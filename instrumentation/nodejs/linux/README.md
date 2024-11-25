@@ -34,7 +34,7 @@ Open a command line terminal and navigate to the root of the directory.
 For example:
 
 ````
-cd ~/splunk-opentelemetry-examples/instrumentation/nodejs
+cd ~/splunk-opentelemetry-examples/instrumentation/nodejs/linux
 ````
 
 ### Initialize NPM and Install Packages (Optional)
@@ -53,17 +53,17 @@ npm install express
 npm install pino
 ````
 
-There's no need to run these commands again as you can use the `package.json` file that 
-was already created. 
-
-### Instrument with the Splunk Distribution of OpenTelemetry JS (Optional)
-
-Next, we'll instrument our application using the Splunk Distribution of OpenTelemetry JS 
-by first installing the `@splunk/otel` package: 
+Next, we'll instrument our application using the Splunk Distribution of OpenTelemetry JS
+by first installing the `@splunk/otel` package, so let's install this package as well:
 
 ````
 npm install @splunk/otel
 ````
+
+There's no need to run these commands again as you can use the `package.json` file that 
+was already created. 
+
+### Configure the Splunk Distribution of OpenTelemetry JS 
 
 To configure the instrumentation, we've set the following environment variables:
 
@@ -79,6 +79,12 @@ Note that we've enabled both the CPU and memory profiler, so we can utilize the
 AlwaysOn Profiling capabilities.
 
 ### Execute the application
+
+Let's install the packages in the `package.json` file with the following command: 
+
+````
+npm install
+````
 
 Next, we'll execute the application with the `@splunk/otel` package as follows: 
 
