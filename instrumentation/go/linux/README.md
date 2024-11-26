@@ -2,14 +2,14 @@
 
 This example demonstrates how to instrument a Go Application using OpenTelemetry,
 and export traces and metrics to a local collector, which will then
-export that data to Splunk. We'll use Go 21.4 for this example, but the steps
+export that data to Splunk. We'll use Go 1.22.9 for this example, but the steps
 for other Go versions are similar.
 
 ## Prerequisites
 
 The following tools are required to build and execute the Go application:
 
-* Go 21.4
+* Go 1.22.9
 * A Linux-compatible host (such as Ubuntu 24.04, or Mac OS)
 
 ## Deploy the Splunk OpenTelemetry Collector

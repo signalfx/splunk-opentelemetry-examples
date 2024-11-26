@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-go
+spec:
+  selector:
+    matchLabels:
+      app: helloworld-go
+  template:
+    metadata:
+      labels:
+        app: helloworld-go
+    #      annotations:
+    #        splunk.com/exclude: "true"
+    spec:
+      tolerations:
+      nodeSelector:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: helloworld-go
+          image: ghcr.io/splunk/helloworld-go:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+          env:
+            - name: PORT
+              value: "8080"
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://$(NODE_IP):4317"
+            - name: OTEL_SERVICE_NAME
+              value: "helloworld-go"
+          resources:
+            requests:
+              cpu: 150m
+              memory: 2048Mi
+            limits:
+              cpu: 300m
+              memory: 4096Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-go
+spec:
+  type: LoadBalancer
+  selector:
+    app: helloworld-go
+  ports:
+    - protocol: TCP
+      port: 81
+      targetPort: 8080
