@@ -54,10 +54,10 @@ variables for each platform.
 We've already built the Docker image for this application, so feel free to skip 
 this section unless you want to use your own image.
 
-To build the image, run the following command from the `splunk-opentelemetry-examples/instrumentation/dotnet/k8s` directory:
+To build the image, run the following command from the `splunk-opentelemetry-examples/instrumentation/dotnet/linux` directory:
 
 ```
-docker build --platform="linux/amd64" -f MultiStageDocker/Dockerfile -t sampledotnetapp:1.0 .
+docker build --platform="linux/amd64" -f ./Dockerfile -t sampledotnetapp:1.0 .
 ```
 
 If you'd like to test the Docker image locally you can use the following command:
@@ -97,6 +97,7 @@ our Kubernetes cluster.  We'll do this by using the following
 kubectl command to deploy the dotnetapp.yaml manifest file:
 
 ````
+cd ~/splunk-opentelemetry-examples/instrumentation/dotnet/k8s
 kubectl apply -f ./dotnetapp.yaml
 ````
 
@@ -166,36 +167,8 @@ heap used by each generation in the CLR:
 
 ### View Logs with Trace Context
 
-We've included some custom code with this example to demonstrate how trace context can 
-be added to log entries.  You can find this code in the
-SplunkTelemetryConfiguration.cs file: 
-
-````
-   public static void ConfigureLogger(ILoggingBuilder logging)
-   {
-       logging.AddSimpleConsole(options =>
-       {
-           options.IncludeScopes = true;
-       });
-
-        logging.Configure(options =>
-        {
-            options.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
-                                               | ActivityTrackingOptions.TraceId
-                                               | ActivityTrackingOptions.ParentId
-                                               | ActivityTrackingOptions.Baggage
-                                               | ActivityTrackingOptions.Tags;
-        }).AddConsole(options =>
-        {
-           options.FormatterName = "splunkLogsJson";
-        });
-
-        logging.AddConsoleFormatter<SplunkTelemetryConsoleFormatter, ConsoleFormatterOptions>();
-   }
-````
-
-We've included a custom log formatter in the same file, to customize the 
-application log format. 
+As outlined in [the linux example](../linux), we've included some custom code
+to demonstrate how trace context can be added to log entries.
 
 The OpenTelemetry Collector can be configured to export log data to
 Splunk platform using the Splunk HEC exporter.  The logs can then be made

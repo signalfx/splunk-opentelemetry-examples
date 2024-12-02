@@ -114,8 +114,36 @@ heap used by each generation in the CLR:
 
 ### View Logs with Trace Context
 
-As outlined in [the linux example](../linux), we've included some custom code 
-to demonstrate how trace context can be added to log entries.
+We've included some custom code with this example to demonstrate how trace context can
+be added to log entries.  You can find this code in the
+SplunkTelemetryConfiguration.cs file:
+
+````
+   public static void ConfigureLogger(ILoggingBuilder logging)
+   {
+       logging.AddSimpleConsole(options =>
+       {
+           options.IncludeScopes = true;
+       });
+
+        logging.Configure(options =>
+        {
+            options.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
+                                               | ActivityTrackingOptions.TraceId
+                                               | ActivityTrackingOptions.ParentId
+                                               | ActivityTrackingOptions.Baggage
+                                               | ActivityTrackingOptions.Tags;
+        }).AddConsole(options =>
+        {
+           options.FormatterName = "splunkLogsJson";
+        });
+
+        logging.AddConsoleFormatter<SplunkTelemetryConsoleFormatter, ConsoleFormatterOptions>();
+   }
+````
+
+We've included a custom log formatter in the same file, to customize the
+application log format.
 
 Here's an example of a log entry with trace context included: 
 
