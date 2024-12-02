@@ -34,7 +34,7 @@ It comes in two flavors:
 We'll demonstrate how to deploy the Python application and OpenTelemetry collector
 using ECS Fargate, however EC2 is similar.
 
-## Add the Splunk Distribution of OpenTelemetry JS
+## Add the Splunk Distribution of OpenTelemetry Python
 
 To instrument a Python service running in ECS Fargate with OpenTelemetry, we need to include
 `splunk-py-trace` when launching the application.

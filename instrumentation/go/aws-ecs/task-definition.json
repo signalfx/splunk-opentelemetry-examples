@@ -1,0 +1,109 @@
+{
+    "family": "go-ecs-opentelemetry-example",
+    "containerDefinitions": [
+        {
+            "name": "helloworld-go",
+            "image": "ghcr.io/splunk/helloworld-go:1.0",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "helloworld-8080-tcp",
+                    "containerPort": 8080,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "OTEL_SERVICE_NAME",
+                    "value": "helloworld-go"
+                },
+                {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "deployment.environment=test,service.version=1.0"
+                },
+                {
+                    "name": "SPLUNK_PROFILER_ENABLED",
+                    "value": "true"
+                },
+                {
+                    "name": "SPLUNK_PROFILER_MEMORY_ENABLED",
+                    "value": "true"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "dependsOn": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/helloworld-go",
+                    "awslogs-region": "<AWS Region>",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            }
+        },
+        {
+            "name": "splunk-otel-collector",
+            "image": "quay.io/signalfx/splunk-otel-collector:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SPLUNK_CONFIG",
+                    "value": "/etc/otel/collector/fargate_config.yaml"
+                },
+                {
+                    "name": "SPLUNK_REALM",
+                    "value": "<Splunk Realm>"
+                },
+                {
+                    "name": "SPLUNK_ACCESS_TOKEN",
+                    "value": "<Access Token>"
+                },
+                {
+                    "name": "ECS_METADATA_EXCLUDED_IMAGES",
+                    "value": "[\"quay.io/signalfx/splunk-otel-collector:latest\"]"
+                },
+                {
+                    "name": "SPLUNK_HEC_TOKEN",
+                    "value": "<HEC Token>"
+                },
+                {
+                    "name": "SPLUNK_HEC_URL",
+                    "value": "https://<your domain>.splunkcloud.com:443/services/collector/event"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/helloworld-go",
+                    "awslogs-region": "<AWS Region>",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            }
+        }
+    ],
+    "executionRoleArn": "arn:aws:iam::<AWS Account ID>:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    }
+}
