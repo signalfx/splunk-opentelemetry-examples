@@ -20,121 +20,153 @@ If you just want to build and deploy the example, feel free to skip this section
 
 The application used for this example is a simple Hello World application.
 
-We added a helper class named [SplunkTelemetryConfiguration](./SplunkTelemetryConfigurator.cs), and included code to
-assist with initializing the tracer, as well as a custom logger to inject the trace context.
-
-The tracer initialization is based on the example found in
-[Instrument Java Azure functions for Splunk Observability Cloud](https://docs.splunk.com/observability/en/gdi/get-data-in/serverless/azure/instrument-azure-functions-java.html):
+We added a helper class named [SplunkTelemetryConfiguration](./src/main/java/com/function/SplunkTelemetryConfigurator.java), and included code to assist with initializing the OpenTelemetry SDK: 
 
 ````
-public static TracerProvider ConfigureSplunkTelemetry()
-{
-    // Get environment variables from function configuration
-    // You need a valid Splunk Observability Cloud access token and realm
-    var serviceName = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ?? "Unknown";
-    var accessToken = Environment.GetEnvironmentVariable("SPLUNK_ACCESS_TOKEN")?.Trim();
-    var realm = Environment.GetEnvironmentVariable("SPLUNK_REALM")?.Trim();
+    public static OpenTelemetry configureOpenTelemetry() {
 
-    ArgumentNullException.ThrowIfNull(accessToken, "SPLUNK_ACCESS_TOKEN");
-    ArgumentNullException.ThrowIfNull(realm, "SPLUNK_REALM");
+    String serviceName = System.getenv("OTEL_SERVICE_NAME");
+    String deploymentEnvironment = System.getenv("DEPLOYMENT_ENVIRONMENT");
+    String realm = System.getenv("SPLUNK_REALM");
+    String accessToken = System.getenv("SPLUNK_ACCESS_TOKEN");
 
-    var builder = Sdk.CreateTracerProviderBuilder()
-    // Use Add[instrumentation-name]Instrumentation to instrument missing services
-    // Use Nuget to find different instrumentation libraries
-    .AddHttpClientInstrumentation(opts =>
-    {
-        // This filter prevents background (parent-less) http client activity
-        opts.FilterHttpWebRequest = req => Activity.Current?.Parent != null;
-        opts.FilterHttpRequestMessage = req => Activity.Current?.Parent != null;
-    })
-    // Use AddSource to add your custom DiagnosticSource source names
-    //.AddSource("My.Source.Name")
-    // Creates root spans for function executions
-    .AddSource("Microsoft.Azure.Functions.Worker")
-    .SetSampler(new AlwaysOnSampler())
-    .ConfigureResource(configure => configure
-        .AddService(serviceName: serviceName, serviceVersion: "1.0.0")
-        // See https://github.com/open-telemetry/opentelemetry-java-contrib/tree/main/src/OpenTelemetry.Resources.Azure
-        // for other types of Azure detectors
-        .AddAzureAppServiceDetector())
-    .AddOtlpExporter(opts =>
-    {
-        opts.Endpoint = new Uri($"https://ingest.{realm}.signalfx.com/v2/trace/otlp");
-        opts.Protocol = OtlpExportProtocol.HttpProtobuf;
-        opts.Headers = $"X-SF-TOKEN={accessToken}";
-    }) 
-    // Add the console exporter, which is helpful for debugging as the 
-    // spans get written to the console but should be removed in production
-    .AddConsoleExporter();
+    if (serviceName == null)
+        throw new IllegalArgumentException("The OTEL_SERVICE_NAME environment variable must be populated");
+    if (deploymentEnvironment == null)
+        throw new IllegalArgumentException("The DEPLOYMENT_ENVIRONMENT environment variable must be populated");
+    if (realm == null)
+        throw new IllegalArgumentException("The SPLUNK_REALM environment variable must be populated");
+    if (accessToken == null)
+        throw new IllegalArgumentException("The SPLUNK_ACCESS_TOKEN environment variable must be populated");
 
-    return builder.Build()!;
+    // Note:  an Azure resource detector isn't currently available but should be 
+    // added here once it is 
+    Resource resource = Resource
+        .getDefault()
+        .toBuilder()
+        .put(ResourceAttributes.SERVICE_NAME, serviceName)
+        .put(ResourceAttributes.DEPLOYMENT_ENVIRONMENT, deploymentEnvironment)
+        .build();
+
+    OtlpHttpSpanExporter spanExporter = OtlpHttpSpanExporter.builder()
+        .setEndpoint(String.format("https://ingest.%s.signalfx.com/v2/trace/otlp", realm))
+        .addHeader("X-SF-TOKEN", accessToken)
+        .build();
+
+    SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+        .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
+        .setResource(resource)
+        .build();
+        
+    return OpenTelemetrySdk.builder()
+        .setTracerProvider(sdkTracerProvider)
+        .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+        .build();
 }
 ````
 
-The custom logger injects the trace context as follows:
+It requires the following dependencies to be added to the [pom.xml](./pom.xml) file: 
 
 ````
-   public static ILogger<T> ConfigureLogger<T>()
-   {
-       var loggerFactory = LoggerFactory.Create(logging =>
-       {
-           logging.ClearProviders(); // Clear existing providers
-           logging.Configure(options =>
-           {
-               options.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
-                               | ActivityTrackingOptions.TraceId
-                               | ActivityTrackingOptions.ParentId
-                               | ActivityTrackingOptions.Baggage
-                               | ActivityTrackingOptions.Tags;
-           }).AddConsole(options =>
-           {
-               options.FormatterName = "splunkLogsJson";
-           });
-           logging.AddConsoleFormatter<SplunkTelemetryConsoleFormatter, ConsoleFormatterOptions>();
-       });
+   <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>1.44.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-       return loggerFactory.CreateLogger<T>();
-   }
+    <dependencies>
+        ...
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Not managed by opentelemetry-bom -->
+            <groupId>io.opentelemetry.semconv</groupId>
+            <artifactId>opentelemetry-semconv</artifactId>
+            <version>1.28.0-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-log4j-context-data-2.17-autoconfigure</artifactId>
+            <version>2.8.0-alpha</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
 ````
 
-The [Program.cs file](./Program.cs) was then modified to configure
+Note that we've added `opentelemetry-log4j-context-data-2.17-autoconfigure` as a dependency as well, which injects the trace ID and span ID from an active span into Log4j's context data.  Refer to [ContextData Instrumentation for Log4j2]https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-context-data/log4j-context-data-2.17/library-autoconfigure) 
+for further details. 
+
+
+The log4j2.xml configuration file was modified to utilize this trace context and add it to the log output: 
+
+````
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>%d %5p [%t] %c{3} - trace_id=%X{trace_id} span_id=%X{span_id} trace_flags=%X{trace_flags} service.name=${env:OTEL_SERVICE_NAME} %m%n</pattern>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+````
+
+The [Function.java file](./src/main/java/com/function/Function.java) was then modified to configure
 OpenTelemetry using the helper class as follows:
 
 ````
-using OpenTelemetry.Trace;
-using SplunkTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 
-var tracerProvider = SplunkTelemetryConfigurator.ConfigureSplunkTelemetry();
+public class Function {
 
-var host = new HostBuilder()
-   .ConfigureFunctionsWorkerDefaults()
-   .ConfigureServices(services => services.AddSingleton(tracerProvider))
-   .Build();
-````
+    private final OpenTelemetry openTelemetry = SplunkTelemetryConfigurator.configureOpenTelemetry();
+    private final Tracer tracer = openTelemetry.getTracer(Function.class.getName(), "0.1.0");
+    private static final Logger logger = LogManager.getLogger(Function.class);
 
-And then the [Azure function](./azure_function_java8_opentelemetry_example.cs) was modified to configure
-the logger used by the application:
-````
-    public azure_function_java8_opentelemetry_example(ILogger<azure_function_java8_opentelemetry_example> logger)
-    {
-        _logger = SplunkTelemetryConfigurator.ConfigureLogger<azure_function_java8_opentelemetry_example>();
+    @FunctionName("Hello")
+    public HttpResponseMessage run(
+            @HttpTrigger(
+                name = "req",
+                methods = {HttpMethod.GET, HttpMethod.POST},
+                authLevel = AuthorizationLevel.ANONYMOUS)
+                HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        
+        Span span = tracer.spanBuilder("helloFunction").startSpan();
+
+        try (Scope scope = span.makeCurrent()) {
+            logger.info("Handling the Hello function call");
+            return request.createResponseBuilder(HttpStatus.OK).body("Hello, World!").build(); 
+        } 
+        catch (Throwable t) {
+            span.recordException(t);
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("An error occurred while processing the request").build(); 
+        }
+        finally {
+            span.end();
+        }
     }
 ````
 
-These code changes required a number of packages to be added to the azure-functions.csproj file:
-
-````
-  <ItemGroup>
-    ...
-    <PackageReference Include="OpenTelemetry" Version="1.10.0" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.10.0" />
-    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.10.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.10.0" />
-    <PackageReference Include="OpenTelemetry.Resources.Azure" Version="1.0.0-beta.9" />
-  </ItemGroup>
-````
-
-The `local.settings.json` file was then updated to include the Splunk realm and access token which is
+The `local.settings.json` file was then updated to include the service name, deployment environment, Splunk realm and access token which is
 used for local testing:
 
 ````
@@ -142,12 +174,17 @@ used for local testing:
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "",
-    "FUNCTIONS_WORKER_RUNTIME": "java-isolated", 
+    "FUNCTIONS_WORKER_RUNTIME": "java", 
+    "APPLICATIONINSIGHTS_ENABLE_AGENT": "true",
+    "OTEL_SERVICE_NAME": "azure-function-java-opentelemetry-example",
+    "DEPLOYMENT_ENVIRONMENT": "test",
     "SPLUNK_REALM": "<Splunk Realm i.e. us0, us1, eu0, etc. >", 
     "SPLUNK_ACCESS_TOKEN": "<Splunk Observability Cloud Access Token>"
   }
 }
 ````
+
+Note that we also set APPLICATIONINSIGHTS_ENABLE_AGENT to "true" to ensure the log4j logs appear in App Insights. 
 
 ## Build and Deploy
 
@@ -167,12 +204,7 @@ with Java 21 as the runtime.
 
 ### Create a Deployment Slot (Optional)
 
-By default, Azure will use a deployment slot named "Production" for an Azure Function App.
-This results in OpenTelemetry using a `deployment.environment` setting of "Production" as well,
-which may not be desired.
-
-To use a different `deployment.environment` value, we can create a different deployment slot instead.
-
+By default, Azure will use a deployment slot named "Production" for an Azure Function App.  
 In my example, I created a deployment slot named "test".
 
 ![Deployment Slot](./images/deployment-slot.png)
@@ -180,8 +212,7 @@ In my example, I created a deployment slot named "test".
 ### Set Environment Variables
 
 To allow OpenTelemetry to send trace data to Splunk Observability Cloud,
-we need to set the SPLUNK_REALM and SPLUNK_ACCESS_TOKEN environment variables
-for our Azure Function App:
+we need to set the APPLICATIONINSIGHTS_ENABLE_AGENT, OTEL_SERVICE_NAME, DEPLOYMENT_ENVIRONMENT, SPLUNK_REALM and SPLUNK_ACCESS_TOKEN environment variables for our Azure Function App:
 
 ![Environment Variables](./images/env-vars.png)
 
@@ -231,18 +262,7 @@ using the custom logging changes described above:
 
 ````
 {
-  "event_id": 0,
-  "log_level": "information",
-  "category": "example.azure_function_java8_opentelemetry_example",
-  "message": "C# HTTP trigger function processed a request.",
-  "timestamp": "2024-12-03T23:18:17.2770657Z",
-  "service.name": "opentelemetry-examples",
-  "severity": "INFO",
-  "span_id": "c6667cb0450822dd",
-  "trace_id": "c5580e362f333788634779f64220a087",
-  "parent_id": "2c06698f7f40edb8",
-  "tag_az.schema_url": "https://opentelemetry.io/schemas/1.17.0",
-  "tag_faas.execution": "25fc5264-f946-4c63-b561-822b7c2ccddd"
+    2024-12-05 13:48:58,320  INFO [pool-2-thread-1] com.function.Function - trace_id=746bf6fd39b1c76cb587ed5ca29c4d8a span_id=0f93d5fb716a48e9 trace_flags=01 service.name=azure-function-java-opentelemetry-example Handling the Hello function call
 }
 ````
 

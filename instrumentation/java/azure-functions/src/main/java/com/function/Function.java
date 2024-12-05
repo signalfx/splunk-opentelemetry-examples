@@ -2,6 +2,9 @@ package com.function;
 
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -20,6 +23,7 @@ public class Function {
 
     private final OpenTelemetry openTelemetry = SplunkTelemetryConfigurator.configureOpenTelemetry();
     private final Tracer tracer = openTelemetry.getTracer(Function.class.getName(), "0.1.0");
+    private static final Logger logger = LogManager.getLogger(Function.class);
 
     @FunctionName("Hello")
     public HttpResponseMessage run(
@@ -32,11 +36,10 @@ public class Function {
         
         Span span = tracer.spanBuilder("helloFunction").startSpan();
 
-        // Make the span the current span
         try (Scope scope = span.makeCurrent()) {
-            context.getLogger().info("Handling the Hello function call");
+            logger.info("Handling the Hello function call");
             return request.createResponseBuilder(HttpStatus.OK).body("Hello, World!").build(); 
-        } 
+        }
         catch (Throwable t) {
             span.recordException(t);
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("An error occurred while processing the request").build(); 
