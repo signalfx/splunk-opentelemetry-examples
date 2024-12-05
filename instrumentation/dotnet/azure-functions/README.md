@@ -7,7 +7,7 @@ similar.
 
 ## Prerequisites 
 
-The following tools are required to deploy .NET functions into AWS Lambda: 
+The following tools are required to deploy .NET Azure functions: 
 
 * An Azure account with permissions to create and execute Azure functions
 * [Visual Studio Code](https://code.visualstudio.com/)
@@ -210,7 +210,7 @@ Hello, World!
 
 ### View Traces in Splunk Observability Cloud
 
-After a minute or so, you should start to see traces for the lambda function
+After a minute or so, you should start to see traces for the serverless function
 appearing in Splunk Observability Cloud: 
 
 ![Trace](./images/trace.png)
