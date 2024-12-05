@@ -110,7 +110,7 @@ It requires the following dependencies to be added to the [pom.xml](./pom.xml) f
 
 ````
 
-Note that we've added `opentelemetry-log4j-context-data-2.17-autoconfigure` as a dependency as well, which injects the trace ID and span ID from an active span into Log4j's context data.  Refer to [ContextData Instrumentation for Log4j2]https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-context-data/log4j-context-data-2.17/library-autoconfigure) 
+Note that we've added `opentelemetry-log4j-context-data-2.17-autoconfigure` as a dependency as well, which injects the trace ID and span ID from an active span into Log4j's context data.  Refer to [ContextData Instrumentation for Log4j2](https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-context-data/log4j-context-data-2.17/library-autoconfigure) 
 for further details. 
 
 
@@ -221,17 +221,17 @@ we need to set the APPLICATIONINSIGHTS_ENABLE_AGENT, OTEL_SERVICE_NAME, DEPLOYME
 In the Azure section of Visual Studio Code, right click on the deployment slot of interest
 and select `Deploy to Slot`.
 
-![Deploy](./images/deploy.png)
+<img src="./images/deploy.png" alt="Deploy" width="200"/>
 
 It will ask you to confirm:
 
-![Confirm Deploy](./images/confirm-deploy.png)
+<img src="./images/confirm-deploy.png" alt="Confirm Deploy" width="200"/>
 
 ### Test the Azure Function
 
 Copy the function URL from the Azure function:
 
-![Function URL](./images/function-url.png)
+<img src="./images/function-url.png" alt="Function URL" width="200"/>
 
 Then point your browser to that URL, it should return:
 

@@ -190,17 +190,17 @@ for our Azure Function App:
 In the Azure section of Visual Studio Code, right click on the deployment slot of interest 
 and select `Deploy to Slot`. 
 
-![Deploy](./images/deploy.png)
+<img src="./images/deploy.png" alt="Deploy" width="200"/>
 
 It will ask you to confirm: 
 
-![Confirm Deploy](./images/confirm-deploy.png)
+<img src="./images/confirm-deploy.png" alt="Confirm Deploy" width="200"/>
 
 ### Test the Azure Function
 
 Copy the function URL from the Azure function: 
 
-![Function URL](./images/function-url.png)
+<img src="./images/function-url.png" alt="Function URL" width="200"/>
 
 Then point your browser to that URL, it should return: 
 
