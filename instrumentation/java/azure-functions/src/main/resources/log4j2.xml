@@ -8,7 +8,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.azure.core" level="error" additivity="true">
+        <Logger name="com.azure.core" level="info" additivity="true">
             <appender-ref ref="console" />
         </Logger>
         <Root level="info" additivity="false">
