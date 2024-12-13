@@ -20,7 +20,7 @@ The following tools are required to deploy Python Azure functions:
 For this example, we deployed the Splunk Distribution of the OpenTelemetry Collector onto a virtual machine 
 in Azure using Gateway mode, and ensured it's accessible to our Azure function. 
 
-We also configured it with the `SPLUNK_HEC_TOKEN` and `SPLUNK_HEC_URL` environment variables, so that it 
+We configured it with the `SPLUNK_HEC_TOKEN` and `SPLUNK_HEC_URL` environment variables, so that it 
 exports logs to our Splunk Cloud instance. 
 
 Please refer to [Install the Collector using packages and deployment tools](https://docs.splunk.com/observability/en/gdi/opentelemetry/install-the-collector.html#collector-package-install)
@@ -35,7 +35,7 @@ The application used for this example is a simple Hello World application.
 We added a file named [splunk_opentelemetry.py](./splunk_opentelemetry.py) to include a helper function 
 that initializes OpenTelemetry tracing and metrics: 
 
-````
+```python
 from splunk_otel.tracing import start_tracing
 from splunk_otel.metrics import start_metrics
 
@@ -53,13 +53,13 @@ def init_opentelemetry():
     start_tracing()
     start_metrics()
 
-````
+```
 
 We also updated the [function_app.py](./function_app.py) file to call our helper function to initialize 
 OpenTelemetry instrumentation, start a new span when the HTTP trigger function is invoked, and add
 an attribute to the span: 
 
-````
+```python
 import azure.functions as func
 import logging
 from splunk_opentelemetry import init_opentelemetry
@@ -91,13 +91,13 @@ def azure_function_python_opentelemetry_example(req: func.HttpRequest) -> func.H
 
         if name:
             span.set_attribute("app.name", name)
-            return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+            return func.HttpResponse(f"Hello, {name}!")
         else:
             return func.HttpResponse(
-                "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+                "Hello, World!",
                 status_code=200
             )
-````
+```
 
 These code changes required the `splunk-opentelemetry[all]` and 
 `opentelemetry-instrumentation-logging` packages to be installed, which we can see
@@ -140,7 +140,7 @@ configuration instead for [local.settings.json](./local.settings.json):
   }
 ````
 
-The [host.json](./host.json) file was also updated to set the `telemetryMode` to `openTelemetry`.  This 
+The [host.json](./host.json) file was also updated to set the `telemetryMode` to `OpenTelemetry`.  This 
 enables OpenTelemetry output from the host where the function runs: 
 
 ````
@@ -154,7 +154,7 @@ enables OpenTelemetry output from the host where the function runs:
       }
     }
   },
-  "telemetryMode": "openTelemetry",
+  "telemetryMode": "OpenTelemetry",
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
