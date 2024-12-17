@@ -46,6 +46,20 @@ See
 [Install AWS Load Balancer Controller with Helm](https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html) 
 to install it, if required. 
 
+Note that the instructions referenced above ask you to download an iam_policy.json file with the following command: 
+
+````
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.2/docs/install/iam_policy.json
+````
+
+The permissions change over time, so you'll need to instead download the version that corresponds to the version
+of the AWS Load Balancer Controller you've deployed.  At the time of writing, the latest version is 2.11.0, 
+so I used the following command instead: 
+
+````
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.11.0/docs/install/iam_policy.json
+````
+
 ## Deploy the Splunk OpenTelemetry Collector
 
 This example requires the Splunk Distribution of the OpenTelemetry collector to
@@ -128,6 +142,19 @@ It will return something like the following:
 ````
 NAME               CLASS   HOSTS   ADDRESS                                                                 PORTS   AGE
 doorgame-ingress   alb     *       k8s-default-doorgame-4417858106-224637253.eu-west-1.elb.amazonaws.com   80      5m15s
+````
+
+In some cases, the output of the following command might instead look like the following: 
+
+````
+NAME               CLASS   HOSTS   ADDRESS   PORTS   AGE
+doorgame-ingress   alb     *                 80      8m46s
+````
+
+You can use the following command to troubleshoot: 
+
+````
+kubectl describe ingress doorgame-ingress
 ````
 
 Then we can access the application by pointing our browser to `http://k8s-default-doorgame-4417858106-224637253.eu-west-1.elb.amazonaws.com`.
