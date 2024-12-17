@@ -4,7 +4,9 @@
 
 azure-functions
 
-splunk-opentelemetry[all]==1.21.0
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
 
 # add this package to ensure trace context is added to logs
 opentelemetry-instrumentation-logging

@@ -33,12 +33,9 @@ If you just want to build and deploy the example, feel free to skip this section
 The application used for this example is a simple Hello World application. 
 
 We added a file named [splunk_opentelemetry.py](./splunk_opentelemetry.py) to include a helper function 
-that initializes OpenTelemetry tracing and metrics: 
+that initializes OpenTelemetry for traces, logs, and metrics: 
 
 ```python
-from splunk_otel.tracing import start_tracing
-from splunk_otel.metrics import start_metrics
-
 def init_opentelemetry(): 
 
     if 'OTEL_SERVICE_NAME' not in os.environ: 
@@ -50,9 +47,25 @@ def init_opentelemetry():
     if 'OTEL_RESOURCE_ATTRIBUTES' not in os.environ: 
         raise Exception('The OTEL_RESOURCE_ATTRIBUTES environment variable must be set')
 
-    start_tracing()
-    start_metrics()
+    traceProvider = TracerProvider()
+    processor = BatchSpanProcessor(OTLPSpanExporter())
+    traceProvider.add_span_processor(processor)
+    trace.set_tracer_provider(traceProvider)
 
+    reader = PeriodicExportingMetricReader(OTLPMetricExporter())
+    meterProvider = MeterProvider(metric_readers=[reader])
+    metrics.set_meter_provider(meterProvider)
+
+    _logs.set_logger_provider(
+        LoggerProvider()
+    )
+    logging.getLogger().addHandler(
+        LoggingHandler(
+            logger_provider=_logs.get_logger_provider().add_log_record_processor(
+                BatchLogRecordProcessor(OTLPLogExporter())
+            )
+        )
+    )
 ```
 
 We also updated the [function_app.py](./function_app.py) file to call our helper function to initialize 
@@ -99,12 +112,13 @@ def azure_function_python_opentelemetry_example(req: func.HttpRequest) -> func.H
             )
 ```
 
-These code changes required the `splunk-opentelemetry[all]` and 
-`opentelemetry-instrumentation-logging` packages to be installed, which we can see
+These code changes required several OpenTelemetry packages to be installed, which we can see
 in the [requirements.txt](./requirements.txt) file: 
 
 ````
-splunk-opentelemetry[all]==1.21.0
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
 
 # add this package to ensure trace context is added to logs
 opentelemetry-instrumentation-logging
@@ -119,7 +133,7 @@ For this example, we'll send metrics, traces, and logs to a collector running on
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "python", 
     "OTEL_SERVICE_NAME": "azure_function_python_opentelemetry_example",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://<Collector IP Address>:4317",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://<Collector IP Address>:4318",
     "OTEL_RESOURCE_ATTRIBUTES": "deployment.environment=test",
     "OTEL_PYTHON_LOG_CORRELATION": "true"
   }
@@ -139,30 +153,6 @@ configuration instead for [local.settings.json](./local.settings.json):
     "OTEL_RESOURCE_ATTRIBUTES": "deployment.environment=test" 
   }
 ````
-
-The [host.json](./host.json) file was also updated to set the `telemetryMode` to `OpenTelemetry`.  This 
-enables OpenTelemetry output from the host where the function runs: 
-
-````
-{
-  "version": "2.0",
-  "logging": {
-    "applicationInsights": {
-      "samplingSettings": {
-        "isEnabled": true,
-        "excludedTypes": "Request"
-      }
-    }
-  },
-  "telemetryMode": "OpenTelemetry",
-  "extensionBundle": {
-    "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "[4.*, 5.0.0)"
-  }
-````
-
-Note:  while the above setting should be optional, during testing it was observed that 
-application traces don't get captured either if this setting is not included.  
 
 ## Build and Deploy
 
@@ -225,15 +215,6 @@ After a minute or so, you should start to see traces for the serverless function
 appearing in Splunk Observability Cloud: 
 
 ![Trace](./images/trace.png)
-
-Note that the bottom-right of the trace includes a button that links to the related log entries. 
-
-### View Metrics in Splunk Observability Cloud
-
-The Splunk distribution of OpenTelemetry Python automatically captures runtime metrics, 
-such as `process.runtime.cpython.memory`: 
-
-![Metrics](./images/metrics.png)
 
 Note that the bottom-right of the trace includes a button that links to the related log entries. 
 
