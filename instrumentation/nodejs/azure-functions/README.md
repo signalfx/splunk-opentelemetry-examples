@@ -11,7 +11,19 @@ The following tools are required to deploy Node.js Azure functions:
 
 * An Azure account with permissions to create and execute Azure functions
 * [Visual Studio Code](https://code.visualstudio.com/)
+* An OpenTelemetry collector that's accessible to the Azure function 
 * Azure Functions extension for Visual Studio Code (installed using Visual Studio Code)
+
+## Splunk Distribution of the OpenTelemetry Collector
+
+For this example, we deployed the Splunk Distribution of the OpenTelemetry Collector onto a virtual machine 
+in Azure using Gateway mode, and ensured it's accessible to our Azure function. 
+
+We configured it with the `SPLUNK_HEC_TOKEN` and `SPLUNK_HEC_URL` environment variables, so that it 
+exports logs to our Splunk Cloud instance. 
+
+Please refer to [Install the Collector using packages and deployment tools](https://docs.splunk.com/observability/en/gdi/opentelemetry/install-the-collector.html#collector-package-install)
+for collector installation instructions. 
 
 ## Application Overview
 
@@ -23,18 +35,17 @@ We updated the [index.js](./src/index.js) file to include code that starts the i
 which adds the Azure function OpenTelemetry instrumentation: 
 
 ````
-const { start } = require('@splunk/otel');
-const { getInstrumentations } = require('@splunk/otel/lib/instrumentations');
-const { AzureFunctionsInstrumentation } = require('@azure/functions-opentelemetry-instrumentation');
-
-start({
-   tracing: {
-      instrumentations: [
-         ...getInstrumentations(), // Adds default instrumentations
-         new AzureFunctionsInstrumentation()
-      ],
-   },
+const sdk = new NodeSDK({
+  traceExporter: new OTLPTraceExporter(),
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter(),
+  }),
+  logRecordProcessor: new BatchLogRecordProcessor(
+    new OTLPLogExporter()
+  ),
+  instrumentations: [getNodeAutoInstrumentations(), new AzureFunctionsInstrumentation()],
 });
+sdk.start();
 ````
 
 We also modified the 
@@ -74,20 +85,24 @@ in the [package.json](./package.json) file:
     "@azure/functions": "^4.5.0",
     "@azure/functions-opentelemetry-instrumentation": "^0.1.0",
     "@opentelemetry/api": "^1.9.0",
-    "@splunk/otel": "^2.15.0",
+    "@opentelemetry/sdk-node": "^0.56.0",
+    "@opentelemetry/sdk-metrics": "^1.29.0",
+    "@opentelemetry/sdk-logs": "^0.56.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.56.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.56.0", 
+    "@opentelemetry/exporter-logs-otlp-http": "^0.56.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
     "pino": "^9.5.0"
   },
 ````
 
-The [local.settings.json](./local.settings.json) file was then updated to include the Splunk realm and access token which is
-used for local testing: 
+For this example, we'll send metrics, traces, and logs to a collector running on another virtual machine in Azure. The [local.settings.json](./local.settings.json) file was updated as follows: 
 
 ````
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "https://ingest.<Realm>.signalfx.com/v2/trace/otlp", 
-    "OTEL_EXPORTER_OTLP_HEADERS": "X-SF-TOKEN=<Access Token>", 
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://<Collector IP Address>:4318", 
     "OTEL_SERVICE_NAME": "azure-function-nodejs-opentelemetry-example", 
     "OTEL_RESOURCE_ATTRIBUTES": "deployment.environment=test" 
   }
@@ -107,7 +122,7 @@ enables OpenTelemetry output from the host where the function runs:
       }
     }
   },
-  "telemetryMode": "openTelemetry",
+  "telemetryMode": "OpenTelemetry",
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
@@ -143,8 +158,8 @@ In my example, I created a deployment slot named "test".
 ### Set Environment Variables 
 
 To allow OpenTelemetry to send trace data to Splunk Observability Cloud, 
-we need to set the `SPLUNK_REALM`, `SPLUNK_ACCESS_TOKEN`, `OTEL_EXPORTER_OTLP_ENDPOINT`, 
-and `OTEL_EXPORTER_OTLP_HEADERS` environment variables 
+we need to set the `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, 
+and `OTEL_RESOURCE_ATTRIBUTES` environment variables 
 for our Azure Function App: 
 
 ![Environment Variables](./images/env-vars.png)
@@ -179,11 +194,7 @@ appearing in Splunk Observability Cloud:
 
 ![Trace](./images/trace.png)
 
-Note that there are several traces captured at the function host level by Azure's Application Insights 
-that are not directly related to HTTP function requests. 
-
-And in the trace shown above, there are also .NET spans associated with the function host, which 
-call into our Node.js function. 
+Note that the bottom-right of the trace includes a button that links to the related log entries. 
 
 ### Add Trace Context to Logs
 
@@ -195,25 +206,18 @@ such as the
 Once the logs are in Splunk platform, they can be made available to
 Splunk Observability Cloud using Log Observer Connect.
 
-In the following example, 
-we can see that the trace context was injected successfully into the logs 
-since the Splunk distribution of OpenTelemetry JS automatically handles this when 
-`pino` is used for logging: 
+In general, logs generated by an Azure function get sent to Application Insights.
+Various methods exist for ingesting logs into Splunk platform from Application Insights,
+such as the 
+[Splunk Add-on for Microsoft Cloud Services](https://splunkbase.splunk.com/app/3110).
 
-````
-{
-  "level": 30,
-  "time": 1733937329972,
-  "pid": 5364,
-  "hostname": "10-30-16-44",
-  "trace_id": "5d36a2495225ca7122a24206cf7261ce",
-  "span_id": "24ab25749ad90eb4",
-  "trace_flags": "01",
-  "service.name": "azure-function-nodejs-opentelemetry-example",
-  "service.environment": "test",
-  "msg": "Http function processed request for url \"https://opentelemetry-nodejs-examples-test.azurewebsites.net/api/azure-function-nodejs-opentelemetry-example\""
-}
-````
+In this example, OpenTelemetry JavaScript also exports logs 
+to our collector using OTLP.  
 
-This will ensure full correlation between traces generated by the OpenTelemetry instrumentation
-with metrics and logs. 
+By following the link from the trace show above, we can see all of the log entries associated 
+with this trace: 
+
+![Related Logs](./images/related-logs.png)
+
+We can see that the log entries include a trace_id and span_id, which allows us to correlate 
+logs with traces. 

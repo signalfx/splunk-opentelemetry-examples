@@ -10,7 +10,13 @@
     "@azure/functions": "^4.5.0",
     "@azure/functions-opentelemetry-instrumentation": "^0.1.0",
     "@opentelemetry/api": "^1.9.0",
-    "@splunk/otel": "^2.15.0",
+    "@opentelemetry/sdk-node": "^0.56.0",
+    "@opentelemetry/sdk-metrics": "^1.29.0",
+    "@opentelemetry/sdk-logs": "^0.56.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.56.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.56.0", 
+    "@opentelemetry/exporter-logs-otlp-http": "^0.56.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
     "pino": "^9.5.0"
   },
   "main": "src/{index.js,functions/*.js}"
