@@ -28,112 +28,93 @@ exports logs to our Splunk Cloud instance.
 Please refer to [Install the Collector using packages and deployment tools](https://docs.splunk.com/observability/en/gdi/opentelemetry/install-the-collector.html#collector-package-install)
 for collector installation instructions. 
 
-## Application Overview
+## Application Overview (Optional)
 
 If you just want to build and deploy the example, feel free to skip this section. 
 
 The application used for this example is a simple Hello World application. 
 
-We updated the [index.js](./src/index.js) file to include code that starts the instrumentation, 
-which adds the Azure function OpenTelemetry instrumentation: 
+To instrument the Go function with OpenTelemetry, we added the following code to the `main` function:
 
 ````
-const sdk = new NodeSDK({
-  traceExporter: new OTLPTraceExporter(),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter(),
-  }),
-  logRecordProcessor: new BatchLogRecordProcessor(
-    new OTLPLogExporter()
-  ),
-  instrumentations: [getNodeAutoInstrumentations(), new AzureFunctionsInstrumentation()],
-});
-sdk.start();
+func main() {
+	ctx := context.Background()
+
+	sdk, err := distro.Run()
+	if err != nil {
+		panic(err)
+	}
+	// Flush all spans before the application exits
+	defer func() {
+		if err := sdk.Shutdown(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
+    ...
+	tracer = otel.Tracer("azure_function_go_opentelemetry_example")
+	...
+	listenAddr := ":8080"
+	if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
+		listenAddr = ":" + val
+	}
+
+	// Wrap the helloHandler function.
+	handler := http.HandlerFunc(helloHandler)
+	wrappedHandler := otelhttp.NewHandler(handler, "hello")
+	http.Handle("/api/azure_function_go_opentelemetry_example", wrappedHandler)
+	logger.Info(fmt.Sprintf("About to listen on %s. Go to https://127.0.0.1%s/", listenAddr, listenAddr))
+	http.ListenAndServe(listenAddr, nil)
+}
 ````
 
-We also modified the 
-[azure-function-Go-opentelemetry-example.js](./src/functions/azure-function-Go-opentelemetry-example.js) 
-file to start a custom span and add a span attribute to it: 
+This activates the Splunk distribution of OpenTelemetry Go and instruments the HTTP handler.
+
+### Install Go Modules (Optional)
+
+We used the following commands to add the Go modules required to instrument this application
+with OpenTelemetry.  Please note that these commands don't need to be executed again, but are
+provided for reference in case you'd like to apply instrumentation to your own Azure function.
+
+We generated a go.mod file by executing the following command:
 
 ````
-const opentelemetry = require('@opentelemetry/api');
+go mod init example.com/helloworld
+```` 
 
-const tracer = opentelemetry.trace.getTracer('azure-function-Go-opentelemetry-example', '0.1.0');
-
-app.http('azure-function-Go-opentelemetry-example', {
-    methods: ['GET', 'POST'],
-    authLevel: 'anonymous',
-    handler: async (request, context) => {
-        return tracer.startActiveSpan('Go-azure-http-trigger', (span) => {
-
-            logger.info(`Http function processed request for url "${request.url}"`);
-
-            const name = request.query.get('name') || 'world';
-            
-            span.setAttribute('app.name', name);
-            span.end();
-
-            return { body: `Hello, ${name}!` };
-        });
-    }
-});
-````
-
-These code changes required the `@splunk/otel`, `@opentelemetry/api` and 
-`@azure/functions-opentelemetry-instrumentation` packages to be installed with npm, which we can see
-in the [package.json](./package.json) file: 
+Our application uses the `net/http` package so we'll add that with the following command:
 
 ````
-  "dependencies": {
-    "@azure/functions": "^4.5.0",
-    "@azure/functions-opentelemetry-instrumentation": "^0.1.0",
-    "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/sdk-node": "^0.56.0",
-    "@opentelemetry/sdk-metrics": "^1.29.0",
-    "@opentelemetry/sdk-logs": "^0.56.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.56.0",
-    "@opentelemetry/exporter-metrics-otlp-http": "^0.56.0", 
-    "@opentelemetry/exporter-logs-otlp-http": "^0.56.0",
-    "@opentelemetry/auto-instrumentations-node": "^0.54.0",
-    "pino": "^9.5.0"
-  },
+go get go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
 ````
 
-For this example, we'll send metrics, traces, and logs to a collector running on another virtual machine in Azure. The [local.settings.json](./local.settings.json) file was updated as follows: 
+Our application also uses [zap](https://github.com/uber-go/zap) for logging, so we'll add that
+as well:
+
+````
+go get go.uber.org/zap
+````
+
+We then installed the Splunk distribution of OpenTelemetry Go with the following command:
+
+````
+go get github.com/signalfx/splunk-otel-go/distro
+````
+
+There's no need to run these commands again as you can use the `go.mod` file that
+was already created.
+
+For this example, we'll send metrics, traces, and logs to a collector running on another virtual machine in Azure.
+The [local.settings.json](./local.settings.json) file was updated as follows: 
 
 ````
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://<Collector IP Address>:4318", 
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://<Collector IP Address>:4317", 
     "OTEL_SERVICE_NAME": "azure-function-Go-opentelemetry-example", 
     "OTEL_RESOURCE_ATTRIBUTES": "deployment.environment=test" 
   }
-````
-
-The [host.json](./host.json) file was also updated to set the `telemetryMode` to `openTelemetry`.  This 
-enables OpenTelemetry output from the host where the function runs: 
-
-````
-{
-  "version": "2.0",
-  "logging": {
-    "applicationInsights": {
-      "samplingSettings": {
-        "isEnabled": true,
-        "excludedTypes": "Request"
-      }
-    }
-  },
-  "telemetryMode": "OpenTelemetry",
-  "extensionBundle": {
-    "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "[4.*, 5.0.0)"
-  }
-````
-
-Note:  while the above setting should be optional, during testing it was observed that 
-application traces don't get captured either if this setting is not included.  
+```` 
 
 ## Build and Deploy
 
@@ -167,9 +148,14 @@ to [Compile the custom handler for Azure](https://learn.microsoft.com/en-us/azur
 
 ### Create a Function App in Azure 
 
-Create a Function App in Azure if you don't already have one.  For my example, 
-I used `opentelemetry-Go-examples` as the function name, and used the region of “West US 2” 
-with Go v20 as the runtime. 
+Create a Function App in Azure to host this new function. 
+
+Using Visual Studio Code on Mac OS, press `Function + F1`, 
+and then enter `Create new Function App in Azure (Advanced)` in the top menu bar.  The `Advanced` option is required so we can choose `Linux` as the target OS rather than the default of `Windows`, which won't work 
+for this example. 
+
+In my case, I used `opentelemetry-go-examples` as the function name, and used the region of “West US 2” 
+with Go v1.21.4 as the runtime. 
 
 ![Azure Function App](./images/azure-function-app.png)
 
@@ -191,7 +177,7 @@ for our Azure Function App:
 
 ### Build and Deploy the Azure Function
 
-In the Azure section of Visual Studio Code, right click on the deployment slot of interest 
+In the Azure section of Visual Studio Code, right-click on the deployment slot of interest 
 and select `Deploy to Slot`. 
 
 <img src="./images/deploy.png" alt="Deploy" width="200"/>
@@ -219,30 +205,30 @@ appearing in Splunk Observability Cloud:
 
 ![Trace](./images/trace.png)
 
-Note that the bottom-right of the trace includes a button that links to the related log entries. 
-
 ### Add Trace Context to Logs
 
 Logs generated by an Azure function get sent to Application Insights.
 Various methods exist for ingesting logs into Splunk platform from Application Insights,
-such as the 
+such as the
 [Splunk Add-on for Microsoft Cloud Services](https://splunkbase.splunk.com/app/3110).
 
 Once the logs are in Splunk platform, they can be made available to
 Splunk Observability Cloud using Log Observer Connect.
 
-In general, logs generated by an Azure function get sent to Application Insights.
-Various methods exist for ingesting logs into Splunk platform from Application Insights,
-such as the 
-[Splunk Add-on for Microsoft Cloud Services](https://splunkbase.splunk.com/app/3110).
+In the following example, we can see that the trace context was injected successfully into the logs
+using the custom logging changes added to [handler.go](./handler.go): 
 
-In this example, OpenTelemetry Go also exports logs 
-to our collector using OTLP.  
+````
+{
+	"level":"info",
+	"ts":1735005796.872678,
+	"caller":"azure-functions/handler.go:25",
+	"msg":"In helloHandler()",
+	"trace_id":"7be0d754758b93c87cb0d3964b95fd9b",
+	"span_id":"bacb525d679dbe5c",
+	"trace_flags":"01"
+}
+````
 
-By following the link from the trace show above, we can see all of the log entries associated 
-with this trace: 
-
-![Related Logs](./images/related-logs.png)
-
-We can see that the log entries include a trace_id and span_id, which allows us to correlate 
-logs with traces. 
+This will ensure full correlation between traces generated by the OpenTelemetry instrumentation
+with metrics and logs. 
