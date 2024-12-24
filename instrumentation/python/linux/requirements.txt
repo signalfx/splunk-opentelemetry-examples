@@ -11,7 +11,7 @@ grpcio==1.68.0
 idna==3.10
 importlib_metadata==8.4.0
 itsdangerous==2.2.0
-Jinja2==3.1.4
+Jinja2==3.1.5
 MarkupSafe==3.0.2
 opentelemetry-api==1.27.0
 opentelemetry-exporter-otlp-proto-common==1.27.0
