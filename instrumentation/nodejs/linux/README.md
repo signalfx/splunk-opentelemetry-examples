@@ -24,7 +24,7 @@ The following tools are required to build and execute the Node.js application:
 ## Deploy the Splunk OpenTelemetry Collector
 
 This example requires the Splunk Distribution of the OpenTelemetry collector to
-be running on the host and available via http://localhost:4317.  Follow the
+be running on the host and available via http://localhost:4318.  Follow the
 instructions in [Install the Collector for Linux with the installer script](https://docs.splunk.com/observability/en/gdi/opentelemetry/collector-linux/install-linux.html#install-the-collector-using-the-installer-script)
 to install the collector on your host.
 
