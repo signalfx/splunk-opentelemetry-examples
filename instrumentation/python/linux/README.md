@@ -43,7 +43,7 @@ We then ran the following command to install instrumentation for packages
 used by our application: 
 
 ````
-splunk-py-trace-bootstrap
+opentelemetry-bootstrap
 ````
 
 We then generated a requirements.txt file by executing the following command:
@@ -79,10 +79,10 @@ AlwaysOn Profiling capabilities.
 
 ### Execute the application
 
-Next, we'll execute the application with the `splunk-py-trace` binary as follows:
+Next, we'll execute the application with the `opentelemetry-instrument` binary as follows:
 
 ````
-splunk-py-trace flask run -p 8080
+opentelemetry-instrument flask run -p 8080
 ````
 
 Access the application by navigating your web browser to the following URL:
