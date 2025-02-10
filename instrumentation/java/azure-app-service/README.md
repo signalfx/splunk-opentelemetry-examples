@@ -45,7 +45,6 @@ We'll use the Maven plugin to deploy our Java application to Azure.  In order to
 need to configure it first with the following command: 
 
 ``` bash
-cd my-webapp
 mvn com.microsoft.azure:azure-webapp-maven-plugin:2.13.0:config
 ```
 
