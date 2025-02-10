@@ -26,7 +26,6 @@ deployment environments:
 | Azure Function         | [Link](./instrumentation/java/azure-functions)   | [Link](./instrumentation/dotnet/azure-functions)                      | [Link](./instrumentation/nodejs/azure-functions) | [Link](./instrumentation/python/azure-functions) | [Link](./instrumentation/go/azure-functions) |
 | Azure App Service      | [Link](./instrumentation/java/azure-app-service) |          |  |  |  |
 | Google Cloud Function  |                                                  |                                                                       |                                                  |                                                  |                                             |
-| Azure Web Apps         |                                                  |                                                                       |                                                  |                                                  |                                             |
 
 Examples for each combination will be added over time. 
 
