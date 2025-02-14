@@ -36,7 +36,7 @@ We installed the following packages:
 
 ````
 pip3 install flask
-pip3 install "splunk-opentelemetry[all]" 
+pip3 install "splunk-opentelemetry" 
 ````
 
 We then ran the following command to install instrumentation for packages 
@@ -71,8 +71,9 @@ To configure the instrumentation, we've set the following environment variables:
 ```` 
 export OTEL_SERVICE_NAME=python-flask-otel
 export OTEL_RESOURCE_ATTRIBUTES='deployment.environment=test'
+export OTEL_PYTHON_DISABLED_INSTRUMENTATIONS=click
 export OTEL_LOGS_EXPORTER=otlp
-export OTEL_PYTHON_LOG_LEVEL=debug
+export OTEL_PYTHON_LOG_LEVEL=debug,console
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 export SPLUNK_PROFILER_ENABLED=true
 ````
@@ -129,7 +130,57 @@ to logs when the standard `logging` library is used.
 Here's an example log entry, which includes the trace_id and span_id:
 
 ````
-2024-11-20 09:44:23,884 INFO [app] [app.py:11] [trace_id=1e16f688e4b6fc2c09a00c7522ca4c7a span_id=ae92e28b8c2007b0 resource.service.name=python-flask-otel trace_sampled=True] - Handling the /hello request
+{
+    "body": "Handling the /hello request",
+    "severity_number": 9,
+    "severity_text": "INFO",
+    "attributes": {
+        "otelSpanID": "ceca0980ca032057",
+        "otelTraceID": "5f5b4204fd2cf7f7e4907a294b6e935f",
+        "otelTraceSampled": true,
+        "otelServiceName": "python-flask-otel",
+        "code.filepath": "/home/splunk/splunk-opentelemetry-examples/instrumentation/python/linux/app.py",
+        "code.function": "hello_world",
+        "code.lineno": 10
+    },
+    "dropped_attributes": 0,
+    "timestamp": "2025-02-14T17:38:58.400733Z",
+    "observed_timestamp": "2025-02-14T17:38:58.400797Z",
+    "trace_id": "0x5f5b4204fd2cf7f7e4907a294b6e935f",
+    "span_id": "0xceca0980ca032057",
+    "trace_flags": 1,
+    "resource": {
+        "attributes": {
+            "telemetry.sdk.language": "python",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.29.0",
+            "host.name": "derek-1",
+            "host.arch": "x86_64",
+            "deployment.environment": "test",
+            "telemetry.distro.name": "splunk-opentelemetry",
+            "telemetry.distro.version": "2.0.0",
+            "service.name": "python-flask-otel",
+            "process.runtime.description": "3.10.12 (main, Jan 17 2025, 14:35:34) [GCC 11.4.0]",
+            "process.runtime.name": "cpython",
+            "process.runtime.version": "3.10.12",
+            "process.pid": 25738,
+            "process.executable.name": "/home/splunk/splunk-opentelemetry-examples/instrumentation/python/linux/venv/bin/python3",
+            "process.executable.path": "/home/splunk/splunk-opentelemetry-examples/instrumentation/python/linux/venv/bin",
+            "process.command": "/home/splunk/splunk-opentelemetry-examples/instrumentation/python/linux/venv/bin/flask",
+            "process.command_line": "/home/splunk/splunk-opentelemetry-examples/instrumentation/python/linux/venv/bin/flask run -p 8080",
+            "process.command_args": [
+                "/home/splunk/splunk-opentelemetry-examples/instrumentation/python/linux/venv/bin/flask",
+                "run",
+                "-p",
+                "8080"
+            ],
+            "process.parent_pid": 23622,
+            "process.owner": "splunk",
+            "telemetry.auto.version": "0.50b0"
+        },
+        "schema_url": ""
+    }
+}
 ````
 
 The OpenTelemetry Collector can be configured to export log data to
