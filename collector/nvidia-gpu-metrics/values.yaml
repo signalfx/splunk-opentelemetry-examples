@@ -1,0 +1,114 @@
+rbac:
+  # modify the rules to give access to the "endpoints" resource, which is required
+  # by our prometheus receiver config below
+  customRules:
+    - apiGroups:
+        - ""
+      resources:
+        - endpoints
+        - events
+        - namespaces
+        - namespaces/status
+        - nodes
+        - nodes/spec
+        - nodes/stats
+        - nodes/proxy
+        - pods
+        - pods/status
+        - persistentvolumeclaims
+        - persistentvolumes
+        - replicationcontrollers
+        - replicationcontrollers/status
+        - resourcequotas
+        - services
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - apps
+      resources:
+        - daemonsets
+        - deployments
+        - replicasets
+        - statefulsets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - extensions
+      resources:
+        - daemonsets
+        - deployments
+        - replicasets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - batch
+      resources:
+        - jobs
+        - cronjobs
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - autoscaling
+      resources:
+        - horizontalpodautoscalers
+      verbs:
+        - get
+        - list
+        - watch
+    - nonResourceURLs:
+        - /metrics
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - events.k8s.io
+      resources:
+        - events
+        - namespaces
+      verbs:
+        - get
+        - list
+        - watch
+agent:
+  config:
+    receivers:
+      prometheus/nvidia-gpu-metrics:
+        config:
+          scrape_configs:
+            - job_name: gpu-metrics
+              scrape_interval: 1s
+              metrics_path: /metrics
+              scheme: http
+              kubernetes_sd_configs:
+                - role: endpoints
+                  namespaces:
+                    names:
+                      - gpu-operator
+              relabel_configs:
+                - source_labels: [ __meta_kubernetes_endpoints_name ]
+                  action: drop
+                  regex: .*-node-feature-discovery-master
+                - source_labels: [ __meta_kubernetes_pod_node_name ]
+                  action: replace
+                  target_label: kubernetes_node
+    service:
+      pipelines:
+        metrics/nvidia-gpu-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - prometheus/nvidia-gpu-metrics
