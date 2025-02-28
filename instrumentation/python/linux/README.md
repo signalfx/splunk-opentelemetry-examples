@@ -73,7 +73,7 @@ export OTEL_SERVICE_NAME=python-flask-otel
 export OTEL_RESOURCE_ATTRIBUTES='deployment.environment=test'
 export OTEL_PYTHON_DISABLED_INSTRUMENTATIONS=click
 export OTEL_LOGS_EXPORTER=otlp
-export OTEL_PYTHON_LOG_LEVEL=debug,console
+export OTEL_PYTHON_LOG_LEVEL=info
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 export SPLUNK_PROFILER_ENABLED=true
 ````

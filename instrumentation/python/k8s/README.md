@@ -112,6 +112,16 @@ Python instrumentation gathers and exports data to the collector running within 
       value: "http://$(NODE_IP):4317"
     - name: OTEL_SERVICE_NAME
       value: "helloworld-python"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment=test"
+    - name: OTEL_PYTHON_DISABLED_INSTRUMENTATIONS
+      value: "click"
+    - name: OTEL_LOGS_EXPORTER
+      value: "otlp"
+    - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+      value: "true"
+    - name: OTEL_PYTHON_LOG_LEVEL
+      value: "info"
     - name: SPLUNK_PROFILER_ENABLED
       value: "true"
 ````
