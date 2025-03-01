@@ -40,7 +40,7 @@ To instrument a Python service running in ECS Fargate with OpenTelemetry, we nee
 `splunk-py-trace` when launching the application.
 
 We've already done this in the [python/k8s](../k8s) example, and the container image
-is available with an image name of `ghcr.io/splunk/helloworld-python:1.0`.
+is available with an image name of `ghcr.io/splunk/helloworld-python:1.1`.
 
 ## Update the ECS Task Definition
 
@@ -50,18 +50,34 @@ For our application container, we first need to add several environment variable
 
 ````
    "environment": [
-       {
-           "name": "OTEL_SERVICE_NAME",
-           "value": "helloworld-python-ecs"
-       },
-       {
-           "name": "OTEL_RESOURCE_ATTRIBUTES",
-           "value": "deployment.environment=test,service.version=1.0"
-       },
-       {
-           "name": "SPLUNK_PROFILER_ENABLED",
-           "value": "true"
-       },
+        {
+            "name": "OTEL_SERVICE_NAME",
+            "value": "helloworld-python"
+        },
+        {
+            "name": "OTEL_RESOURCE_ATTRIBUTES",
+            "value": "deployment.environment=test,service.version=1.0"
+        },
+        {
+            "name": "OTEL_PYTHON_DISABLED_INSTRUMENTATIONS",
+            "value": "click"
+        },
+        {
+            "name": "OTEL_LOGS_EXPORTER",
+            "value": "otlp"
+        },
+        {
+            "name": "OTEL_PYTHON_LOG_LEVEL",
+            "value": "info"
+        },
+        {
+            "name": "OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED",
+            "value": "true"
+        },
+        {
+            "name": "SPLUNK_PROFILER_ENABLED",
+            "value": "true"
+        },
    ],
 ````
 

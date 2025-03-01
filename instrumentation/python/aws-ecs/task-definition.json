@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "helloworld-python",
-            "image": "ghcr.io/splunk/helloworld-python:1.0",
+            "image": "ghcr.io/splunk/helloworld-python:1.1",
             "cpu": 0,
             "portMappings": [
                 {
@@ -24,11 +24,23 @@
                     "value": "deployment.environment=test,service.version=1.0"
                 },
                 {
-                    "name": "SPLUNK_PROFILER_ENABLED",
+                    "name": "OTEL_PYTHON_DISABLED_INSTRUMENTATIONS",
+                    "value": "click"
+                },
+                {
+                    "name": "OTEL_LOGS_EXPORTER",
+                    "value": "otlp"
+                },
+                {
+                    "name": "OTEL_PYTHON_LOG_LEVEL",
+                    "value": "info"
+                },
+                {
+                    "name": "OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED",
                     "value": "true"
                 },
                 {
-                    "name": "SPLUNK_PROFILER_MEMORY_ENABLED",
+                    "name": "SPLUNK_PROFILER_ENABLED",
                     "value": "true"
                 }
             ],
