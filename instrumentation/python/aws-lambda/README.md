@@ -2,7 +2,7 @@
 
 This example demonstrates how to instrument an AWS Lambda function written in
 Python using OpenTelemetry, and then export the data to Splunk Observability
-Cloud.  We'll use Python 3.9 for this example, but the steps for earlier Python versions
+Cloud.  We'll use Python 3.12 for this example, but the steps for earlier Python versions
 are similar.  The example also uses the AWS Serverless Application Model (SAM)
 CLI to deploy the Lambda function and an associated API Gateway to access it.
 
@@ -11,7 +11,7 @@ CLI to deploy the Lambda function and an associated API Gateway to access it.
 The following tools are required to deploy Python functions into AWS Lambda using SAM:
 
 * An AWS account with permissions to create and execute Lambda functions
-* Python 3.9
+* Python 3.12
 * Download and install [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
 
 ## Application Overview
@@ -73,7 +73,7 @@ ARN for us-west-1 and Python x86_64:
 
 ````
       Layers:
-        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-python:10
+        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-python:16
 ````
 
 #### Add the Splunk OpenTelemetry Collector layer
@@ -87,8 +87,8 @@ here's the ARN for us-west-1:
 
 ````
       Layers:
-        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-python:10
-        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-collector:10
+        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-python:16
+        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-collector:16
 ````
 
 #### Add the Splunk Metrics Extension Layer
@@ -99,9 +99,9 @@ region in Step 7 in [this document](https://docs.splunk.com/observability/en/gdi
 
 ````
       Layers:
-        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-python:10
-        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-collector:10
-        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-lambda-metrics:10
+        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-python:16
+        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-apm-collector:16
+        - arn:aws:lambda:us-west-1:254067382080:layer:splunk-lambda-metrics:16
 ````
 
 ### Add the Splunk Observability Cloud Access Token and Realm
