@@ -1,4 +1,4 @@
-# Instrumenting a Node.js Google Cloud Run Function with OpenTelemetry
+# Instrumenting a Python Google Cloud Run Function with OpenTelemetry
 
 This example demonstrates how to instrument an serverless Google Cloud Run function written in
 Python using OpenTelemetry, and then export the data to Splunk Observability
