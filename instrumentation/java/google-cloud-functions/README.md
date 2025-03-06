@@ -33,43 +33,28 @@ The application used for this example is a simple Hello World application.
 We added a helper class named [SplunkTelemetryConfiguration](./src/main/java/gcfv2/SplunkTelemetryConfigurator.java), and included code to assist with initializing the OpenTelemetry SDK:
 
 ````
-public class SplunkTelemetryConfigurator {
-
-    public static OpenTelemetry configureOpenTelemetry() {
+    public static OpenTelemetrySdk configureOpenTelemetry() {
 
         String serviceName = System.getenv("OTEL_SERVICE_NAME");
-        String deploymentEnvironment = System.getenv("DEPLOYMENT_ENVIRONMENT");
+        String otelResourceAttributes = System.getenv("OTEL_RESOURCE_ATTRIBUTES");
         String otelExporterEndpoint = System.getenv("OTEL_EXPORTER_OTLP_ENDPOINT");
 
         if (serviceName == null)
             throw new IllegalArgumentException("The OTEL_SERVICE_NAME environment variable must be populated");
-        if (deploymentEnvironment == null)
-            throw new IllegalArgumentException("The DEPLOYMENT_ENVIRONMENT environment variable must be populated");
+        if (otelResourceAttributes == null)
+            throw new IllegalArgumentException("The OTEL_RESOURCE_ATTRIBUTES environment variable must be populated");
         if (otelExporterEndpoint == null)
             throw new IllegalArgumentException("The OTEL_EXPORTER_OTLP_ENDPOINT environment variable must be populated");
 
-        Resource resource = Resource
-            .getDefault()
-            .toBuilder()
-            .put(ResourceAttributes.SERVICE_NAME, serviceName)
-            .put(ResourceAttributes.DEPLOYMENT_ENVIRONMENT, deploymentEnvironment)
-            .build();
+        OpenTelemetrySdk openTelemetrySdk =
+            AutoConfiguredOpenTelemetrySdk.initialize().getOpenTelemetrySdk();
 
-        OtlpHttpSpanExporter spanExporter = OtlpHttpSpanExporter.builder()
-            .setEndpoint(String.format("%s/v1/traces", otelExporterEndpoint))
-            .build();
+        Resource autoResource = ResourceConfiguration.createEnvironmentResource();
 
-        SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
-            .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
-            .setResource(resource)
-            .build();
+        GCPResourceProvider resourceProvider = new GCPResourceProvider();
 
-        return OpenTelemetrySdk.builder()
-            .setTracerProvider(sdkTracerProvider)
-            .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
-            .build();
+        return openTelemetrySdk;
     }
-}
 ````
 
 It requires the following dependencies to be added to the [pom.xml](./pom.xml) file:
@@ -113,6 +98,15 @@ It requires the following dependencies to be added to the [pom.xml](./pom.xml) f
             <version>2.8.0-alpha</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.contrib</groupId>
+            <artifactId>opentelemetry-gcp-resources</artifactId>
+            <version>1.44.0-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
+        </dependency>
     </dependencies>
 
 ````
@@ -139,8 +133,8 @@ OpenTelemetry using the helper class as follows:
 ````
 public class HelloHttpFunction implements HttpFunction {
 
-    private final OpenTelemetry openTelemetry = SplunkTelemetryConfigurator.configureOpenTelemetry();
-    private final Tracer tracer = openTelemetry.getTracer(HelloHttpFunction.class.getName(), "0.1.0");
+    private final OpenTelemetrySdk openTelemetrySdk = SplunkTelemetryConfigurator.configureOpenTelemetry();
+    private final Tracer tracer = openTelemetrySdk.getTracer(HelloHttpFunction.class.getName(), "0.1.0");
     private static final Logger logger = LogManager.getLogger(HelloHttpFunction.class);
 
     public void service(final HttpRequest request, final HttpResponse response) throws Exception {
@@ -191,7 +185,7 @@ gcloud functions deploy java-gcloud-function-example \
     --source=. \
     --entry-point=gcfv2.HelloHttpFunction \
     --trigger-http \
-    --set-env-vars OTEL_SERVICE_NAME=java-gcloud-function-example,OTEL_EXPORTER_OTLP_ENDPOINT=http://<collector IP address>:4318,DEPLOYMENT_ENVIRONMENT=test
+    --set-env-vars OTEL_SERVICE_NAME=java-gcloud-function-example,OTEL_EXPORTER_OTLP_ENDPOINT=http://<collector IP address>:4317,OTEL_RESOURCE_ATTRIBUTES='deployment.environment=test'
 ```
 
 Answer "y" to the following question when asked:
