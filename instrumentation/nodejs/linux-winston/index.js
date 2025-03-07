@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const winston = require('winston')
+const api = require('@opentelemetry/api');
 
 const logger = winston.createLogger({
   level: 'debug',
@@ -22,6 +23,14 @@ app.listen(parseInt(PORT, 10), () => {
 });
 
 function hello(res) {
+  let span = api.trace.getSpan(api.context.active());
+  if (span) {
+    let context = span.spanContext()
+    if (context) {
+      console.log(`OpenTelemetry tracing enabled. Active spanId=${context.spanId}, traceId=${context.traceId}`)
+    }
+  }
+
   logger.info('/hello endpoint invoked, sending response');
   slow_function()
   res.status(200).send("Hello, World!");
