@@ -1,0 +1,27 @@
+clusterName: aks-test
+splunkObservability:
+  infrastructureMonitoringEventsEnabled: true
+  realm: <REALM>
+  accessToken: <ACCESS TOKEN>
+  metricsEnabled: true
+  logsEnabled: true
+  tracesEnabled: true
+  profilingEnabled: true
+gateway:
+  enabled: false
+environment: test
+distribution: "aks"
+cloudProvider: "azure"
+isWindows: false
+operatorcrds:
+  install: true
+operator:
+  enabled: true
+  nodeSelector:
+    kubernetes.io/os: linux
+agent:
+  discovery:
+    enabled: true
+splunkPlatform:
+  endpoint: <HEC URL>
+  token: <HEC TOKEN>

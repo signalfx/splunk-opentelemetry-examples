@@ -1,0 +1,33 @@
+clusterName: aks-test
+splunkObservability:
+  infrastructureMonitoringEventsEnabled: true
+  realm: <REALM>
+  accessToken: <ACCESS TOKEN>
+  metricsEnabled: true
+  logsEnabled: true
+  tracesEnabled: true
+  profilingEnabled: true
+gateway:
+  enabled: false
+environment: test
+distribution: "aks"
+cloudProvider: "azure"
+operatorcrds:
+  install: false
+operator:
+  enabled: false
+agent:
+  discovery:
+    enabled: true
+splunkPlatform:
+  endpoint: <HEC URL>
+  token: <HEC TOKEN>
+
+isWindows: true
+logsEngine: otel
+readinessProbe:
+  initialDelaySeconds: 60
+livenessProbe:
+  initialDelaySeconds: 60
+clusterReceiver:
+  enabled: false

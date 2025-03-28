@@ -2,7 +2,7 @@
 
 This example demonstrates how to instrument an AWS Lambda function written in
 Node.js using OpenTelemetry, and then export the data to Splunk Observability
-Cloud.  We'll use Node.js 16 for this example, but the steps for other Node.js versions
+Cloud.  We'll use Node.js 20 for this example, but the steps for other Node.js versions
 are similar.  The example also uses the AWS Serverless Application Model (SAM)
 CLI to deploy the Lambda function and an associated API Gateway to access it.
 
@@ -11,7 +11,7 @@ CLI to deploy the Lambda function and an associated API Gateway to access it.
 The following tools are required to deploy Node.js functions into AWS Lambda using SAM:
 
 * An AWS account with permissions to create and execute Lambda functions
-* Node.js 16
+* Node.js 20
 * Download and install [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
 
 ## Application Overview

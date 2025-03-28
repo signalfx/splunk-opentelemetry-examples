@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "@splunk/otel": "^3.0.0",
+    "pino": "^9.5.0"
+  }
+}

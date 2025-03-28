@@ -49,16 +49,16 @@ your own image.
 You can use the following command to build the Docker image:
 
 ````
-docker build --platform="linux/amd64" -t helloworld-python:1.0 .
+docker build --platform="linux/amd64" -t helloworld-python:1.1 .
 ````
 
 Ensure that you use a machine with a linux/amd64 architecture to build the image, as there are issues
 with AlwaysOn profiling when the image is built with arm64 architecture.
 
-Note that the Dockerfile references `splunk-py-trace` when launching the application:
+Note that the Dockerfile references `opentelemetry-instrument` when launching the application:
 
 ````
-CMD ["splunk-py-trace", "flask", "run", "--host", "0.0.0.0", "-p", "8080"]
+CMD ["opentelemetry-instrument", "flask", "run", "--host", "0.0.0.0", "-p", "8080"]
 ````
 
 It also includes the `--host` argument to ensure the flask application is visible
@@ -67,7 +67,7 @@ within the Kubernetes network (and not from just the container itself).
 If you'd like to test the Docker image locally you can use:
 
 ````
-docker run -p 8080:8080 -e OTEL_SERVICE_NAME=helloworld-python -e SPLUNK_PROFILER_ENABLED=true helloworld-python:1.0
+docker run -p 8080:8080 -e OTEL_SERVICE_NAME=helloworld-python -e SPLUNK_PROFILER_ENABLED=true helloworld-python:1.1
 ````
 
 Then access the application by pointing your browser to `http://localhost:8080/hello`.
@@ -82,8 +82,8 @@ Specifically, we've pushed the
 image to GitHub's container repository using the following commands:
 
 ````
-docker tag helloworld-python:1.0 ghcr.io/splunk/helloworld-python:1.0
-docker push ghcr.io/splunk/helloworld-python:1.0
+docker tag helloworld-python:1.1 ghcr.io/splunk/helloworld-python:1.1
+docker push ghcr.io/splunk/helloworld-python:1.1
 ````
 
 ### Deploy to Kubernetes
@@ -112,6 +112,16 @@ Python instrumentation gathers and exports data to the collector running within 
       value: "http://$(NODE_IP):4317"
     - name: OTEL_SERVICE_NAME
       value: "helloworld-python"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: "deployment.environment=test"
+    - name: OTEL_PYTHON_DISABLED_INSTRUMENTATIONS
+      value: "click"
+    - name: OTEL_LOGS_EXPORTER
+      value: "otlp"
+    - name: OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED
+      value: "true"
+    - name: OTEL_PYTHON_LOG_LEVEL
+      value: "info"
     - name: SPLUNK_PROFILER_ENABLED
       value: "true"
 ````

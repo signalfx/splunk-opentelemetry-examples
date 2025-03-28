@@ -76,8 +76,8 @@ app.http('azure-function-nodejs-opentelemetry-example', {
 });
 ````
 
-These code changes required the `@splunk/otel`, `@opentelemetry/api` and 
-`@azure/functions-opentelemetry-instrumentation` packages to be installed with npm, which we can see
+These code changes required several OpenTelemetry-related packages to be installed with npm, such 
+as `@opentelemetry/api` and `@azure/functions-opentelemetry-instrumentation`, which we can see
 in the [package.json](./package.json) file: 
 
 ````

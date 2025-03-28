@@ -4,4 +4,4 @@ ADD requirements.txt .
 RUN pip3 install -r requirements.txt
 EXPOSE 8080
 # ensure our flask server is visible from the network (not just localhost)
-CMD ["splunk-py-trace", "flask", "run", "--host", "0.0.0.0", "-p", "8080"]
+CMD ["opentelemetry-instrument", "flask", "run", "--host", "0.0.0.0", "-p", "8080"]
