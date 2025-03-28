@@ -39,6 +39,7 @@ provided for reference in case you'd like to apply instrumentation to your own A
 Our application uses the `net/http` package so we'll add that with the following command:
 
 ````
+cd src
 go get go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
 ````
 
@@ -85,7 +86,7 @@ gcloud functions deploy go-gcloud-function-example \
     --region=us-central1 \
     --runtime=go123 \
     --source=./src \
-    --entry-point=HelloHTTP \
+    --entry-point=WrappedHandler \
     --trigger-http \
     --set-env-vars OTEL_SERVICE_NAME=go-gcloud-function-example,OTEL_EXPORTER_OTLP_ENDPOINT=http://<collector IP address>:4317,OTEL_RESOURCE_ATTRIBUTES=deployment.environment=test
 ```

@@ -6,11 +6,35 @@ import (
   "html"
   "net/http"
 
-  "github.com/GoogleCloudPlatform/functions-framework-go/functions"
+//  "github.com/GoogleCloudPlatform/functions-framework-go/functions"
+  "context"
+  "github.com/signalfx/splunk-otel-go/distro"
+   "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
+type HttpHandler = func(w http.ResponseWriter, r *http.Request)
+var WrappedHandler HttpHandler
+
 func init() {
-   functions.HTTP("HelloHTTP", helloHTTP)
+
+   sdk, err := distro.Run()
+   if err != nil {
+      panic(err)
+   }
+   // Flush all spans before the application exits
+   defer func() {
+      if err := sdk.Shutdown(context.Background()); err != nil {
+         panic(err)
+      }
+   }()
+
+    // create instrumented handler
+    handler := otelhttp.NewHandler(http.HandlerFunc(helloHTTP), "HelloHTTP")
+
+    WrappedHandler = func(w http.ResponseWriter, r *http.Request) {
+        // call the actual handler
+        handler.ServeHTTP(w, r)
+    }
 }
 
 // helloHTTP is an HTTP Cloud Function with a request parameter.
