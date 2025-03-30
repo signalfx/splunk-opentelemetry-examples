@@ -10,14 +10,14 @@ import (
   "github.com/signalfx/splunk-otel-go/distro"
    "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
    "go.opentelemetry.io/otel"
-   "go.opentelemetry.io/otel/trace"
-   //"go.opentelemetry.io/otel/sdk/trace"
 )
 
 type HttpHandler = func(w http.ResponseWriter, r *http.Request)
 var WrappedHandler HttpHandler
-var tracer trace.Tracer
-//var tracerProvider trace.TracerProvider
+
+type Flusher interface {
+	ForceFlush(context.Context) error
+}
 
 func init() {
 
@@ -32,7 +32,7 @@ func init() {
       }
    }()
 
-	tracer = otel.Tracer("google_cloud_function_go_opentelemetry_example")
+    flusher := otel.GetTracerProvider().(Flusher)
 
     // create instrumented handler
     handler := otelhttp.NewHandler(http.HandlerFunc(helloHTTP), "HelloHTTP")
@@ -41,7 +41,8 @@ func init() {
         // call the actual handler
         handler.ServeHTTP(w, r)
 
-        // TODO: do we need to flush spans here?
+        // ensure any spans are flushed
+        flusher.ForceFlush(r.Context())
     }
 }
 
