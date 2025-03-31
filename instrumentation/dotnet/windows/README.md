@@ -1,4 +1,4 @@
-# Instrumenting a .NET Framework Application on Windows with OpenTelemetry (Work in Progress)
+# Instrumenting a .NET Framework Application on Windows with OpenTelemetry 
 
 This example demonstrates how to instrument a .NET Framework Application on Windows using OpenTelemetry,
 and export traces, metrics, and logs to a local collector, which will then
@@ -81,3 +81,6 @@ Register-OpenTelemetryForIIS
 > The workaround is to create a new registry DWORD value called `LoaderOptimization` 
 > under `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework` and set the value 1. Perform an `iisreset` and 
 > test the application again. 
+> 
+> See the [GitHub documentation](https://github.com/open-telemetry/opentelemetry-dotnet-instrumentation/blob/main/docs/troubleshooting.md#iis---loading-this-assembly-would-produce-a-different-grant-set-from-other-instances) 
+> for further details. 
