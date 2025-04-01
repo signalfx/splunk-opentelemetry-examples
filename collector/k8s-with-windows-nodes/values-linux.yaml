@@ -25,3 +25,22 @@ agent:
 splunkPlatform:
   endpoint: <HEC URL>
   token: <HEC TOKEN>
+agent:
+  config:
+    receivers:
+      kubeletstats:
+        # this is required as the Kubelet API server in AKS uses self-signed certificates
+        insecure_skip_verify: true
+      receiver_creator:
+        receivers:
+          # example of how to capture coredns metrics using the prometheus receiver
+          prometheus/coredns:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: coredns
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9153'
+            rule: type == "pod" && labels["k8s-app"] == "kube-dns"
+        watch_observers: [k8s_observer]

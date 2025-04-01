@@ -31,3 +31,8 @@ livenessProbe:
   initialDelaySeconds: 60
 clusterReceiver:
   enabled: false
+agent:
+  config:
+    receivers:
+      kubeletstats:
+        insecure_skip_verify: true

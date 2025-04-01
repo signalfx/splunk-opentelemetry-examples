@@ -10,10 +10,12 @@ import (
   "github.com/signalfx/splunk-otel-go/distro"
    "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
    "go.opentelemetry.io/otel"
+   "go.opentelemetry.io/otel/trace"
 )
 
 type HttpHandler = func(w http.ResponseWriter, r *http.Request)
 var WrappedHandler HttpHandler
+var tracer trace.Tracer
 
 type Flusher interface {
 	ForceFlush(context.Context) error
@@ -32,6 +34,8 @@ func init() {
       }
    }()
 
+	tracer = otel.Tracer("go-gcloud-function-example")
+
     flusher := otel.GetTracerProvider().(Flusher)
 
     // create instrumented handler
@@ -48,6 +52,11 @@ func init() {
 
 // helloHTTP is an HTTP Cloud Function with a request parameter.
 func helloHTTP(w http.ResponseWriter, r *http.Request) {
+
+  ctx := r.Context()
+  ctx, span := tracer.Start(ctx, "helloHTTP")
+  defer span.End()
+
   var d struct {
     Name string `json:"name"`
   }
