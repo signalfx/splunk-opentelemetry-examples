@@ -73,6 +73,8 @@ Install-OpenTelemetryCore
 Register-OpenTelemetryForIIS
 ```
 
+Once complete, access the application once again using http://localhost/aspnetapp.
+
 > Note: you may receive an error such as the following when accessing your application after the instrumentation
 > is installed: 
 > 
@@ -84,3 +86,33 @@ Register-OpenTelemetryForIIS
 > 
 > See the [GitHub documentation](https://github.com/open-telemetry/opentelemetry-dotnet-instrumentation/blob/main/docs/troubleshooting.md#iis---loading-this-assembly-would-produce-a-different-grant-set-from-other-instances) 
 > for further details. 
+
+## View Traces in Splunk Observability Cloud
+
+After a minute or so, you should start to see traces for the .NET application
+appearing in Splunk Observability Cloud:
+
+![Trace](./images/trace.png)
+
+## View Metrics in Splunk Observability Cloud
+
+Metrics are collected by the Splunk Distribution of OpenTelemetry .NET automatically.  
+For example, the `process.runtime.dotnet.assemblies.count` metric shows us the size of the
+heap used by each generation in the CLR:
+
+![CLR Metric Example](./images/metrics.png)
+
+## View Logs with Trace Context
+
+While this sample application doesn't generate any log output, the Splunk Distribution of 
+OpenTelemetry .NET automatically exports logs enriched with tracing context from any 
+application that uses logging API from:
+
+* Microsoft.Extensions.Logging
+* log4net
+
+Application logs are enriched with tracing metadata and then exported to a local instance 
+of the OpenTelemetry Collector in OTLP format.
+
+Refer to [Connect .NET trace data with logs using OpenTelemetry instrumentation](https://docs.splunk.com/observability/en/gdi/get-data-in/application/otel-dotnet/instrumentation/connect-traces-logs.html) 
+for further details. 
