@@ -4,7 +4,7 @@ splunkObservability:
   realm: <REALM>
   accessToken: <ACCESS TOKEN>
   metricsEnabled: true
-  logsEnabled: true
+  logsEnabled: false
   tracesEnabled: true
   profilingEnabled: true
 gateway:
@@ -36,3 +36,10 @@ agent:
     receivers:
       kubeletstats:
         insecure_skip_verify: true
+  ports:
+    # ensure the hostPort is set on the collector for port 4318
+    otlp-http:
+      containerPort: 4318
+      hostPort: 4318
+      protocol: TCP
+      enabled_for: [metrics, traces, logs, profiling]

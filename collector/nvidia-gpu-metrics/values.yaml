@@ -81,25 +81,18 @@ rbac:
 agent:
   config:
     receivers:
-      prometheus/nvidia-gpu-metrics:
-        config:
-          scrape_configs:
-            - job_name: gpu-metrics
-              scrape_interval: 1s
-              metrics_path: /metrics
-              scheme: http
-              kubernetes_sd_configs:
-                - role: endpoints
-                  namespaces:
-                    names:
-                      - gpu-operator
-              relabel_configs:
-                - source_labels: [ __meta_kubernetes_endpoints_name ]
-                  action: drop
-                  regex: .*-node-feature-discovery-master
-                - source_labels: [ __meta_kubernetes_pod_node_name ]
-                  action: replace
-                  target_label: kubernetes_node
+      receiver_creator:
+        # Name of the extensions to watch for endpoints to start and stop.
+        watch_observers: [ k8s_observer ]
+        receivers:
+          prometheus:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: gpu-metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9400'
     service:
       pipelines:
         metrics/nvidia-gpu-metrics:
@@ -111,4 +104,4 @@ agent:
             - resourcedetection
             - resource
           receivers:
-            - prometheus/nvidia-gpu-metrics
+            - receiver_creator
