@@ -13,6 +13,7 @@ agent:
                     static_configs:
                       - targets:
                           - '`endpoint`:9400'
+            rule: type == "pod" && labels["app"] == "nvidia-dcgm-exporter"
     service:
       pipelines:
         metrics/nvidia-gpu-metrics:
