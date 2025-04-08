@@ -23,19 +23,7 @@ type Flusher interface {
 
 func init() {
 
-   sdk, err := distro.Run()
-   if err != nil {
-      panic(err)
-   }
-   // Flush all spans before the application exits
-   defer func() {
-      if err := sdk.Shutdown(context.Background()); err != nil {
-         panic(err)
-      }
-   }()
-
-	tracer = otel.Tracer("go-gcloud-function-example")
-
+    tracer = initOpenTelemetry()
     flusher := otel.GetTracerProvider().(Flusher)
 
     // create instrumented handler
@@ -50,12 +38,23 @@ func init() {
     }
 }
 
+func initOpenTelemetry() (trace.Tracer) {
+   _, err := distro.Run()
+   if err != nil {
+      panic(err)
+   }
+   // comment this out otherwise the SDK will shutdown at the end of the init function
+   //defer func() {
+   //   if err := sdk.Shutdown(context.Background()); err != nil {
+   //      panic(err)
+   //   }
+   //}()
+
+    return otel.Tracer("go-gcloud-function-example")
+}
+
 // helloHTTP is an HTTP Cloud Function with a request parameter.
 func helloHTTP(w http.ResponseWriter, r *http.Request) {
-
-  ctx := r.Context()
-  ctx, span := tracer.Start(ctx, "helloHTTP")
-  defer span.End()
 
   var d struct {
     Name string `json:"name"`
