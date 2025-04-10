@@ -1,0 +1,14 @@
+autodetect:
+  istio: true
+agent:
+  config:
+    exporters:
+      debug:
+        verbosity: detailed
+    service:
+      pipelines:
+        traces:
+          exporters:
+            - otlphttp
+            - signalfx
+            - debug
