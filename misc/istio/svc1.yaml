@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-istio-example-svc1
+  namespace: svc1
+spec:
+  selector:
+    matchLabels:
+      app: python-istio-example-svc1
+  template:
+    metadata:
+      labels:
+        app: python-istio-example-svc1
+    spec:
+      tolerations:
+      nodeSelector:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: python-istio-example-svc1
+          image: ghcr.io/splunk/python-istio-example-svc1:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://$(NODE_IP):4317"
+            - name: OTEL_SERVICE_NAME
+              value: "python-istio-example-svc1"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "deployment.environment=test"
+            - name: OTEL_PYTHON_DISABLED_INSTRUMENTATIONS
+              value: "click"
+            - name: SVC2_ENDPOINT
+              value: http://python-istio-example-svc2.svc2.svc.cluster.local:8090/hello
+          resources:
+            requests:
+              cpu: 150m
+              memory: 2048Mi
+            limits:
+              cpu: 300m
+              memory: 4096Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-istio-example-svc1
+  namespace: svc1
+spec:
+  selector:
+    app: python-istio-example-svc1
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
