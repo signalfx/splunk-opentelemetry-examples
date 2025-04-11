@@ -36,6 +36,8 @@ spec:
               value: "deployment.environment=test"
             - name: OTEL_PYTHON_DISABLED_INSTRUMENTATIONS
               value: "click"
+            - name: OTEL_PROPAGATORS
+              value: "tracecontext,baggage,b3multi"
             - name: SVC2_ENDPOINT
               value: http://python-istio-example-svc2.svc2.svc.cluster.local:8090/hello
           resources:

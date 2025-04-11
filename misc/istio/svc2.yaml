@@ -36,6 +36,8 @@ spec:
               value: "deployment.environment=test"
             - name: OTEL_PYTHON_DISABLED_INSTRUMENTATIONS
               value: "click"
+            - name: OTEL_PROPAGATORS
+              value: "tracecontext,baggage,b3multi"
           resources:
             requests:
               cpu: 150m
