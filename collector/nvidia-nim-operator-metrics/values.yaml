@@ -1,0 +1,25 @@
+clusterReceiver:
+  config:
+    receivers:
+      prometheus/nvidia-nim:
+        config:
+          scrape_configs:
+            - job_name: 'nvidia-nim-operator'
+              scrape_interval: 10s
+              authorization:
+                type: Bearer
+                credentials_file: '/var/run/secrets/kubernetes.io/serviceaccount/token'
+              static_configs:
+                - targets: ['k8s-nim-operator-metrics-service.nim-operator.svc.cluster.local:8080']
+    service:
+      pipelines:
+        metrics/nvidia-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - prometheus/nvidia-nim
