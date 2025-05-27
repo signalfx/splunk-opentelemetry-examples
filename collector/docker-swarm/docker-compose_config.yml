@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  splunk-otel-collector:
+    deploy:
+      placement: 
+        constraints: 
+          - node.role == worker
+      replicas: 2
+    environment:
+      - SPLUNK_ACCESS_TOKEN=12345
+      - SPLUNK_REALM=us1
+      - SPLUNK_CONFIG=/etc/collector.yml
+      - SPLUNK_API_URL=https://api.us1.signalfx.com
+      - SPLUNK_INGEST_URL=https://ingest.us1.signalfx.com
+    ports:
+      - 13133:13133
+      - 14250:14250
+      - 14268:14268
+      - 4317:4317
+      - 4318:4318
+      - 6060:6060
+      - 7276:7276
+      - 8888:8888
+      - 9080:9080
+      - 9411:9411
+      - 9943:9943
+    image: quay.io/signalfx/splunk-otel-collector:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/ubuntu/collector.yml:/etc/collector.yml:ro
+networks: {}
