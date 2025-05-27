@@ -25,6 +25,7 @@ services:
       - 9411:9411
       - 9943:9943
     image: quay.io/signalfx/splunk-otel-collector:latest
+    user: 0:0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/ubuntu/collector.yml:/etc/collector.yml:ro

@@ -60,12 +60,8 @@ multipass exec manager -- docker stack deploy --compose-file docker-compose.yml 
 multipass exec manager -- docker stack services otelcol
 ```
 
-Now when you run:
-```bash
-multipass exec manager -- docker stack services otelcol
-```
-
-you will know it is deployed when it reaches 2/2.
+You will know it is deployed successfully when the output of `docker stack services otelcol` 
+reaches 2/2.
 
 You can shell into each of the instances and do the regular investigations what's happening:
 
@@ -82,3 +78,16 @@ exit
 
 Here's an example of the `cpu.utilization` metric being sent:
 ![CPU Graph](img/cpu.png)
+
+You can view Docker container stats by navigating to Infrastructure -> Docker and selecting 
+your Docker hosts: 
+
+![Docker dashboard](img/docker.png)
+
+## Cleanup 
+
+To undeploy the collector, run the following command: 
+
+```bash
+multipass exec manager -- docker stack rm otelcol    
+```
