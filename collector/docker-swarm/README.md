@@ -1,10 +1,10 @@
-## Docker Swarm example
+# Docker Swarm Example
 
 This document explains how to setup a docker swarm environment, that we will deploy the OTel collector in.
 
 Based on [this article](https://dev.to/mattdark/docker-swarm-with-virtual-machines-using-multipass-39b0) for setting up swarm with multipass.
 
-### Setup
+## Initialize Docker Swarm
 
 Run the following from the host to deploy the 3 systems with docker
 
@@ -39,7 +39,7 @@ o6mfzffyu1y9jahb3cf3g7zrn     worker1    Ready     Active                       
 ryjfhsj6unp9uktecd0uc7jzc     worker2    Ready     Active                          28.1.1
 ````
 
-### OpenTelemetry Collector deployment
+## OpenTelemetry Collector deployment
 
 Now we want to deploy the OpenTelemetry collector. Update the
 [docker-compose_config.yml](./docker-compose_config.yml) file 
@@ -84,10 +84,65 @@ your Docker hosts:
 
 ![Docker dashboard](img/docker.png)
 
-## Cleanup 
+## Deploy an Application 
 
-To undeploy the collector, run the following command: 
+Next, let's deploy an application.  We'll use a node.js Docker image that's already 
+been instrumented with OpenTelemetry.  The source code and Dockerfile for this application 
+can be found [here](../../instrumentation/nodejs/linux).  
+
+Use the following commands to deploy the sample application: 
 
 ```bash
-multipass exec manager -- docker stack rm otelcol    
+# Push the compose file 
+multipass transfer sample-app-docker-compose.yml manager:/home/ubuntu/sample-app-docker-compose.yml
+# Deploy
+multipass exec manager -- docker stack deploy --with-registry-auth --compose-file sample-app-docker-compose.yml app
+# Verify
+multipass exec manager -- docker stack services app
+```
+
+You will know it is deployed successfully when the output of `docker stack services app` reaches 2/2.
+
+To access the application, first get the IP address of one of the nodes in the docker swarm: 
+
+```bash
+multipass list
+```
+
+It should return something like the following: 
+
+````
+Name                    State             IPv4             Image
+manager                 Running           192.168.68.6     Ubuntu 24.04 LTS
+                                          172.17.0.1
+                                          172.18.0.1
+worker1                 Running           192.168.68.7     Ubuntu 24.04 LTS
+                                          172.17.0.1
+                                          172.18.0.1
+worker2                 Running           192.168.68.8     Ubuntu 24.04 LTS
+                                          172.17.0.1
+                                          172.18.0.1
+````
+
+We'll connect to the application using the IP address of the manager (but it can be any of the nodes): 
+
+```bash
+curl http://192.168.68.6:8080/hello
+```
+
+It should return `Hello, World!`. 
+
+## Cleanup
+
+To undeploy the collector and application, run the following commands:
+
+```bash
+multipass exec manager -- docker stack rm otelcol
+multipass exec manager -- docker stack rm app
+```
+
+To delete the multipass instances: 
+
+```bash
+multipass delete manager worker1 worker2 --purge 
 ```
