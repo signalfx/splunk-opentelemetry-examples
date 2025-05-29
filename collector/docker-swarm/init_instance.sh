@@ -1,6 +1,8 @@
 NM=$1
 
-multipass launch --name ${NM} --memory 2G --disk 8G --cpus 2
+orb create --arch amd64 ubuntu ${NM}
+orb -m ${NM} sudo mkdir /home/ubuntu
+orb -m ${NM} sudo chown ${USER}:${USER} /home/ubuntu
+orb push -m ${NM} install_docker.sh /home/ubuntu/install_docker.sh
 
-multipass transfer install_docker.sh ${NM}:/home/ubuntu/install_docker.sh
-multipass exec ${NM} -- sh -x /home/ubuntu/install_docker.sh
+orb -m ${NM} /home/ubuntu/install_docker.sh

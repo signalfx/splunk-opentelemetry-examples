@@ -4,8 +4,8 @@ services:
     networks:
       - main
     deploy:
-      placement: 
-        constraints: 
+      placement:
+        constraints:
           - node.role == worker
       replicas: 2
     environment:
@@ -31,6 +31,24 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/ubuntu/collector.yml:/etc/collector.yml:ro
+  helloworld-nodejs:
+    networks:
+      - main
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      replicas: 2
+    environment:
+      - OTEL_SERVICE_NAME=helloworld
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment=test
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://splunk-otel-collector:4318
+      - SPLUNK_METRICS_ENABLED=true
+      - SPLUNK_PROFILER_ENABLED=true
+      - SPLUNK_PROFILER_MEMORY_ENABLED=true
+    ports:
+      - "8080:8080"
+    image: ghcr.io/splunk/helloworld-nodejs:1.0
 networks:
   main:
     driver: overlay

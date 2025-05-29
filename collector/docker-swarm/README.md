@@ -1,10 +1,19 @@
 # Docker Swarm Example
 
-This document explains how to setup a docker swarm environment, that we will deploy the OTel collector in.
-
-Based on [this article](https://dev.to/mattdark/docker-swarm-with-virtual-machines-using-multipass-39b0) for setting up swarm with multipass.
+This example shows how to use OrbStack on MacOS to provision a 3-node docker swarm environment. 
+If you already have a docker swarm environment provisioned, these steps can be skipped. 
 
 ## Initialize Docker Swarm
+
+### Install OrbStack
+
+```bash
+brew install orbstack
+```
+
+Alternatively, you can download Orbstack from [here](https://orbstack.dev/download) and install it. 
+
+### Provision Linux Instances and Install Docker
 
 Run the following from the host to deploy the 3 systems with docker
 
@@ -17,18 +26,18 @@ sh -x init_instance.sh worker2
 Then initialize the swarm:
 
 ```bash
-multipass exec manager -- docker swarm init
+orb -m manager docker swarm init
 ```
 Take the token and IP address provided as output from the previous command and use it to connect the workers:
 
 ```bash
-multipass exec worker1 -- docker swarm join --token [token] [ip]:2377
-multipass exec worker2 -- docker swarm join --token [token] [ip]:2377
+orb -m worker1 docker swarm join --token [token] [ip]:2377
+orb -m worker2 docker swarm join --token [token] [ip]:2377
 ```
 
 Confirm the swarm:
 ```bash
-multipass exec manager -- docker node ls
+orb -m manager docker node ls
 ```
 
 The output should look like the following: 
@@ -51,13 +60,13 @@ nodes.  Then deploy the collector service.
 
 ```bash
 # Push the compose file and the config file
-multipass transfer docker-compose_config.yml manager:/home/ubuntu/docker-compose.yml
-multipass transfer config1.yml worker1:/home/ubuntu/collector.yml
-multipass transfer config1.yml worker2:/home/ubuntu/collector.yml
+orb push -m manager docker-compose_config.yml /home/ubuntu/docker-compose.yml
+orb push -m worker1 config1.yml /home/ubuntu/collector.yml
+orb push -m worker2 config1.yml /home/ubuntu/collector.yml
 # Deploy
-multipass exec manager -- docker stack deploy --compose-file docker-compose.yml otelcol
+orb -m manager docker stack deploy --compose-file /home/ubuntu/docker-compose.yml otelcol
 # Verify
-multipass exec manager -- docker stack services otelcol
+orb -m manager docker stack services otelcol
 ```
 
 You will know it is deployed successfully when the output of `docker stack services otelcol` 
@@ -66,14 +75,10 @@ reaches 2/2.
 You can shell into each of the instances and do the regular investigations what's happening:
 
 ```bash
-# Go onto the worker
-multipass shell worker1
 # View running containers
-docker ps -a
+orb -m worker1 docker ps -a
 # View logs of otel collector
-docker logs [Container ID]
-# Exit back to your host
-exit
+orb -m worker1 docker logs [Container ID]
 ```
 
 Here's an example of the `cpu.utilization` metric being sent:
@@ -90,59 +95,69 @@ Next, let's deploy an application.  We'll use a node.js Docker image that's alre
 been instrumented with OpenTelemetry.  The source code and Dockerfile for this application 
 can be found [here](../../instrumentation/nodejs/linux).  
 
+```bash
+orb -m manager docker stack rm otelcol
+```
+
+Update the [docker-compose_with_app.yml](./docker-compose_with_app.yml) file with the target realm 
+and access token. 
+
 Use the following commands to deploy the sample application: 
 
 ```bash
 # Push the compose file 
-multipass transfer sample-app-docker-compose.yml manager:/home/ubuntu/sample-app-docker-compose.yml
+orb push -m manager docker-compose_with_app.yml /home/ubuntu/docker-compose_with_app.yml
 # Deploy
-multipass exec manager -- docker stack deploy --with-registry-auth --compose-file sample-app-docker-compose.yml app
+orb -m manager docker stack deploy --with-registry-auth --compose-file docker-compose_with_app.yml app-with-collector
 # Verify
-multipass exec manager -- docker stack services app
+orb -m manager docker stack services app-with-collector
 ```
 
-You will know it is deployed successfully when the output of `docker stack services app` reaches 2/2.
+You will know it is deployed successfully when the output of `docker stack services app-with-collector` reaches 2/2.
 
 To access the application, first get the IP address of one of the nodes in the docker swarm: 
 
 ```bash
-multipass list
+orb -m manager ip addr
 ```
 
 It should return something like the following: 
 
 ````
-Name                    State             IPv4             Image
-manager                 Running           192.168.68.6     Ubuntu 24.04 LTS
-                                          172.17.0.1
-                                          172.18.0.1
-worker1                 Running           192.168.68.7     Ubuntu 24.04 LTS
-                                          172.17.0.1
-                                          172.18.0.1
-worker2                 Running           192.168.68.8     Ubuntu 24.04 LTS
-                                          172.17.0.1
-                                          172.18.0.1
+...
+5: eth0@if15: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether b6:77:18:42:d9:54 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 198.19.249.198/24 metric 100 brd 198.19.249.255 scope global dynamic eth0
+       valid_lft 170138sec preferred_lft 170138sec
+    inet6 fd07:b51a:cc66:0:b477:18ff:fe42:d954/64 scope global mngtmpaddr noprefixroute 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::b477:18ff:fe42:d954/64 scope link proto kernel_ll 
+       valid_lft forever preferred_lft forever
+...
 ````
 
 We'll connect to the application using the IP address of the manager (but it can be any of the nodes): 
 
 ```bash
-curl http://192.168.68.6:8080/hello
+curl http://198.19.249.198:8080/hello
 ```
 
 It should return `Hello, World!`. 
 
+After a minute or so, you should see a trace in Splunk Observability Cloud: 
+
+![Trace](img/trace.png)
+
 ## Cleanup
 
-To undeploy the collector and application, run the following commands:
+To undeploy the collector and application, run the following command:
 
 ```bash
-multipass exec manager -- docker stack rm otelcol
-multipass exec manager -- docker stack rm app
+orb -m manager docker stack rm app-with-collector
 ```
 
-To delete the multipass instances: 
+To delete the OrbStack instances: 
 
 ```bash
-multipass delete manager worker1 worker2 --purge 
+orb delete manager worker1 worker2 
 ```
