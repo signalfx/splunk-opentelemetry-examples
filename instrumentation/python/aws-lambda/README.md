@@ -201,7 +201,7 @@ the Splunk Distribution of OpenTelemetry Python automatically adds trace context
 such as in the following example: 
 
 ````
-2024-10-24 18:35:22,856 WARNING [app] [app.py:18] [trace_id=e360e2e4502da1977091485e1587dfcd span_id=f233ae269ef43749 resource.service.name=aws-lambda-python-opentelemetry-example trace_sampled=True] - Successfully got the IP address, returning a response.
+2025-06-02 23:49:46,431 INFO [app] [app.py:27] [trace_id=2b5c8fcec6908f57a7dc747bd00f50f2 span_id=32d9cc8f90531cd4 resource.service.name=aws-lambda-python-opentelemetry-example d trace_sampled=True] - Successfully got the IP address, returning a response.
 ````
 
 To ensure trace context is injected into log entries, we had to set the following
@@ -216,3 +216,20 @@ We also had to include the following package in the requirements.txt file:
 ````
 opentelemetry.instrumentation.logging
 ````
+
+And configure the `LoggingInstrumentor` in our Lambda function as follows: 
+
+```python
+import sys
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+
+LoggingInstrumentor().instrument(set_logging_format=True)
+FORMAT = '%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s resource.service.name=%(otelServiceName)s d trace_sampled=%(otelTraceSampled)s] - %(message)s'
+
+logger = logging.getLogger(__name__)
+logger.setLevel("INFO")
+h = logging.StreamHandler(sys.stdout)
+h.setFormatter(logging.Formatter(FORMAT))
+logger.addHandler(h)
+logging.getLogger().setLevel(logging.INFO)
+```
