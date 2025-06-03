@@ -1,0 +1,198 @@
+# this deployment will create a pod with both the intersight-otel collector
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intersight-otel
+spec:
+  selector:
+    matchLabels:
+      app: intersight-otel
+  template:
+    metadata:
+      labels:
+        app: intersight-otel
+        component: otel-collector
+      annotations:
+        eks.amazonaws.com/compute-type: fargate
+    spec:
+      tolerations:
+        - key: eks.amazonaws.com/compute-type
+          value: fargate
+          operator: Equal
+          effect: NoSchedule
+      containers:
+        - name: intersight-otel
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+            privileged: false
+            readOnlyRootFilesystem: true
+          image: ghcr.io/cgascoig/intersight-otel:v0.1.2
+          # args: ["-c", "/etc/intersight-otel/intersight-otel.toml"]
+          command:
+            - "/target/release/intersight_otel"
+            - "-c"
+            - "/etc/intersight-otel/intersight-otel.toml"
+          env:
+            - name: RUST_LOG
+              value: "info"
+            - name: intersight_otel_key_file
+              value: /etc/intersight-otel-key/intersight.pem
+            - name: intersight_otel_key_id
+              valueFrom:
+                secretKeyRef:
+                  name: intersight-api-credentials
+                  key: intersight-key-id
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: intersight-otel-config
+              mountPath: /etc/intersight-otel
+              readOnly: true
+            - name: intersight-otel-key
+              mountPath: /etc/intersight-otel-key
+              readOnly: true
+      volumes:
+        - name: intersight-otel-config
+          configMap:
+            name: intersight-otel-config
+        - name: intersight-otel-key
+          secret:
+            secretName: intersight-api-credentials
+            items:
+              - key: intersight-key
+                path: intersight.pem
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: intersight-otel-config
+data:
+  intersight-otel.toml: |
+    otel_collector_endpoint = "http://ucs-otel-collector-splunk-otel-collector-agent.otel.svc.cluster.local:4317"
+
+    [[pollers]]
+    name = "intersight.vm_count"
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "account" }
+    api_query = "api/v1/virtualization/VirtualMachines?$count=true"
+    aggregator = "result_count"
+    interval = 60
+
+    [[pollers]]
+    name = "intersight.policy.ntp.count"
+    api_query = "api/v1/ntp/Policies?$count=true"
+    aggregator = "result_count"
+    interval = 60
+
+    [[pollers]]
+    name = "intersight.advisories.security.affected_objects"
+    api_query = "api/v1/tam/AdvisoryInstances?$count=true&$filter=Advisory/ObjectType eq 'tam.SecurityAdvisory'"
+    aggregator = "result_count"
+    interval = 60
+
+    [[pollers]]
+    name = "intersight.advisories.nonsecurity.affected_objects"
+    api_query = "api/v1/tam/AdvisoryInstances?$count=true&$filter=Advisory/ObjectType ne 'tam.SecurityAdvisory'"
+    aggregator = "result_count"
+    interval = 60
+
+    [[pollers]]
+    name = "intersight.advisories.security.count"
+    api_query = "api/v1/tam/AdvisoryInstances?$filter=Advisory/ObjectType eq 'tam.SecurityAdvisory'&$apply=groupby((Advisory), aggregate($count as count))"
+    aggregator = "count_results"
+    interval = 60
+
+    [[pollers]]
+    name = "intersight.alarms.count"
+    otel_attributes = { severity = "critical" }
+    api_query = "api/v1/cond/Alarms?$filter=Acknowledge eq 'None' and Severity eq 'Critical'&$count=true"
+    aggregator = "result_count"
+    interval = 60
+
+    [[pollers]]
+    name = "intersight.alarms.count"
+    otel_attributes = { severity = "warning" }
+    api_query = "api/v1/cond/Alarms?$filter=Acknowledge eq 'None' and Severity eq 'Warning'&$count=true"
+    aggregator = "result_count"
+    interval = 60
+
+    [[tspollers]]
+    name = "hx_performance"
+    datasource = "hx"
+    dimensions = ["deviceId"]
+    filter = { type = "and", fields = [{type = "selector", dimension = "node", value = "allhosts"},{type = "selector", dimension = "datastore", value = "cluster"}]}
+    aggregations = [{name = "read_ops_per_min", type = "longSum", fieldName = "sumReadOps"}, {name = "write_ops_per_min", type = "longSum",fieldName = "sumWriteOps"}, {name = "read_tp_bytes_per_min", type = "longSum", fieldName = "sumReadBytes"},{name = "write_tp_bytes_per_min", type = "longSum", fieldName = "sumWriteBytes"},{name = "sum_read_latency",type = "longSum", fieldName = "sumReadLatency"},{name = "sum_write_latency",type = "longSum", fieldName = "sumWriteLatency"}]
+    post_aggregations = [{type = "arithmetic",name = "intersight.hyperflex.read.iops",fn = "/",fields = [{type = "fieldAccess",name = "read_ops_per_min",fieldName = "read_ops_per_min"},{type = "constant",name = "const",value = 300}]}, {type = "arithmetic",name = "intersight.hyperflex.write.iops",fn = "/",fields = [{type = "fieldAccess",name = "write_ops_per_min",fieldName = "write_ops_per_min"},{type = "constant",name = "const",value = 300}]},{type = "arithmetic", name = "intersight.hyperflex.read.throughput", fn = "/", fields = [{type = "fieldAccess", name = "read_tp_bytes_per_min", fieldName = "read_tp_bytes_per_min"},{type = "constant", name = "const", value = 300}]},{type = "arithmetic", name = "intersight.hyperflex.write.throughput", fn = "/", fields = [{type = "fieldAccess", name = "write_tp_bytes_per_min", fieldName = "write_tp_bytes_per_min"},{type = "constant", name = "const", value = 300}]},{type = "arithmetic", name = "intersight.hyperflex.read.latency", fn = "/", fields = [{type = "fieldAccess", name = "sum_read_latency", fieldName = "sum_read_latency"},{type = "fieldAccess",name = "read_ops_per_min", fieldName = "read_ops_per_min"}]},{type = "arithmetic", name = "intersight.hyperflex.write.latency", fn = "/", fields = [{type = "fieldAccess", name = "sum_write_latency",fieldName = "sum_write_latency"},{type = "fieldAccess", name = "write_ops_per_min", fieldName = "write_ops_per_min"}]}]
+    field_names = ["intersight.hyperflex.read.iops", "intersight.hyperflex.write.iops", "intersight.hyperflex.read.throughput", "intersight.hyperflex.write.throughput", "intersight.hyperflex.read.latency", "intersight.hyperflex.write.latency"]
+    otel_dimension_to_attribute_map = { deviceId = "intersight.hyperflex.device.id" }
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "hyperflex_cluster"}
+    interval = 60
+
+    [[tspollers]]
+    name = "ucs_network_utilization"
+    datasource = "NetworkInterfaces"
+    dimensions = ["host.name"]
+    filter = { type = "and", fields = [{type = "selector", dimension = "instrument.name", value = "hw.network"}]}
+    aggregations = [{type = "longSum", name = "count", fieldName = "hw.network.bandwidth.utilization_all_count"}, {type = "doubleSum", name = "hw.network.bandwidth.utilization_all-Sum", fieldName = "hw.network.bandwidth.utilization_all"}]
+    post_aggregations = [{type = "arithmetic", name = "intersight.ucs.network.utilization.average", fn = "/", fields = [{type = "fieldAccess", name = "hw.network.bandwidth.utilization_all-Sum",fieldName = "hw.network.bandwidth.utilization_all-Sum"},{type = "fieldAccess", name = "count", fieldName = "count"}]}]
+    field_names = ["intersight.ucs.network.utilization.average"]
+    otel_dimension_to_attribute_map = { "host.name" = "intersight.host.name" }
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "ucs_domain"}
+    interval = 60
+
+    [[tspollers]]
+    name = "ucs_network_bytes"
+    datasource = "NetworkInterfaces"
+    dimensions = ["host.name"]
+    filter = { type = "and", fields = [{type = "selector", dimension = "instrument.name", value = "hw.network"}]}
+    aggregations = [{"type" = "doubleSum", "name" = "hw.network.io_transmit_duration-Sum", "fieldName" = "hw.network.io_transmit_duration"}, {"type" = "longSum", "name" = "hw.network.io_transmit-Sum", "fieldName" = "hw.network.io_transmit" }, {"type" = "doubleSum", "name" = "hw.network.io_receive_duration-Sum", "fieldName" = "hw.network.io_receive_duration"}, {"type" = "longSum", "name" = "hw.network.io_receive-Sum", "fieldName" = "hw.network.io_receive" }]
+
+    post_aggregations = [{type = "arithmetic", name = "intersight.ucs.network.transmit.rate", fn = "/", fields = [{type = "fieldAccess", name = "hw.network.io_transmit-Sum",fieldName = "hw.network.io_transmit-Sum"},{type = "fieldAccess", name = "hw.network.io_transmit_duration-Sum", fieldName = "hw.network.io_transmit_duration-Sum"}]}, {type = "arithmetic", name = "intersight.ucs.network.receive.rate", fn = "/", fields = [{type = "fieldAccess", name = "hw.network.io_receive-Sum",fieldName = "hw.network.io_receive-Sum"},{type = "fieldAccess", name = "hw.network.io_transmit_receive-Sum", fieldName = "hw.network.io_receive_duration-Sum"}]}]
+    field_names = ["intersight.ucs.network.transmit.rate", "intersight.ucs.network.receive.rate"]
+    otel_dimension_to_attribute_map = { "host.name" = "intersight.host.name" }
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "ucs_domain"}
+    interval = 60
+
+    [[tspollers]]
+    name = "ucs_fan_speed"
+    datasource = "PhysicalEntities"
+    dimensions = ["host.name"]
+    filter = { type = "and", fields = [{type = "selector", dimension = "instrument.name", value = "hw.fan"}]}
+    aggregations = [{type = "longSum", name = "count", fieldName = "hw.fan.speed_count"}, {type = "longSum", name = "hw.fan.speed-Sum", fieldName = "hw.fan.speed"}]
+    post_aggregations = [{"type" = "expression", "name" = "intersight.ucs.fan.speed", "expression" = "(\"hw.fan.speed-Sum\" / \"count\")"}]
+    field_names = ["intersight.ucs.fan.speed"]
+    otel_dimension_to_attribute_map = { "host.name" = "intersight.host.name" }
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "ucs_domain"}
+    interval = 60
+
+    [[tspollers]]
+    name = "ucs_host_power"
+    datasource = "PhysicalEntities"
+    dimensions = ["name"]
+    filter = { type = "and", fields = [{type = "selector", dimension = "instrument.name", value = "hw.host"}]}
+    aggregations = [{type = "longSum", name = "count", fieldName = "hw.host.power_count"}, {type = "doubleSum", name = "hw.host.power-Sum", fieldName = "hw.host.power"}]
+    post_aggregations = [{"type" = "expression", "name" = "intersight.ucs.host.power", "expression" = "(\"hw.host.power-Sum\" / \"count\")"}]
+    field_names = ["intersight.ucs.host.power"]
+    otel_dimension_to_attribute_map = { "name" = "intersight.name" }
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "ucs_domain"}
+    interval = 60
+
+    [[tspollers]]
+    name = "ucs_host_temperature"
+    datasource = "PhysicalEntities"
+    dimensions = ["host.name"]
+    filter = { type = "and", fields = [{type = "selector", dimension = "instrument.name", value = "hw.temperature"}, {type = "selector", dimension = "host.type", value = "compute.Blade"}]}
+    aggregations = [{type = "longSum", name = "count", fieldName = "hw.temperature_count"}, {type = "doubleSum", name = "hw.temperature-Sum", fieldName = "hw.temperature"}]
+    post_aggregations = [{"type" = "expression", "name" = "intersight.ucs.host.temperature", "expression" = "(\"hw.temperature-Sum\" / \"count\")"}]
+    field_names = ["intersight.ucs.host.temperature"]
+    otel_dimension_to_attribute_map = { "host.name" = "intersight.host.name" }
+    otel_attributes = { "intersight.account.name" = "POD_NAME", "intersight.fsotype" = "ucs_domain"}
+    interval = 60
+---

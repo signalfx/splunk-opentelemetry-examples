@@ -1,0 +1,121 @@
+distribution: openshift
+readinessProbe:
+  initialDelaySeconds: 180
+livenessProbe:
+  initialDelaySeconds: 180
+operator:
+  enabled: false
+operatorcrds:
+  installed: false
+gateway:
+  enabled: false
+splunkObservability:
+  profilingEnabled: true
+agent:
+  discovery:
+    enabled: true
+  resources:
+    limits:
+      cpu: 200m
+      # This value is being used as a source for default memory_limiter processor configurations
+      memory: 2000Mi
+  config:
+    exporters:
+      signalfx:
+        send_otlp_histograms: true
+    receivers:
+      kubeletstats:
+        insecure_skip_verify: true
+      receiver_creator:
+        # Name of the extensions to watch for endpoints to start and stop.
+        watch_observers: [ k8s_observer ]
+        receivers:
+          prometheus/nexus:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: nexus-metrics
+                    metrics_path: /metrics
+                    scrape_interval: 10s
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9362'
+            rule: type == "pod" && labels["app"] == "cisco-exporter"
+          prometheus/dcgm:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: gpu-metrics
+                    scrape_interval: 10s
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9400'
+            rule: type == "pod" && labels["app"] == "nvidia-dcgm-exporter"
+          prometheus/nim-llm:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: nim-for-llm-metrics
+                    scrape_interval: 10s
+                    metrics_path: /v1/metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:8000'
+            rule: type == "pod" && labels["app"] == "llm"
+
+          prometheus/nim-embedding:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: nim-for-embedqallm-metrics
+                    scrape_interval: 10s
+                    metrics_path: /v1/metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:8000'
+            rule: type == "pod" && labels["app"] == "embedqa"
+
+          prometheus/nim-reranking:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: nim-for-rerankqallm-metrics
+                    scrape_interval: 10s
+                    metrics_path: /v1/metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:8000'
+            rule: type == "pod" && labels["app"] == "rerankqa"
+
+          prometheus/milvus:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: milvus-metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9091'
+            rule: type == "pod" && labels["app.kubernetes.io/name"] == "milvus"
+
+          prometheus/portworx:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: portworx-metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:17001'
+                          - '`endpoint`:17018'
+            rule: type == "pod" && labels["name"] == "portworx"
+    service:
+      pipelines:
+        metrics/nvidia-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - receiver_creator

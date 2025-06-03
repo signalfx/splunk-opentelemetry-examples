@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cisco-exporter-config
+data:
+  config.yml: |
+    debug: false
+    legacy_ciphers: false
+    # default values
+    timeout: 5
+    batch_size: 10000
+
+    devices:
+      - host: <hostname>
+        username: <username>
+        password: <password>
+      - host: <hostname>
+        username: <username>
+        password: <password>
+
+    features:
+      bgp: false
+      environment: false
+      facts: false
+      interfaces: true
+      optics: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cisco-exporter-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cisco-exporter
+  template:
+    metadata:
+      labels:
+        app: cisco-exporter
+    spec:
+      containers:
+        - name: cisco-exporter
+          image: khurshidali76/cisco_exporter:0.2
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: cisco-exporter-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cisco-exporter-service
+spec:
+  selector:
+    app: cisco-exporter
+  ports:
+    - protocol: TCP
+      port: 9362
+      targetPort: 9362
