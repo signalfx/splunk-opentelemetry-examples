@@ -12,6 +12,10 @@ with the following components:
 * NVIDIA AI Enterprise, for deploying and managing AI workloads.
 * Red Hat OpenShift, which is a Kubernetes-based container platform that simplifies the orchestration and deployment of containerized AI applications.
 
+![AI Infrastructure Pods](images/ai-infrastructure-pods-inferencing.png)
+
+Source:  https://www.cisco.com/c/en/us/products/collateral/servers-unified-computing/ucs-x-series-modular-system/ai-infrastructure-pods-inferencing-aag.html 
+
 We’ll demonstrate how Splunk Observability Cloud provides comprehensive visibility into all of this 
 infrastructure along with all the application components that are running on this stack.
 
@@ -47,11 +51,13 @@ to scrape metrics for the following components:
 
 * Nexus
 * NVIDIA DCGM
-* NIM LLM
+* Meta Llama 3.1 LLM
 * Embedding LLM
 * Rerank LLM
 * Milvus (vector database)
-* Portworx
+* Portworx (container storage) 
+
+![AI Pod Dashboard](images/ai-pod-dashboard.png)
 
 ## Deploy the Intersight Integration
 
@@ -79,6 +85,8 @@ Finally, we can apply the manifest as follows:
 ```bash
 kubectl kubectl -n intersight-otel apply -f ./intersight/values.yaml
 ```
+
+![Intersight Dashboard](images/intersight-dashboard.png)
 
 ## Deploy the Nexus Integration
 
@@ -111,3 +119,34 @@ Finally, we can apply the manifest as follows:
 ```bash
 kubectl kubectl -n cisco-exporter apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
 ```
+![Nexus Dashboard](images/nexus-dashboard.png)
+
+## Instrument Applications with OpenTelemetry 
+
+The Python agent from the Splunk Distribution of OpenTelemetry Python can automatically instrument 
+Python applications by dynamically patching supported libraries. Follow the [steps here](https://docs.splunk.com/observability/en/gdi/get-data-in/application/python/instrumentation/instrument-python-application.html) 
+to start collecting metrics and traces from your Python-based Gen AI applications.
+
+Activate [Always On Profiling](https://docs.splunk.com/observability/en/gdi/get-data-in/application/python/instrumentation/instrument-python-application.html) 
+if you’d like to capture CPU call stacks for your application as well.
+
+The metric and trace data captured by the Splunk Distribution of OpenTelemetry Python 
+can be enhanced with an open-source solution, such as [OpenLIT](https://openlit.io/).
+
+Doing this requires only two steps. First, install the openlit package:
+
+```bash
+pip install openlit
+```
+
+Second, import the openlit package in your Python code, and then initialize it:
+
+```bash
+import openlit
+…
+# Initialize OpenLIT instrumentation
+openlit.init()
+```
+![Service Map](images/service-map.png)
+
+![Trace Details](images/trace-details.png)
