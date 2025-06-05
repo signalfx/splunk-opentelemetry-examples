@@ -27,6 +27,18 @@ First, we'll create a new namespace for the collector:
 kubectl create ns otel 
 ```
 
+Add the Splunk OpenTelemetry Collector for Kubernetes' Helm chart repository:
+
+```bash
+helm repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
+````
+
+Ensure the repository is up-to-date: 
+
+```bash
+helm repo update
+````
+
 Then we'll deploy the OpenTelemetry collector in that namespace:
 
 > Note: update the command below before running it 
@@ -83,7 +95,7 @@ kubectl -n intersight-otel create secret generic intersight-api-credentials \
 Finally, we can apply the manifest as follows: 
 
 ```bash
-kubectl kubectl -n intersight-otel apply -f ./intersight/values.yaml
+kubectl -n intersight-otel apply -f ./intersight/values.yaml
 ```
 
 ![Intersight Dashboard](images/intersight-dashboard.png)
@@ -117,7 +129,7 @@ password: <password>
 Finally, we can apply the manifest as follows:
 
 ```bash
-kubectl kubectl -n cisco-exporter apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
+kubectl -n cisco-exporter apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
 ```
 ![Nexus Dashboard](images/nexus-dashboard.png)
 
