@@ -7,7 +7,7 @@ This example demonstrates how Splunk Observability Cloud can be used to monitor 
 with the following components: 
 
 * Cisco Unified Computing System™ (Cisco UCS), which ensures that the compute power required for demanding AI workloads is readily available and scalable.
-* FlashStack (Cisco UCS servers with Pure Storage), which provides high-performance storage and compute capabilities essential for handling large-scale AI and machine learning tasks.
+* FlexPod and FlashStack converged infrastructure, which provide high-performance storage and compute capabilities essential for handling large-scale AI and machine learning tasks.
 * Cisco's Nexus switches, which provide an AI-ready infrastructure designed to support high-performance AI/ML workloads.
 * NVIDIA AI Enterprise, for deploying and managing AI workloads.
 * Red Hat OpenShift, which is a Kubernetes-based container platform that simplifies the orchestration and deployment of containerized AI applications.
@@ -62,12 +62,12 @@ The [otel-collector/values.yaml](./otel-collector/values.yaml) file includes pro
 to scrape metrics for the following components: 
 
 * Nexus
-* NVIDIA DCGM
-* Meta Llama 3.1 LLM
-* Embedding LLM
-* Rerank LLM
+* NVIDIA GPUs 
+* NVIDIA NIM for Large Language Models
+* NVIDIA NIM for Text Embedding
+* NVIDIA NIM for Text Re-Ranking
 * Milvus (vector database)
-* Portworx (container storage) 
+* Cloud-native, software-defined storage 
 
 ![AI Pod Dashboard](images/ai-pod-dashboard.png)
 
