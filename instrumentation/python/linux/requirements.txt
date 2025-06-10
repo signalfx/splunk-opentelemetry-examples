@@ -38,7 +38,7 @@ opentelemetry-util-http==0.50b0
 packaging==24.2
 protobuf==5.29.3
 psutil==6.1.1
-requests==2.32.3
+requests==2.32.4
 splunk-opentelemetry==2.0.0
 typing_extensions==4.12.2
 urllib3==2.3.0
