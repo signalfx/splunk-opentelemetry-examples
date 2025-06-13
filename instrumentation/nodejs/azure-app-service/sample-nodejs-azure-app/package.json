@@ -1,0 +1,17 @@
+{
+  "name": "sample-nodejs-azure-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "@splunk/otel": "^3.1.2",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1"
+  }
+}
