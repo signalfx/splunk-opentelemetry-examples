@@ -81,7 +81,7 @@ az webapp config appsettings set --name <app_name> \
     --settings NODE_OPTIONS='--require "@splunk/otel/instrument"' \
         OTEL_SERVICE_NAME='azure-nodejs-web-app' \
         OTEL_RESOURCE_ATTRIBUTES='deployment.environment=test' \
-        OTEL_EXPORTER_OTLP_ENDPOINT='http(s)://<collector URL>:4317' \
+        OTEL_EXPORTER_OTLP_ENDPOINT='http(s)://<collector URL>:4318' \
         SPLUNK_METRICS_ENABLED=true \
         SPLUNK_PROFILER_ENABLED=true \
         SPLUNK_PROFILER_MEMORY_ENABLED=true 
