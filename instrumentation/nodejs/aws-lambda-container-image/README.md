@@ -139,7 +139,11 @@ file:
       SPLUNK_REALM: us1
       OTEL_RESOURCE_ATTRIBUTES: deployment.environment=test
       OTEL_SERVICE_NAME: aws-lambda-nodejs-opentelemetry-example
+      AWS_LAMBDA_EXEC_WRAPPER: /opt/nodejs-otel-handler
 ````
+
+Please refer to [Configure the OpenTelemetry Lambda Layer](https://docs.splunk.com/observability/en/gdi/get-data-in/serverless/aws/otel-lambda-layer/instrumentation/lambda-language-layers.html#configure-the-splunk-opentelemetry-lambda-layer)
+which includes alternate options for `AWS_LAMBDA_EXEC_WRAPPER`.
 
 We'll also need to add the AWS account ID and region to the `ImageUri`: 
 

@@ -24,6 +24,7 @@ Resources:
           SPLUNK_REALM: <Splunk Realm>
           OTEL_RESOURCE_ATTRIBUTES: deployment.environment=test
           OTEL_SERVICE_NAME: aws-lambda-nodejs-opentelemetry-example
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/nodejs-otel-handler
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
