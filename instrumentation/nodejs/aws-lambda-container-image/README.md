@@ -10,6 +10,9 @@ We'll use Node.js 20 for this example, but the steps for other Node.js versions
 are similar.  The example also uses the AWS Serverless Application Model (SAM)
 CLI to deploy the Lambda function and an associated API Gateway to access it.
 
+The process of adding the Splunk OpenTelemetry Lambda layer to the container image 
+is based on [Working with Lambda layers and extensions in container images](https://aws.amazon.com/blogs/compute/working-with-lambda-layers-and-extensions-in-container-images/).
+
 ## Prerequisites
 
 The following tools are required to deploy Node.js functions into AWS Lambda using SAM:
