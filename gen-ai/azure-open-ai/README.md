@@ -21,10 +21,10 @@ to instrument the application.
 
 ``` bash
 # clone the repo if you haven't already
-git clone https://github.com/signalfx/splunk-opentelemetry/examples/gen-ai/azure-openai.git
+git clone https://github.com/signalfx/splunk-opentelemetry-examples.git
 
 # navigate to the directory repo
-cd splunk-opentelemetry/examples/gen-ai/azure-openai.git
+cd splunk-opentelemetry-examples/gen-ai/azure-openai.git
 
 # create a virtual environment 
 python3 -m venv venv
