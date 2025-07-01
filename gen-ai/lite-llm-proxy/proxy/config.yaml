@@ -7,4 +7,4 @@ model_list:
       rpm: 6      # Rate limit for this deployment: in requests per minute (rpm)
 
 litellm_settings:
-  callbacks: ["otel"]
+  callbacks: ["otel","prometheus"]

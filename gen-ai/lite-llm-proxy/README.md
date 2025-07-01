@@ -73,6 +73,28 @@ litellm_settings:
   callbacks: ["otel"]
 ````
 
+### Configure LiteLLM Proxy to Expose Prometheus Metrics (Optional)
+
+LiteLLM Proxy can also be configured to expose a Prometheus `/metrics` endpoint. 
+Note however that this functionality requires a LiteLLM Enterprise license, as described 
+in the [documentation](https://docs.litellm.ai/docs/proxy/prometheus). 
+
+We can enable this in the [config.yaml](./proxy/config.yaml) file as follows:
+
+```yaml
+litellm_settings:
+  callbacks: ["otel","prometheus"]
+````
+
+Then we can add a Prometheus receiver to the OpenTelemetry collector config to scrape these metrics: 
+
+```yaml
+  prometheus_simple/litellm-proxy:
+    collection_interval: 30s
+    endpoint: "127.0.0.1:4000"
+    metrics_path: /metrics/
+````
+
 ### Start the LiteLLM Proxy
 
 Start LiteLLM proxy using the following command: 
