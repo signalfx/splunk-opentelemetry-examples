@@ -1,7 +1,8 @@
 # LiteLLM Proxy Example with Splunk
 
 [LiteLLM Proxy](https://docs.litellm.ai/) provides a centralized, unified interface to more than
-100 different types of LLMs.  It includes the ability to track LLM usage and cost. 
+100 different types of LLMs (including OpenAI, Anthropic, AWS Bedrock, Google Gemini, etc).
+It includes the ability to track LLM usage and cost. 
 
 This example demonstrates how the
 [Splunk Distribution of OpenTelemetry Python](https://help.splunk.com/en/splunk-observability-cloud/manage-data/instrument-back-end-services/instrument-back-end-applications-to-send-spans-to-splunk-apm./instrument-a-python-application/about-splunk-otel-python)
@@ -19,6 +20,32 @@ to instrument the application.
 * Splunk distribution of OpenTelemetry collector running on the host where the example is deployed
 * An OpenAI API key 
 * Python 3.12
+* Docker
+
+## Deploy a Postgres Database 
+
+LiteLLM Proxy uses a PostgreSQL database to store information such as 
+Virtual Keys, Organizations, Teams, Users, Budgets, and Per request Usage Tracking. 
+
+Further details can be found in [What is stored in the DB](https://docs.litellm.ai/docs/proxy/db_info). 
+
+We'll use Docker to deploy a Postgres database for this example.  Add a password then run the 
+command below to start the Postgres database: 
+
+``` bash
+docker run --name local-postgres \
+    -p 54320:5432 \
+    -e POSTGRES_PASSWORD=*** \
+    -e SSL_MODE=disable \
+    -d postgres
+```
+
+Configure the following environment variable so LiteLLM knows where to find 
+this database (substitute the Postgres password before running the command): 
+
+```bash
+export DATABASE_URL="postgresql://postgres:***@localhost:54320/litellm"
+```
 
 ## Install the LiteLLM Proxy
 
@@ -37,14 +64,27 @@ python3 -m venv venv
 # activate the virtual environment for the proxy
 source venv/bin/activate
 
-# install litellm proxy
+# install litellm proxy and prisma
 pip install 'litellm[proxy]'
+pip install prisma
 ```
 
-### Set Environment Variables
+### Set Additional Environment Variables
+
+Set a few additional environment variables, filling in the desired values for 
+`OPENAI_API_KEY`, `LITELLM_MASTER_KEY` and `UI_PASSWORD`:
 
 ``` bash
 export OPENAI_API_KEY="REPLACE_WITH_YOUR_KEY_VALUE_HERE"
+
+# this is your master key for using the proxy server
+export LITELLM_MASTER_KEY=***
+
+# username to sign in to the LiteLLM Admin UI
+export UI_USERNAME=o11y
+
+# password to sign in to the LiteLLM Admin UI
+export UI_PASSWORD=***
 ```
 
 ### Configure LiteLLM Proxy to Emit OpenTelemetry
@@ -97,11 +137,31 @@ Then we can add a Prometheus receiver to the OpenTelemetry collector config to s
 
 ### Start the LiteLLM Proxy
 
-Start LiteLLM proxy using the following command: 
+Start LiteLLM proxy with Docker using the following command: 
 
 ``` bash
 litellm --config config.yaml
 ```
+
+### Access the LiteLLM Admin UI
+
+Navigate to `http://localhost:4000/ui/` to bring up the Admin UI:
+
+![Example trace](./images/litellm-admin-login.png)
+
+Enter the values for `UI_USERNAME` and `UI_PASSWORD` that you set earlier. 
+
+Use the Admin UI to create a new Virtual Key: 
+
+![Example trace](./images/litellm-virtual-keys.png)
+
+Provide a name for the key, map it to the `gpt-3.5-turbo` model, then set a limit 
+of 1 request per minute: 
+
+![Example trace](./images/litellm-create-virtual-key.png)
+
+Ensure that you copy the API key once it's provided, as you won't be able to view it again 
+using LiteLLM. 
 
 ## Run the Application 
 
@@ -128,12 +188,16 @@ pip install -r requirements.txt
 
 ### Set Environment Variables
 
+Set the following environment variables.  Add the value for the `LITELLM_VIRTUAL_KEY` copied above 
+before running the following commands: 
+
 ``` bash
 export OTEL_SERVICE_NAME=litellm-proxy-app
 export OTEL_RESOURCE_ATTRIBUTES='deployment.environment=test'
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 export OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true
+export LITELLM_VIRTUAL_KEY=***
 ```
 
 ### Launch the Application
@@ -156,3 +220,10 @@ We can also view any log entries related to this trace by clicking on the Logs b
 at the bottom right of the trace:
 
 ![Related logs](./images/related-logs.png)
+
+Virtual key usage can be tracked using the LiteLLM Admin UI:
+
+![Related logs](./images/litellm-virtual-key-usage.png)
+
+If Prometheus metrics are enabled, we can also track virtual key usage plus much 
+more using Splunk Observability Cloud. 
