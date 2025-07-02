@@ -137,7 +137,7 @@ Then we can add a Prometheus receiver to the OpenTelemetry collector config to s
 
 ### Start the LiteLLM Proxy
 
-Start LiteLLM proxy with Docker using the following command: 
+Start LiteLLM proxy using the following command: 
 
 ``` bash
 litellm --config config.yaml

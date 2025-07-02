@@ -1,0 +1,10 @@
+model_list:
+  - model_name: llama3-1-8b-instruct-v1
+    litellm_params:
+      model: os.environ/AWS_MODEL_NAME
+      aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+      aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+      aws_region_name: os.environ/AWS_REGION_NAME
+
+litellm_settings:
+  callbacks: ["otel"]
