@@ -114,7 +114,7 @@ Open another terminal window in the same directory and run the following command
 
 ``` bash
 # navigate to the application directory
-cd splunk-opentelemetry-examples/gen-ai/aws-bedrock/app
+cd splunk-opentelemetry-examples/gen-ai/aws-bedrock-lite-llm-proxy/app
 
 # create a virtual environment for the application
 python3 -m venv venv
