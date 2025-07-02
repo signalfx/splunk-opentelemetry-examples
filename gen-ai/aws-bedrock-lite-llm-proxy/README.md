@@ -1,4 +1,4 @@
-# Amazon Bedrock Example with Splunk
+# Amazon Bedrock Example with LiteLLM Proxy
 
 [Amazon Bedrock](https://aws.amazon.com/bedrock/) is a fully-managed service that provides 
 access to various foundational large language models, including models from [Anthropic](https://aws.amazon.com/bedrock/anthropic), 
