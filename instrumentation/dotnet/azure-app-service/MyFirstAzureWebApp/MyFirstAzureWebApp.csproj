@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Splunk.OpenTelemetry.AutoInstrumentation" Version="1.10.0" />
+  </ItemGroup>
+
 </Project>

@@ -35,13 +35,35 @@ Open a command line terminal and use the following command to authenticate with 
 az login
 ```
 
-## Deploy the .NET application to Azure
+## Instrument the Application (Optional)
+
+Note that the following steps have already been completed for the 
+example application, so there's no need to execute these steps again. 
+
+To automatically instrument the application using NuGet packages, 
+we executed the following command: 
+
+``` bash
+dotnet add MyFirstAzureWebApp.csproj package Splunk.OpenTelemetry.AutoInstrumentation --prereleas
+```
+
+Further details on this process can be found in [Install the OpenTelemetry .NET instrumentation using the NuGet packages](https://help.splunk.com/en/splunk-observability-cloud/manage-data/instrument-back-end-services/instrument-back-end-applications-to-send-spans-to-splunk-apm./instrument-a-.net-application/instrument-your-.net-application#install-the-opentelemetry-.net-instrumentation-using-the-nuget-packages-0). 
+
+## Build the Application
 
 Navigate to the application directory:
 
 ``` bash
 cd ~/splunk-opentelemetry-examples/instrumentation/dotnet/azure-app-service/MyFirstAzureWebApp
 ```
+
+Build the application using the following command: 
+
+``` bash
+dotnet build --runtime linux-x64
+```
+
+## Deploy the .NET application to Azure
 
 Then deploy the application to Azure:
 
@@ -70,6 +92,18 @@ az webapp config appsettings set --name <app_name> \
         SPLUNK_PROFILER_ENABLED=true \
         SPLUNK_PROFILER_MEMORY_ENABLED=true 
 ```
+
+## Update the Startup Command
+
+To apply the OpenTelemetry instrumentation, we need to modify the 
+application startup command as follows: 
+
+``` bash
+az webapp config set --startup-file="splunk-launch.sh dotnet MyFirstAzureWebApp.dll"
+```
+
+See [Run the instrumented application](https://help.splunk.com/en/splunk-observability-cloud/manage-data/instrument-back-end-services/instrument-back-end-applications-to-send-spans-to-splunk-apm./instrument-a-.net-application/instrument-your-.net-application#run-the-instrumented-application-0)
+for further details.
 
 ## Test the Application
 

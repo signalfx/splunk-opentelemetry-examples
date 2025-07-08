@@ -14,6 +14,11 @@ public class IndexModel : PageModel
 
     public void OnGet()
     {
+        _logger.LogInformation("IndexModel processed a GET request");
+    }
 
+    public virtual void OnPageHandlerExecuted(Microsoft.AspNetCore.Mvc.Filters.PageHandlerExecutedContext context)
+    {
+            _logger.LogInformation("OnPageHandlerExecuted was invoked on IndexModel");
     }
 }
