@@ -1,0 +1,26 @@
+create_question_task:
+  description: >
+    Create a question suitable for Grade {grade} math students.
+  expected_output: >
+    A math question
+  agent: teacher
+  output_file: output/question.md
+
+answer_question_task:
+  description: >
+    Review the assigned math question and prepare a solution.
+  expected_output: >
+    A solution to the assigned math question. 
+    Formatted as markdown without '```'
+  agent: student
+  output_file: output/answer.md
+
+grade_question_task:
+  description: >
+    Review the assigned math question and the solution provided by the student. 
+    Grade the assignment and provide a rationale for the grade.
+  expected_output: >
+    A grade for the assignment with a brief rationale for the grade. 
+    Formatted as markdown without '```'
+  agent: teaching_assistant
+  output_file: output/grade.md
