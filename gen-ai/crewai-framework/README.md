@@ -70,9 +70,13 @@ has already been generated.
 export OPENAI_API_KEY="REPLACE_WITH_YOUR_KEY_VALUE_HERE"
 export MODEL=gpt-4o-mini
 export OTEL_SERVICE_NAME=crewai-example
-export OTEL_RESOURCE_ATTRIBUTES='deployment.environment=test'
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+export CREWAI_DISABLE_TELEMETRY=true  # disable the telemetry used by CrewAI itself 
+export OTEL_PYTHON_DISABLED_INSTRUMENTATIONS=click
+export OTEL_LOGS_EXPORTER=otlp
+export OTEL_PYTHON_LOG_LEVEL=info
+export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 ```
 
 ## Run the Application 
@@ -80,18 +84,13 @@ export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 Execute the following command to run the application:
 
 ``` bash
-crewai run
+uv run opentelemetry-instrument crewai run
 ```
 
 You should see traces in Splunk Observability Cloud that look like the following:
 
 ![Example trace](./images/trace.png)
 
-Prompt details are available on the AI Events tab on the right-hand side of the screen:
+Prompt details are available on the right-hand side of the screen as Span Events:
 
 ![Prompt details](./images/prompt-details.png)
-
-We can also view any log entries related to this trace by clicking on the Logs button
-at the bottom right of the trace:
-
-![Related logs](./images/related-logs.png)

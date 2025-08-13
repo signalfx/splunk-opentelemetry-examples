@@ -2,13 +2,16 @@
 import sys
 import warnings
 import openlit
+import logging
 
 from datetime import datetime
 
 from math_problems.crew import MathProblems
 
+logging.getLogger().setLevel(logging.INFO)
+
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
-openlit.init()
+openlit.init(environment="test")
 
 # This main file is intended to be a way for you to run your
 # crew locally, so refrain from adding unnecessary logic into this file.
@@ -25,7 +28,7 @@ def run():
     
     try:
         result = MathProblems().crew().kickoff(inputs=inputs)
-        print(result.raw)
+        logging.getLogger().info(result.raw)
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 
