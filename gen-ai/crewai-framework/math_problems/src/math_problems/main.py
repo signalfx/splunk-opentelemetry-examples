@@ -2,13 +2,13 @@
 import sys
 import warnings
 import openlit
-import logging
+from crewai.utilities import Logger
 
 from datetime import datetime
 
 from math_problems.crew import MathProblems
 
-logging.getLogger().setLevel(logging.INFO)
+my_logger = Logger(verbose=True)
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 openlit.init(environment="test")
@@ -27,8 +27,17 @@ def run():
     }
     
     try:
+        my_logger.log(
+            "info",
+            "About to kickoff the crew...",
+            color="blue"
+        )
         result = MathProblems().crew().kickoff(inputs=inputs)
-        logging.getLogger().info(result.raw)
+        my_logger.log(
+            "info",
+            result.raw,
+            color="blue"
+        )
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 
