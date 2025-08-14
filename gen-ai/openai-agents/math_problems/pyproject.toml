@@ -6,4 +6,6 @@ authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "openai-agents>=0.2.6",
+    "openlit>=1.35.0",
+    "splunk-opentelemetry>=2.6.0",
 ]

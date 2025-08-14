@@ -1,16 +1,19 @@
-from agents import Runner, trace, gen_trace_id
+from agents import Runner
 from student_agent import student_agent
 from teacher_agent import teacher_agent, MathQuestion
 from teaching_assistant_agent import teaching_assistant_agent, AssignmentResult
 import asyncio
+from opentelemetry import trace
+import openlit
+
+tracer = trace.get_tracer("openai-agents")
+openlit.init(environment="test")
 
 class AssignmentManager:
 
     async def run(self):
-        """ Run the assignment process """
-        trace_id = gen_trace_id()
-        with trace("Research trace", trace_id=trace_id):
-            print(f"View trace: https://platform.openai.com/traces/trace?trace_id={trace_id}")
+       with tracer.start_as_current_span("math-assignment") as current_span:
+            """ Run the assignment process """
             print("Teacher is generating a math question...")
             math_question = await self.create_question()
             print("Student is preparing a solution to the question")
@@ -33,7 +36,7 @@ class AssignmentManager:
 
     async def prepare_solution(self, question: MathQuestion) -> str:
         """ Prepare a solution to the question """
-        input = f"Branch of Mathematics: {question.mathematics_branch}\nRationale for the question: {question.rationale}\nThe math question: {question.question}"
+        input = f"The math question: {question.question}"
         result = await Runner.run(
             student_agent,
             input,
