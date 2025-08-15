@@ -23,6 +23,16 @@ agent:
     exporters:
       signalfx:
         send_otlp_histograms: true
+    processors:
+      filter/health:
+        error_mode: ignore
+        traces:
+          span:
+            - |
+              (
+                IsMatch(name, ".*/v1/health/live.*") or
+                IsMatch(name, ".*/v1/health/ready.*")
+              )
     receivers:
       kubeletstats:
         insecure_skip_verify: true
@@ -119,3 +129,12 @@ agent:
             - resource
           receivers:
             - receiver_creator
+        traces:
+          processors:
+            - memory_limiter
+            - k8sattributes
+            - batch
+            - resourcedetection
+            - resource
+            - resource/add_environment
+            - filter/health
