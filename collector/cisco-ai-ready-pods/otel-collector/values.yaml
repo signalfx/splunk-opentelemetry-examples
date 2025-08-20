@@ -117,6 +117,46 @@ agent:
                           - '`endpoint`:17001'
                           - '`endpoint`:17018'
             rule: type == "pod" && labels["name"] == "portworx"
+
+          prometheus/trident:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: trident-metrics
+                    scrape_interval: 10s
+                    metrics_path: /metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:8001'
+            rule: type == "pod" && labels["app"] == "controller.csi.trident.netapp.io"
+
+          prometheus/redfish-health:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: redfish-health-metrics
+                    scrape_interval: 180s
+                    metrics_path: /health
+                    params:
+                      target: ['<IP Address>']
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9210'
+            rule: type == "pod" && labels["app"] == "redfish-exporter"
+
+          prometheus/redfish-performance:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: redfish-performance-metrics
+                    scrape_interval: 60s
+                    metrics_path: /performance
+                    params:
+                      target: ['<IP Address>']
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9210'
+            rule: type == "pod" && labels["app"] == "redfish-exporter"
     service:
       pipelines:
         metrics/nvidia-metrics:

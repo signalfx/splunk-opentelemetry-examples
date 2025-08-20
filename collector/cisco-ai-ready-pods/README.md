@@ -69,6 +69,10 @@ to scrape metrics for the following components:
 * Milvus (vector database)
 * Cloud-native, software-defined storage 
 
+Update the [otel-collector/values.yaml](./otel-collector/values.yaml) as appropriate for your environment.  For example, if 
+your environment doesn't use Trident, then this section can be commented out.  If your environment 
+uses Redfish, then ensure the target IP addresses are added to the `values.yaml` file. 
+
 ![AI Pod Dashboard](images/ai-pod-dashboard.png)
 
 ## Deploy the Intersight Integration
@@ -132,6 +136,14 @@ Finally, we can apply the manifest as follows:
 kubectl -n cisco-exporter apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
 ```
 ![Nexus Dashboard](images/nexus-dashboard.png)
+
+## Deploy the Redfish Integration
+
+This integration utilizes the Redfish Prometheus Exporter found [here](https://github.com/sapcc/redfish-exporter/tree/main).
+This solution was dockerized and then run as a deployment in the `redfish` namespace.
+
+These metrics can then be scraped by the Prometheus receiver included in the OpenTelemetry
+collector deployed above.
 
 ## Instrument Applications with OpenTelemetry 
 
