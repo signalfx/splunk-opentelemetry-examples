@@ -1,0 +1,13 @@
+[project]
+name = "math_problems"
+version = "0.1.0"
+description = "Solving math problems using LangGraph"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "langchain>=0.3.27",
+    "langchain-openai>=0.3.32",
+    "langgraph>=0.6.6",
+    "openlit>=1.35.1",
+    "splunk-opentelemetry>=2.7.0",
+]
