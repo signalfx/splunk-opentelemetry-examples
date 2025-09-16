@@ -163,6 +163,17 @@ agent:
               - request_generation_tokens
               - milvus_proxy_req_in_queue_latency
               - milvus_rootcoord_ddl_req_latency_in_queue
+              - vllm:num_requests_running
+              - vllm:e2e_request_latency_seconds
+              - vllm:time_to_first_token_seconds
+              - vllm:time_per_output_token_seconds
+              - vllm:request_failure_total
+              - vllm:request_success_total
+              - vllm:num_requests_waiting
+              - vllm:prompt_tokens_total
+              - vllm:generation_tokens_total
+              - vllm:gpu_cache_usage_perc
+              - vllm:request_finish_total
     receivers:
       kubeletstats:
         insecure_skip_verify: true
