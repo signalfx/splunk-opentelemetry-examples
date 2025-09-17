@@ -10,6 +10,7 @@ from opentelemetry import trace
 import openlit
 
 tracer = trace.get_tracer("autogen-example")
+tracer_provider = trace.get_tracer_provider()
 
 async def main():
 
@@ -18,15 +19,15 @@ async def main():
     host = GrpcWorkerAgentRuntimeHost(address="localhost:50052")
     host.start()
 
-    worker1 = GrpcWorkerAgentRuntime(host_address="localhost:50052")
+    worker1 = GrpcWorkerAgentRuntime(host_address="localhost:50052", tracer_provider=tracer_provider)
     await worker1.start()
     await IdeaGeneratorAgent.register(worker1, "idea_generator_agent", lambda: IdeaGeneratorAgent("idea_generator_agent"))
 
-    worker2 = GrpcWorkerAgentRuntime(host_address="localhost:50052")
+    worker2 = GrpcWorkerAgentRuntime(host_address="localhost:50052", tracer_provider=tracer_provider)
     await worker2.start()
     await MarketResearchAgent.register(worker2, "market_research_agent", lambda: MarketResearchAgent("market_research_agent"))
 
-    worker = GrpcWorkerAgentRuntime(host_address="localhost:50052")
+    worker = GrpcWorkerAgentRuntime(host_address="localhost:50052", tracer_provider=tracer_provider)
     await worker.start()
     await EvaluatorAgent.register(worker, "evaluator_agent", lambda: EvaluatorAgent("evaluator_agent"))
     agent_id = AgentId("evaluator_agent", "default")
