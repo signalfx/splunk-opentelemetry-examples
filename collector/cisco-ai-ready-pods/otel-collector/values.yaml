@@ -11,6 +11,12 @@ gateway:
   enabled: false
 splunkObservability:
   profilingEnabled: true
+clusterReceiver:
+  # Need to be adjusted based on size of the monitored cluster
+  resources:
+    limits:
+      cpu: 200m
+      memory: 2000Mi
 agent:
   discovery:
     enabled: true

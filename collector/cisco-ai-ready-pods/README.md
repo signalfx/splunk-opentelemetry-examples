@@ -21,10 +21,11 @@ infrastructure along with all the application components that are running on thi
 
 ## Deploy the Splunk Distribution of the OpenTelemetry Collector 
 
-First, we'll create a new namespace for the collector: 
+First, we'll create a new project for the collector and switch to that project: 
 
 ```bash
-kubectl create ns otel 
+oc new-project otel 
+oc project otel
 ```
 
 Add the Splunk OpenTelemetry Collector for Kubernetes' Helm chart repository:
@@ -73,7 +74,57 @@ Update the [otel-collector/values.yaml](./otel-collector/values.yaml) as appropr
 your environment doesn't use Trident, then this section can be commented out.  If your environment 
 uses Redfish, then ensure the target IP addresses are added to the `values.yaml` file. 
 
+Once the collector is running, you should see the AI Pod dashboard populated as in the following example: 
+
 ![AI Pod Dashboard](images/ai-pod-dashboard.png)
+
+### Troubleshooting 
+
+#### Memory Issues
+
+If you see errors in the collector logs related to high memory usage such as the following: 
+
+````
+025-09-16T18:41:56.572Z	error	Scrape commit failed	{"otelcol.component.id": "prometheus/k8s_cluster_receiver", "otelcol.component.kind": "Receiver", "otelcol.signal": "metrics", "scrape_pool": "otel-k8s-cluster-receiver", "target": "http://localhost:8889/metrics", "err": "data refused due to high memory usage"}
+````
+
+Then you'll need to update the memory settings in the values.yaml file and apply the changes. 
+Memory limits are set for both the Cluster Receiver and the Agent: 
+
+``` yaml
+clusterReceiver:
+  # Need to be adjusted based on size of the monitored cluster
+  resources:
+    limits:
+      cpu: 200m
+      memory: 2000Mi
+agent:
+  discovery:
+    enabled: true
+  resources:
+    limits:
+      cpu: 200m
+      # This value is being used as a source for default memory_limiter processor configurations
+      memory: 2000Mi
+```
+
+#### UID Errors 
+
+If the OpenTelemetry Operator was enabled as part of the OpenTelemetry Collector installation, 
+you may see an error such as the following: 
+
+````
+Invalid value: 65532: must be in the ranges: [1000940000, 1000949999]
+````
+
+This is saying that the User ID (UID) chosen for the service account is not in the acceptable range. 
+To work around this issue, we can run the following command: 
+
+````
+oc adm policy add-scc-to-user anyuid -z <service account name>
+````
+
+This allows a service account to use any (UID) when dpeloying the collector via Helm. 
 
 ## Deploy the Intersight Integration
 
@@ -81,17 +132,18 @@ This integration is based on the example [here](https://github.com/cgascoig/inte
 It makes requests to Intersight APIs and sends the resulting metrics to the OpenTelemetry collector
 deployed in the previous step. 
 
-First, we'll create a new namespace for this integration: 
+First, we'll create a new project for this integration and switch to it: 
 
 ```bash 
-kubectl create namespace intersight-otel
+oc new-project intersight-otel
+oc project intersight-otel
 ```
 
 Then, we'll add the Intersight API key as a Kubernetes secret. This assumes you have your 
 Intersight Key ID in `/tmp/intersight.keyid.txt` and your Intersight Key in `/tmp/intersight.pem`:
 
 ```bash
-kubectl -n intersight-otel create secret generic intersight-api-credentials \
+oc create secret generic intersight-api-credentials \
     --from-file=intersight-key-id=/tmp/intersight.keyid.txt \
     --from-file=intersight-key=/tmp/intersight.pem
 ````
@@ -99,7 +151,7 @@ kubectl -n intersight-otel create secret generic intersight-api-credentials \
 Finally, we can apply the manifest as follows: 
 
 ```bash
-kubectl -n intersight-otel apply -f ./intersight/values.yaml
+oc apply -f ./intersight/values.yaml
 ```
 
 ![Intersight Dashboard](images/intersight-dashboard.png)
@@ -115,10 +167,11 @@ prometheus format at port 9362.
 These metrics can then be scraped by the prometheus receiver included in the OpenTelemetry 
 collector deployed above. 
 
-First, we'll create a new namespace for this integration:
+First, we'll create a new project for this integration and switch to it:
 
 ```bash 
-kubectl create namespace cisco-exporter
+oc new-project cisco-exporter
+oc project cisco-exporter
 ```
 
 Then, update the [cisco_exporter_k8s_all_in_one.yaml](./nexus/cisco_exporter_k8s_all_in_one.yaml) file 
@@ -133,7 +186,7 @@ password: <password>
 Finally, we can apply the manifest as follows:
 
 ```bash
-kubectl -n cisco-exporter apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
+oc apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
 ```
 ![Nexus Dashboard](images/nexus-dashboard.png)
 
