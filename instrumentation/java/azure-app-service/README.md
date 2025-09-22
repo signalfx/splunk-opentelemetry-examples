@@ -121,6 +121,7 @@ what data to collect and where to send it:
 * `OTEL_RESOURCE_ATTRIBUTES`: `deployment.environment=test`
 * `SPLUNK_PROFILER_ENABLED`: `true`
 * `SPLUNK_PROFILER_MEMORY_ENABLED`: `true`
+* `SPLUNK_TRACE_RESPONSE_HEADER_ENABLED`: `true`
 
 > Note: remember to substitute the URL for your collector 
 
