@@ -56,6 +56,24 @@ When prompted, provide the following inputs:
 * Define value for pricingTier: `3` (for P1v2)
 * Confirm: `Y`
 
+## Create Azure SQL Database
+
+This example uses an Azure SQL database.  Follow the instructions 
+[here](https://learn.microsoft.com/en-us/azure/azure-sql/database/connect-query-java?view=azuresql#prepare-the-working-environment) 
+to create the database.  Ensure firewall rules are set so that it's accessible 
+from the Azure app service we'll be creating below. 
+
+Once the database is created, connect to it using the Query Editor in the Azure console, 
+then create the following table: 
+
+``` sql
+  CREATE TABLE SiteActivity (
+      SiteActivityID INT IDENTITY(1,1) PRIMARY KEY,
+      Name NVARCHAR(256) NOT NULL,
+      ActivityDate DATE
+  );
+```
+
 ## Build and Deploy the Java application to Azure
 
 Let's build the application with Maven: 
@@ -122,8 +140,9 @@ what data to collect and where to send it:
 * `SPLUNK_PROFILER_ENABLED`: `true`
 * `SPLUNK_PROFILER_MEMORY_ENABLED`: `true`
 * `SPLUNK_TRACE_RESPONSE_HEADER_ENABLED`: `true`
+* `DATABASE_URL`: `jdbc:sqlserver://<database host>.database.windows.net:1433;database=<database name>;user=<database user>@<database name>;password=<database password>;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;`
 
-> Note: remember to substitute the URL for your collector 
+> Note: remember to substitute the URL for your collector, and the database host, username, and password. 
 
 The environment variables should look like the following in Azure: 
 
