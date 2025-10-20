@@ -1,0 +1,3 @@
+requests
+# add this package to ensure trace context is added to logs
+opentelemetry.instrumentation.logging==0.54b1
