@@ -22,6 +22,8 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:SPLUNK_ACCESS_TOKEN'
+        - S3ReadPolicy:
+            BucketName: <bucket name>
       Architectures:
         - x86_64
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -31,7 +33,7 @@ Resources:
           OTEL_SERVICE_NAME: aws-lambda-python-opentelemetry-example
           AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-instrument
           OTEL_PYTHON_LOG_CORRELATION: true
-          OPENTELEMETRY_COLLECTOR_CONFIG_URI: /opt/collector-config.yaml
+          OPENTELEMETRY_COLLECTOR_CONFIG_URI: s3://<bucket_name>.s3.<region>.amazonaws.com/collector-config.yaml
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

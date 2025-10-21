@@ -2,7 +2,8 @@
 
 This example builds on [Instrumenting a Python AWS Lambda Function with OpenTelemetry](../aws-lambda) 
 and demonstrates how to utilize AWS Secrets Manager to store the `SPLUNK_ACCESS_TOKEN` value 
-securely. 
+securely, and how to use the Secrets Manager Provider with the OpenTelemetry Collector to 
+use the secret in the collector configuration. 
 
 ## Prerequisites
 
@@ -43,51 +44,66 @@ aws secretsmanager create-secret \
   --region "<put your target AWS region here>"
 ````
 
-### Define a Wrapper
+### Upload the Custom Collector Configuration to S3
 
-Next, we'll create a wrapper that copies a [custom collector configuration](./layer/collector-config.yaml) 
-to the lambda runtime. The only change in the configuration is to use the 
+Create an S3 bucket for the collector configuration: 
+
+> Note: substitute your bucket name and target AWS region before running the following command
+
+````
+aws s3 mb s3://your-unique-bucket-name --region your-aws-region
+````
+
+Then upload a custom collector configuration file 
+([collector-config.yaml](./collector-config.yaml)) to this S3 bucket: 
+
+> Note: substitute your bucket name and target AWS region before running the following command
+
+````
+aws s3 cp ./collector-config.yaml s3://your-bucket-name/collector-config.yaml --region your-aws-region
+````
+
+Note that the custom collector configuration file uses the 
 [Secrets Manager Provider](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/confmap/provider/secretsmanagerprovider/README.md)  
-to fetch the `SPLUNK_ACCESS_TOKEN` value: 
+to fetch the `SPLUNK_ACCESS_TOKEN` value:
 
 ``` yaml
     headers:
       "X-SF-TOKEN": "${secretsmanager:SPLUNK_ACCESS_TOKEN}"
 ```
 
-The custom configuration file is referenced in the `template.yaml` file: 
+### Use the Custom Collector Configuration
 
-``` yaml
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          ...
-          OPENTELEMETRY_COLLECTOR_CONFIG_URI: /opt/collector-config.yaml
-```
-
-Let's create a ZIP for this layer: 
-
-``` bash
-cd layer; zip -r ../copy-custom-collector-config.zip .; cd -
-```
-
-Then publish the layer to AWS: 
-
-> Note: substitute your target AWS region before running the following command
-
-``` bash
-aws lambda publish-layer-version \
-  --layer-name copy-custom-collector-config \
-  --zip-file fileb://copy-custom-collector-config.zip \
-  --region <target AWS region>
-```
-
-### Add the Splunk Lambda layers
+Now that we've uploaded the custom collector configuration to S3, we'll need to tell our
+Lambda function to use it. 
 
 Let's first make a copy of the template.yaml.base file:
 
 ````
 cp template.yaml.base template.yaml
 ````
+
+Update the `template.yaml` file to specify the S3 bucket name and region where the 
+collector configuration file is stored: 
+
+``` yaml
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          ...
+          OPENTELEMETRY_COLLECTOR_CONFIG_URI: s3://<bucket_name>.s3.<region>.amazonaws.com/collector-config.yaml
+```
+
+Add your bucket name here as well, to ensure the IAM role used by the Lambda function 
+has access to read from the bucket: 
+
+``` yaml
+        - S3ReadPolicy:
+            BucketName: <bucket name>
+```
+
+### Add the Splunk Lambda layers
+
+Next, we're going to add layers for Splunk OpenTelemetry instrumentation. 
 
 #### Add the Splunk OpenTelemetry Lambda Python Layer
 
