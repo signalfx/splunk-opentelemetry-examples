@@ -45,26 +45,29 @@ aws secretsmanager create-secret \
 
 ### Define a Wrapper
 
-Next, we'll create a wrapper using the code found in [layer/opt/execute-wrappers.sh](./layer/opt/execute-wrappers.sh) 
-and [layer/opt/otel-secrets-wrapper.sh](./layer/opt/otel-secrets-wrapper.sh)
+Next, we'll create a wrapper that copies a [custom collector configuration](./layer/collector-config.yaml) 
+to the lambda runtime. The only change in the configuration is to use the 
+[Secrets Manager Provider](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/confmap/provider/secretsmanagerprovider/README.md)  
+to fetch the `SPLUNK_ACCESS_TOKEN` value: 
 
-`otel-secrets-wrapper.sh` uses boto3 to read the access token from a secret and store it in 
-an environment variable named `SPLUNK_ACCESS_TOKEN`. 
-
-`execute-wrappers.sh` first invokes `otel-secrets-wrapper.sh` to read the secret, and then 
-runs the `/opt/otel-instrument` wrapper to instrument the Python Lambda function with OpenTelemetry. 
-
-We included boto3 as part of the layer with the following command: 
-
-``` bash
-mkdir -p layer/python/lib/python3.12/site-packages
-pip install --target layer/python/lib/python3.12/site-packages/ boto3==1.40.55 botocore==1.40.55
+``` yaml
+    headers:
+      "X-SF-TOKEN": "${secretsmanager:SPLUNK_ACCESS_TOKEN}"
 ```
-    
+
+The custom configuration file is referenced in the `template.yaml` file: 
+
+``` yaml
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          ...
+          OPENTELEMETRY_COLLECTOR_CONFIG_URI: /opt/collector-config.yaml
+```
+
 Let's create a ZIP for this layer: 
 
 ``` bash
-cd layer; zip -r ../otel-secrets-wrapper-layer.zip .; cd -
+cd layer; zip -r ../copy-custom-collector-config.zip .; cd -
 ```
 
 Then publish the layer to AWS: 
@@ -73,8 +76,8 @@ Then publish the layer to AWS:
 
 ``` bash
 aws lambda publish-layer-version \
-  --layer-name otel-secrets-wrapper \
-  --zip-file fileb://otel-secrets-wrapper-layer.zip \
+  --layer-name copy-custom-collector-config \
+  --zip-file fileb://copy-custom-collector-config.zip \
   --region <target AWS region>
 ```
 

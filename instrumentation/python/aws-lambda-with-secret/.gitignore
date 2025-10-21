@@ -1,5 +1,5 @@
 samconfig.toml
 template.yaml
 my_deployment_package.zip
-otel-secrets-wrapper-layer.zip
+copy-custom-collector-config.zip
 layer/python/lib/*

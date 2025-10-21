@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "localhost:4317"
+      http:
+        endpoint: "localhost:4318"
+
+exporters:
+  otlphttp:
+    tls:
+      insecure_skip_verify: true
+    endpoint: "https://ingest.${env:SPLUNK_REALM}.signalfx.com:443"
+    traces_endpoint: "https://ingest.${env:SPLUNK_REALM}.signalfx.com:443/v2/trace/otlp"
+    metrics_endpoint: "https://ingest.${env:SPLUNK_REALM}.signalfx.com:443/v2/datapoint/otlp"
+    headers:
+      "X-SF-TOKEN": "${secretsmanager:SPLUNK_ACCESS_TOKEN}"
+
+service:
+  telemetry:
+    logs:
+      level: "error"
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlphttp]

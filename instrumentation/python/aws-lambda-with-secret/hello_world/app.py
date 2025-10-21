@@ -4,8 +4,6 @@ import logging
 import sys
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 import os
-import subprocess
-import stat
 
 LoggingInstrumentor().instrument(set_logging_format=True)
 FORMAT = '%(asctime)s [severity=%(levelname)s] [%(name)s] [%(filename)s:%(lineno)d] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s service.name=%(otelServiceName)s d trace_sampled=%(otelTraceSampled)s] - %(message)s'

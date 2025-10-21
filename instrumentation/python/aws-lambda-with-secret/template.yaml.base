@@ -29,8 +29,9 @@ Resources:
           SPLUNK_REALM: ** Add Realm Here e.g. us0, us1, eu0, etc. **
           OTEL_RESOURCE_ATTRIBUTES: deployment.environment=** Add the Name of Your Environment Here **
           OTEL_SERVICE_NAME: aws-lambda-python-opentelemetry-example
-          AWS_LAMBDA_EXEC_WRAPPER: /opt/execute-wrappers.sh
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-instrument
           OTEL_PYTHON_LOG_CORRELATION: true
+          OPENTELEMETRY_COLLECTOR_CONFIG_URI: /opt/collector-config.yaml
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -38,7 +39,7 @@ Resources:
             Path: /hello
             Method: get
       Layers:
-        - arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:otel-secrets-wrapper:17
+        - arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:copy-custom-collector-config:1
         - ** Add Splunk OpenTelemetry Lambda Python Layer ARN Here **
         - ** Add Splunk OpenTelemetry Collector Layer ARN Here **
         - ** Add Splunk Metrics Extension Layer ARN Here **
