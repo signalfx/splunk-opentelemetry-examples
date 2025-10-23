@@ -1,0 +1,222 @@
+distribution: openshift
+readinessProbe:
+  initialDelaySeconds: 180
+livenessProbe:
+  initialDelaySeconds: 180
+operator:
+  enabled: false
+operatorcrds:
+  installed: false
+gateway:
+  enabled: false
+splunkObservability:
+  profilingEnabled: true
+clusterReceiver:
+  # Need to be adjusted based on size of the monitored cluster
+  resources:
+    limits:
+      cpu: 200m
+      memory: 2000Mi
+agent:
+  discovery:
+    enabled: true
+  resources:
+    limits:
+      cpu: 200m
+      # This value is being used as a source for default memory_limiter processor configurations
+      memory: 2000Mi
+  config:
+    exporters:
+      signalfx:
+        send_otlp_histograms: true
+    processors:
+      filter/health:
+        error_mode: ignore
+        traces:
+          span:
+            - |
+              (
+                IsMatch(name, ".*/v1/health/live.*") or
+                IsMatch(name, ".*/v1/health/ready.*")
+              )
+      filter/metrics_to_be_included:
+        metrics:
+          # Include only metrics used in charts and detectors
+          include:
+            match_type: strict
+            metric_names:
+              - cisco_collector_duration_seconds
+              - cisco_interface_receive_broadcast
+              - cisco_interface_receive_bytes
+              - cisco_interface_receive_drops
+              - cisco_interface_receive_errors
+              - cisco_interface_receive_multicast
+              - cisco_interface_transmit_bytes
+              - cisco_interface_transmit_drops
+              - cisco_interface_transmit_errors
+              - cisco_interface_up
+              - cisco_up
+              - DCGM_FI_DEV_FB_FREE
+              - DCGM_FI_DEV_FB_USED
+              - DCGM_FI_DEV_GPU_TEMP
+              - DCGM_FI_DEV_GPU_UTIL
+              - DCGM_FI_DEV_MEM_CLOCK
+              - DCGM_FI_DEV_MEM_COPY_UTIL
+              - DCGM_FI_DEV_MEMORY_TEMP
+              - DCGM_FI_DEV_POWER_USAGE
+              - DCGM_FI_DEV_SM_CLOCK
+              - DCGM_FI_DEV_TOTAL_ENERGY_CONSUMPTION
+              - DCGM_FI_PROF_DRAM_ACTIVE
+              - DCGM_FI_PROF_GR_ENGINE_ACTIVE
+              - DCGM_FI_PROF_PCIE_RX_BYTES
+              - DCGM_FI_PROF_PCIE_TX_BYTES
+              - DCGM_FI_PROF_PIPE_TENSOR_ACTIVE
+              - generation_tokens_total
+              - go_info
+              - go_memstats_alloc_bytes
+              - go_memstats_alloc_bytes_total
+              - go_memstats_buck_hash_sys_bytes
+              - go_memstats_frees_total
+              - go_memstats_gc_sys_bytes
+              - go_memstats_heap_alloc_bytes
+              - go_memstats_heap_idle_bytes
+              - go_memstats_heap_inuse_bytes
+              - go_memstats_heap_objects
+              - go_memstats_heap_released_bytes
+              - go_memstats_heap_sys_bytes
+              - go_memstats_last_gc_time_seconds
+              - go_memstats_lookups_total
+              - go_memstats_mallocs_total
+              - go_memstats_mcache_inuse_bytes
+              - go_memstats_mcache_sys_bytes
+              - go_memstats_mspan_inuse_bytes
+              - go_memstats_mspan_sys_bytes
+              - go_memstats_next_gc_bytes
+              - go_memstats_other_sys_bytes
+              - go_memstats_stack_inuse_bytes
+              - go_memstats_stack_sys_bytes
+              - go_memstats_sys_bytes
+              - go_sched_gomaxprocs_threads
+              - gpu_cache_usage_perc
+              - gpu_total_energy_consumption_joules
+              - http.server.active_requests
+              - intersight.advisories.nonsecurity.affected_objects
+              - intersight.advisories.security.affected_objects
+              - intersight.advisories.security.count
+              - intersight.alarms.count
+              - intersight.ucs.fan.speed
+              - intersight.ucs.host.power
+              - intersight.ucs.host.temperature
+              - intersight.ucs.network.receive.rate
+              - intersight.ucs.network.transmit.rate
+              - intersight.ucs.network.utilization.average
+              - intersight.vm_count
+              - milvus_proxy_cache_hit_count
+              - milvus_proxy_req_count
+              - milvus_querycoord_collection_num
+              - milvus_rootcoord_ddl_req_count
+              - milvus_rootcoord_dml_channel_num
+              - milvus_rootcoord_id_alloc_count
+              - num_request_max
+              - num_requests_running
+              - num_requests_waiting
+              - process_cpu_seconds_total
+              - process_max_fds
+              - process_open_fds
+              - process_resident_memory_bytes
+              - process_start_time_seconds
+              - process_virtual_memory_bytes
+              - process_virtual_memory_max_bytes
+              - promhttp_metric_handler_requests_in_flight
+              - promhttp_metric_handler_requests_total
+              - prompt_tokens_total
+              - px_cluster_cpu_percent
+              - px_cluster_disk_total_bytes
+              - px_cluster_disk_utilized_bytes
+              - px_cluster_status_nodes_offline
+              - px_cluster_status_nodes_online
+              - px_volume_read_latency_seconds
+              - px_volume_reads_total
+              - px_volume_readthroughput
+              - px_volume_write_latency_seconds
+              - px_volume_writes_total
+              - px_volume_writethroughput
+              - python_gc_collections_total
+              - python_gc_objects_collected_total
+              - python_gc_objects_uncollectable_total
+              - python_info
+              - redfish_performance_scrape_duration_seconds
+              - redfish_thermal_fans_lower_threshold_critical
+              - redfish_thermal_fans_upper_threshold_critical
+              - redfish_thermal_temperatures_reading_celsius
+              - request_failure_total
+              - request_finish_total
+              - request_success_total
+              - system.cpu.time
+              - trident_backend_count
+              - trident_node_count
+              - trident_operation_duration_milliseconds_count
+              - trident_operation_duration_milliseconds_quantile
+              - trident_operation_duration_milliseconds_sum
+              - trident_storageclass_count
+              - trident_volume_allocated_bytes
+              - trident_volume_count
+              - trident_volume_total_bytes
+              - e2e_request_latency_seconds
+              - time_to_first_token_seconds
+              - time_per_output_token_seconds
+              - request_prompt_tokens
+              - request_generation_tokens
+              - milvus_proxy_req_in_queue_latency
+              - milvus_rootcoord_ddl_req_latency_in_queue
+              - vllm:num_requests_running
+              - vllm:e2e_request_latency_seconds
+              - vllm:time_to_first_token_seconds
+              - vllm:time_per_output_token_seconds
+              - vllm:request_failure_total
+              - vllm:request_success_total
+              - vllm:num_requests_waiting
+              - vllm:prompt_tokens_total
+              - vllm:generation_tokens_total
+              - vllm:gpu_cache_usage_perc
+              - vllm:request_finish_total
+    receivers:
+      kubeletstats:
+        insecure_skip_verify: true
+      receiver_creator/cisco-ai-pods:
+        # Name of the extensions to watch for endpoints to start and stop.
+        watch_observers: [ k8s_observer ]
+        receivers:
+          prometheus/dcgm:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: gpu-metrics
+                    scrape_interval: 10s
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:9400'
+            rule: type == "pod" && labels["app"] == "nvidia-dcgm-exporter"
+
+    service:
+      pipelines:
+        metrics/cisco-ai-pods:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - filter/metrics_to_be_included
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - receiver_creator/cisco-ai-pods
+        traces:
+          processors:
+            - memory_limiter
+            - k8sattributes
+            - batch
+            - resourcedetection
+            - resource
+            - resource/add_environment
+            - filter/health
