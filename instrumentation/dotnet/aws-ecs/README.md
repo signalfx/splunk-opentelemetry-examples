@@ -189,7 +189,7 @@ are loaded by the .NET CLR used by our application:
 
 We've included some custom code with this example to demonstrate how trace context can
 be added to log entries.  You can find this code in the
-[SplunkTelemetryConfiguration.cs](../k8s/SplunkTelemetryConfigurator.cs) file:
+[SplunkTelemetryConfiguration.cs](../linux/SplunkTelemetryConfigurator.cs) file:
 
 ````
    public static void ConfigureLogger(ILoggingBuilder logging)
