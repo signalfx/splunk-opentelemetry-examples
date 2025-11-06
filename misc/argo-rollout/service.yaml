@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: doorgame
+spec:
+  type: LoadBalancer
+  selector:
+    app: doorgame
+  ports:
+    - protocol: TCP
+      port: 81
+      targetPort: 9090
