@@ -12,11 +12,11 @@ spec:
           name: splunk-token
           key: token
     - name: query
-      value: sf_metric:demo.trans.latency
+      value: "(sf_metric:service.request.duration.ns.p99 AND service.name:argo-rollouts-demo)"
     - name: operator
-      value: gt
+      value: lt
     - name: threshold
-      value: "200"
+      value: "500000"
     - name: scope
       value: any
   metrics:

@@ -83,8 +83,7 @@ Criteria met (10/18) for query 'sf_metric:demo.trans.latency' with gt 200.
 ### Create a Docker Image 
 
 Next, we'll create a Docker image that will be used by the Job to execute 
-the script we just created. You Dockerfile can be found in 
-[Dockerfile](./Dockerfile). 
+the script we just created using [Dockerfile](./Dockerfile). 
 
 Build the Dockerfile and push it to your repository using the following commands: 
 
@@ -113,12 +112,58 @@ Now, we can create the job, which you can find in [analysis-template.yaml](./ana
 kubectl apply -f ./analysis-template.yaml
 ```
 
+The `analysis-template.yaml` file should be updated with the criteria you require for your 
+application rollouts.  For this example, we used the following criteria, which tells the 
+script to connect to Splunk Observability Cloud using the us1 realm and the provided token. 
+It will then retrieve the value of the `service.request.duration.ns.p99` metric where 
+the `service.name` has a value of `argo-rollouts-demo`. It will return 1 if the metric 
+value is less than 500,000 microseconds (which is equivalent to 0.5 seconds). Otherwise, 
+it will return 0, telling Argo Rollouts that the service is effectively too slow to continue 
+with the rollout process: 
+
+``` yaml
+  args:
+    - name: realm
+      value: us1
+    - name: token
+      valueFrom:
+        secretKeyRef:
+          name: splunk-token
+          key: token
+    - name: query
+      value: "(sf_metric:service.request.duration.ns.p99 AND service.name:argo-rollouts-demo)"
+    - name: operator
+      value: lt
+    - name: threshold
+      value: "500000"
+    - name: scope
+      value: any
+```
+
+## Deploy the Demo Application 
+
+### Build the Demo Application Image
+
+``` bash
+git clone https://github.com/argoproj/rollouts-demo.git
+cd rollouts-demo
+```
+
+Update the Dockerfile to use `FROM golang:1.25 as build` instead of `FROM golang:1.16 as build`, 
+since OpenTelemetry GO auto-instrumentation is not compatible with v1.16. 
+
+Then build the images and push them to the local repository: 
+
+``` bash
+make release IMAGE_NAMESPACE=localhost:9999 DOCKER_PUSH=true
+```
+
 ### Create the Rollout 
 
 With Argo Rollouts, a "rollout" is used in place of a usual Kubernetes Deployment 
 to manage the deployment of an application. 
 
-In this example, we'll deploy the [Door Game sample application](https://github.com/signalfx/splunk-opentelemetry-examples/tree/main/instrumentation/java/linux). 
+In this example, we'll deploy the [rollouts-demo](https://github.com/argoproj/rollouts-demo). 
 
 The [rollout.yaml](./rollout.yaml) refers to the job we created 
 earlier to ensure that the rollout doesn't proceed beyond 40% until 
@@ -152,20 +197,24 @@ You can access your application by using your browser to navigate to:
 http://<IP address>:81
 ````
 
+It should look something like this: 
+
+![Image of Argo Rollouts demo application](./images/argo-rollouts-example.png)
+
+The first time an application is deployed, Argo Rollouts deploys 100% of pods.
 We can monitor progress of the rollout using the following command: 
 
 ``` bash
 kubectl argo rollouts get rollout splunk-argo-rollouts-example --watch
 ```
 
-The first time an application is deployed, Argo Rollouts deploys 100% of pods. 
-
-Let's deploy a slightly updated version of our application, which will trigger 
-Argo Rollouts to perform analysis using our job and shell script, before moving 
-on to the next step of the rollout. 
+Let's update our deployment to use the `slow-yellow` image instead of 
+the `blue` image. This will trigger Argo Rollouts to perform analysis 
+using our job and shell script, before moving on to the next step of the rollout. 
 
 ``` bash
-kubectl apply -f ./rollout-update.yaml
+kubectl argo rollouts set image splunk-argo-rollouts-example \
+  rollouts-demo=localhost:9999/rollouts-demo:slow-yellow
 ```
 
 We can monitor progress of the rollout using the following command:
@@ -175,24 +224,71 @@ kubectl argo rollouts get rollout splunk-argo-rollouts-example --watch
 ```
 
 Argo Rollouts will re-deploy the first pod only, and then pause for one 
-minute (per the specified configuration). Then, it will perform analysis
-by invoking our job, which in turn invokes the script to fetch metrics 
-from Splunk Observability Cloud. If the conditions are met, then the 
-rollout will proceed to the second pod. 
-
-When the analysis has completed successfully, and the second pod is deployed, 
-the output will look something like the following: 
+minute (per the specified configuration). 
 
 ````
-NAME                                                                    KIND         STATUS        AGE  INFO
-⟳ splunk-argo-rollouts-example                                          Rollout      ॥ Paused      89s  
-├──# revision:2                                                                                         
-│  ├──⧉ splunk-argo-rollouts-example-6c65f677bc                         ReplicaSet   ✔ Healthy     80s  canary
-│  │  └──□ splunk-argo-rollouts-example-6c65f677bc-vkkqz                Pod          ✔ Running     80s  ready:1/1
-│  └──α splunk-argo-rollouts-example-6c65f677bc-2                       AnalysisRun  ✔ Successful  18s  ✔ 1
-│     └──⊞ 633fc2f0-a6e0-4138-afe7-5042e75b4dc6.check-splunk-metrics.1  Job          ✔ Successful  18s  
-└──# revision:1                                                                                         
-   └──⧉ splunk-argo-rollouts-example-69b79fd67                          ReplicaSet   ✔ Healthy     89s  stable
-      ├──□ splunk-argo-rollouts-example-69b79fd67-6hgtp                 Pod          ✔ Running     89s  ready:1/1
-      └──□ splunk-argo-rollouts-example-69b79fd67-tcnb9                 Pod          ✔ Running     89s  ready:1/1
+Name:            splunk-argo-rollouts-example
+Namespace:       default
+Status:          ॥ Paused
+Message:         CanaryPauseStep
+Strategy:        Canary
+  Step:          1/8
+  SetWeight:     20
+  ActualWeight:  25
+Images:          localhost:9999/rollouts-demo:blue (stable)
+                 localhost:9999/rollouts-demo:slow-yellow (canary)
+                 otel/autoinstrumentation-go (canary, stable)
+Replicas:
+  Desired:       3
+  Current:       4
+  Updated:       1
+  Ready:         4
+  Available:     4
+
+NAME                                                      KIND        STATUS     AGE  INFO
+⟳ splunk-argo-rollouts-example                            Rollout     ॥ Paused   2m   
+├──# revision:2                                                                       
+│  └──⧉ splunk-argo-rollouts-example-5b95974b48           ReplicaSet  ✔ Healthy  21s  canary
+│     └──□ splunk-argo-rollouts-example-5b95974b48-mqbt6  Pod         ✔ Running  21s  ready:2/2
+└──# revision:1                                                                       
+   └──⧉ splunk-argo-rollouts-example-7574bd5fd6           ReplicaSet  ✔ Healthy  2m   stable
+      ├──□ splunk-argo-rollouts-example-7574bd5fd6-fsn22  Pod         ✔ Running  2m   ready:2/2
+      ├──□ splunk-argo-rollouts-example-7574bd5fd6-sv2t7  Pod         ✔ Running  2m   ready:2/2
+      └──□ splunk-argo-rollouts-example-7574bd5fd6-z6mfp  Pod         ✔ Running  2m   ready:2/2
+````
+
+Then, it will perform analysis by invoking our job, which in turn invokes the script to fetch metrics 
+from Splunk Observability Cloud. If the criteria is met, then the rollout will proceed to the second pod
+and we should see output such as the following: 
+
+````
+NAME                                                                    KIND         STATUS        AGE    INFO
+⟳ splunk-argo-rollouts-example                                          Rollout      ॥ Paused      3m55s  
+├──# revision:2                                                                                           
+│  ├──⧉ splunk-argo-rollouts-example-5b95974b48                         ReplicaSet   ✔ Healthy     2m16s  canary
+│  │  ├──□ splunk-argo-rollouts-example-5b95974b48-mqbt6                Pod          ✔ Running     2m16s  ready:2/2
+│  │  └──□ splunk-argo-rollouts-example-5b95974b48-clgwq                Pod          ✔ Running     16s    ready:2/2
+│  └──α splunk-argo-rollouts-example-5b95974b48-2                       AnalysisRun  ✔ Successful  76s    ✔ 1
+│     └──⊞ 48f24472-ba81-43ec-97c5-075b15bc9914.check-splunk-metrics.1  Job          ✔ Successful  76s    
+└──# revision:1                                                                                           
+   └──⧉ splunk-argo-rollouts-example-7574bd5fd6                         ReplicaSet   ✔ Healthy     3m55s  stable
+      └──□ splunk-argo-rollouts-example-7574bd5fd6-z6mfp                Pod          ✔ Running     3m55s  ready:2/2
+````
+
+If the criteria is *not* met, then the deployment will be rolled back and we should see output
+such as the following: 
+
+````
+NAME                                                                    KIND         STATUS         AGE  INFO
+⟳ splunk-argo-rollouts-example                                          Rollout      ✖ Degraded     91s  
+├──# revision:2                                                                                          
+│  ├──⧉ splunk-argo-rollouts-example-5b95974b48                         ReplicaSet   • ScaledDown   81s  canary
+│  │  └──□ splunk-argo-rollouts-example-5b95974b48-kw4s2                Pod          ◌ Terminating  81s  ready:2/2
+│  └──α splunk-argo-rollouts-example-5b95974b48-2                       AnalysisRun  ✖ Failed       20s  ✖ 1
+│     └──⊞ 4c9c87ac-6f68-4e73-bb4b-31c6fd3d4fe0.check-splunk-metrics.1  Job          ✖ Failed       20s  
+└──# revision:1                                                                                          
+   └──⧉ splunk-argo-rollouts-example-7574bd5fd6                         ReplicaSet   ✔ Healthy      91s  stable
+      ├──□ splunk-argo-rollouts-example-7574bd5fd6-crl65                Pod          ✔ Running      91s  ready:2/2
+      ├──□ splunk-argo-rollouts-example-7574bd5fd6-lhkwc                Pod          ✔ Running      91s  ready:2/2
+      └──□ splunk-argo-rollouts-example-7574bd5fd6-wjklw                Pod          ✔ Running      5s   ready:2/2
 ````

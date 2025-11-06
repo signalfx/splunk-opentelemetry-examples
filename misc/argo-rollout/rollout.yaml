@@ -22,34 +22,41 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: doorgame
+      app: rollouts-demo
   template:
     metadata:
       labels:
-        app: doorgame
+        app: rollouts-demo
     spec:
+      shareProcessNamespace: true
       containers:
-        - name: doorgame
-          image: ghcr.io/splunk/doorgame:1.0
+        - name: rollouts-demo
+          image: localhost:9999/rollouts-demo:blue
           ports:
             - name: http
-              containerPort: 9090
+              containerPort: 8080
               protocol: TCP
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 5m
+        - name: autoinstrumentation-go
+          image: otel/autoinstrumentation-go
+          imagePullPolicy: IfNotPresent
           env:
-            - name: PORT
-              value: "9090"
             - name: NODE_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: OTEL_GO_AUTO_TARGET_EXE
+              value: "/rollouts-demo"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://$(NODE_IP):4318"
             - name: OTEL_SERVICE_NAME
-              value: "doorgame"
-          resources:
-            requests:
-              cpu: 150m
-              memory: 2048Mi
-            limits:
-              cpu: 300m
-              memory: 4096Mi
+              value: "argo-rollouts-demo"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "deployment.environment=argo-rollouts"
+          securityContext:
+            runAsUser: 0
+            privileged: true
+
