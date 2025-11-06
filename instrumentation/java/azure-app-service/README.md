@@ -140,7 +140,7 @@ what data to collect and where to send it:
 * `SPLUNK_PROFILER_ENABLED`: `true`
 * `SPLUNK_PROFILER_MEMORY_ENABLED`: `true`
 * `SPLUNK_TRACE_RESPONSE_HEADER_ENABLED`: `true`
-* `DATABASE_URL`: `jdbc:sqlserver://<database host>.database.windows.net:1433;database=<database name>;user=<database user>@<database name>;password=<database password>;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;`
+* `DATABASE_URL`: `jdbc:sqlserver://<database host>.database.windows.net:1433;database=<database name>;user=<database user>@<database host>;password=<database password>;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;`
 
 > Note: remember to substitute the URL for your collector, and the database host, username, and password. 
 
