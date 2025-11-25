@@ -17,6 +17,87 @@ clusterReceiver:
     limits:
       cpu: 200m
       memory: 2000Mi
+  config:
+    receivers:
+      ciscoos/switch01:
+        collection_interval: 60s
+        timeout: 30s
+        device:
+          device:
+            host:
+              name: "core-switch-01"
+              ip: "<IP Address>"
+              port: 22
+          auth:
+            username: "<username>"
+            password: "<password>"
+        scrapers:
+          system:
+            metrics:
+              cisco.device.up:
+                enabled: true
+              system.cpu.utilization:
+                enabled: true
+              system.memory.utilization:
+                enabled: true
+          interfaces:
+            metrics:
+              system.network.io:
+                enabled: true
+              system.network.errors:
+                enabled: true
+              system.network.packet.dropped:
+                enabled: true
+              system.network.packet.count:
+                enabled: true
+              system.network.interface.status:
+                enabled: true
+      ciscoos/switch02:
+        collection_interval: 60s
+        timeout: 30s
+        device:
+          device:
+            host:
+              name: "core-switch-02"
+              ip: "<IP Address>"
+              port: 22
+          auth:
+            username: "<username>"
+            password: "<password>"
+        scrapers:
+          system:
+            metrics:
+              cisco.device.up:
+                enabled: true
+              system.cpu.utilization:
+                enabled: true
+              system.memory.utilization:
+                enabled: true
+          interfaces:
+            metrics:
+              system.network.io:
+                enabled: true
+              system.network.errors:
+                enabled: true
+              system.network.packet.dropped:
+                enabled: true
+              system.network.packet.count:
+                enabled: true
+              system.network.interface.status:
+                enabled: true
+    service:
+      pipelines:
+        metrics/cisco-os-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - ciscoos/switch01
+            - ciscoos/switch02
 agent:
   discovery:
     enabled: true

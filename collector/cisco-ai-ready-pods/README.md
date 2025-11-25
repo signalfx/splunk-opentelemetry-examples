@@ -158,10 +158,101 @@ oc apply -f ./intersight/values.yaml
 
 ## Deploy the Nexus Integration
 
+### Recommended Integration Approach
+
+As of November 2025, we recommend using the new [Cisco OS receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/ciscoosreceiver)
+to capture metrics from Nexus switches.
+
+We've added an example configuration to the [values.yaml](./otel-collector/values.yaml) file: 
+
+``` yaml
+clusterReceiver:
+  ...
+  config:
+    receivers:
+      ciscoos/switch01:
+        collection_interval: 60s
+        timeout: 30s
+        device:
+          device:
+            host:
+              name: "core-switch-01"
+              ip: "<IP Address>"
+              port: 22
+          auth:
+            username: "<username>"
+            password: "<password>"
+        scrapers:
+          system:
+            metrics:
+              cisco.device.up:
+                enabled: true
+              system.cpu.utilization:
+                enabled: true
+              system.memory.utilization:
+                enabled: true
+          interfaces:
+            metrics:
+              system.network.io:
+                enabled: true
+              system.network.errors:
+                enabled: true
+              system.network.packet.dropped:
+                enabled: true
+              system.network.packet.count:
+                enabled: true
+              system.network.interface.status:
+                enabled: true
+    service:
+      pipelines:
+        metrics/cisco-os-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - ciscoos/switch01
+            - <additional switches as required>
+```
+
+If using this configuration approach, update the [values.yaml](./otel-collector/values.yaml) file with the 
+IP address, username, and password for each Nexus switch included with your AI POD. One receiver per 
+monitored device is required. 
+
+For a more secure approach, you can specify a key file instead of a password: 
+
+``` yaml
+    receivers:
+      ciscoos/switch01:
+        collection_interval: 60s
+        timeout: 30s
+        device:
+          device:
+            host:
+              name: "core-switch-01"
+              ip: "<IP Address>"
+              port: 22
+          auth:
+            username: "<username>"
+            key_file: "/home/user/.ssh/id_rsa"
+```
+
+Note that we've added this receiver to the `clusterReceiver` portion of the configuration, to ensure 
+that the receivers run on a single OpenShift node only, rather than running on every node (as this would
+result in duplicate data). 
+
+If you're using this integration approach, you can delete the `prometheus/nexus` receiver
+from the `values.yaml` file.
+
+### Legacy Integration Approach
+
 This integration is based on the example [here](https://github.com/lwlcom/cisco_exporter).
 This solution was dockerized and then run as a deployment in `cisco-exporter` namespace.
 
-It uses ssh to connect to the switches, then scrapes data and exposes those as metrics in 
+It uses ssh to connect to the switches, then scrapes data and exposes it as metrics in 
 prometheus format at port 9362.
 
 These metrics can then be scraped by the prometheus receiver included in the OpenTelemetry 
@@ -189,6 +280,9 @@ Finally, we can apply the manifest as follows:
 oc apply -f ./nexus/cisco_exporter_k8s_all_in_one.yaml
 ```
 ![Nexus Dashboard](images/nexus-dashboard.png)
+
+If you're using this integration approach, delete the `ciscoos/switch01` receiver
+from the `values.yaml` file.
 
 ## Deploy the Redfish Integration
 
