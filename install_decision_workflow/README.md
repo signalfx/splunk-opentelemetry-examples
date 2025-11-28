@@ -2,13 +2,13 @@
 
 ## Decision Flowchart
 
-### Option 1: Customer doesn't care, just wants to get OTel Signals
+### Option 1: Customer has no preference for a Distro, just wants to see OpenTelemetry Signals
 
 **Recommendation:** Use the Splunk version of the OpenTelemetry Helm chart
 
 This is the simplest and most straightforward approach. The Splunk distribution comes pre-configured with optimal settings for sending telemetry data to Splunk Observability Cloud.
 
-**Installation:**
+**Installation Example:**
 ```bash
 helm repo add splunk-otel-collector-chart https://signalfx.github.io/splunk-otel-collector-chart
 helm repo update
@@ -47,6 +47,7 @@ agent:
 featureGates:
   useMemoryLimitPercentage: true
 ```
+ The above file is the bare minimum values.yaml, of course you can add additional configuration to this file
 
 **Step 2:** Install using the Splunk Helm chart with custom values:
 ```bash

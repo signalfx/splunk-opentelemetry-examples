@@ -38,9 +38,9 @@ in various environments, and how to utilize various features.
 
 
 ## Installation Decision Workflow
-This catagory  provides a decision tree, to help you decide how to install the opnetelmetry collector in kubenetes, it  offers guidenace  for the Splunk
-Distrinution, using the Contrib Verion of the Collector.  
-It Also provides guidance on what to do if there is a pre exisiting opentlemetery colletor installed
+This category  provides a decision tree, to help you decide how to install the OpenTelemetry collector in kubernetes, it  offers guidance  for the Splunk
+Distribution, using the Contrib Version of the Collector.  
+It Also provides guidance on what to do if there is a pre existing OpenTelemetry collector installed
 
 # License
 
