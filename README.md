@@ -5,7 +5,8 @@ with Splunk Observability Cloud. The examples are divided into the following
 two categories: 
 
 1. OpenTelemetry Instrumentation Examples
-2. OpenTelemetry Collector Examples 
+2. OpenTelemetry Collector Examples
+3. Decision  workflow  how to install the Opentelmetry Collector in Kubernetes 
 
 > :warning: These examples are not intended for production usage. While no support is officially provided for them, you are welcome to submit an issue or a pull request. 
 
@@ -34,6 +35,12 @@ Examples for each combination will be added over time.
 
 This category will include examples that demonstrate how to deploy the collector 
 in various environments, and how to utilize various features. 
+
+
+## Installation Decision Workflow
+This catagory  provides a decision tree, to help you decide how to install the opnetelmetry collector in kubenetes, it  offers guidenace  for the Splunk
+Distrinution, using the Contrib Verion of the Collector.  
+It Also provides guidance on what to do if there is a pre exisiting opentlemetery colletor installed
 
 # License
 
