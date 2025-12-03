@@ -2,7 +2,7 @@
 
 ## Decision Flowchart
 
-### Option 1: Customer has no preference for a Distro, just wants to see OpenTelemetry Signals
+### Option 1: No Preference for Specific Collector Distro
 
 **Recommendation:** Use the Splunk version of the OpenTelemetry Helm chart
 
@@ -22,7 +22,7 @@ helm install splunk-otel-collector \
 
 ---
 
-### Option 2: Customer insists on using Contrib instead of the Splunk Distribution
+### Option 2: Prefer the Collector Contrib Distro
 
 **Recommendation:** Use the Splunk Helm chart with a custom values.yaml to override the collector image
 
@@ -64,7 +64,7 @@ helm install splunk-otel-collector \
 
 ---
 
-### Option 3: Customer has an existing OpenTelemetry Collector installation and wants to use Splunk as the endpoint
+### Option 3: Leverage an Existing Collector Install
 
 **Recommendation:** Modify existing configuration to add Splunk exporters
 
