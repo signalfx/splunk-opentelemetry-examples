@@ -53,6 +53,9 @@ const tracingLink = new ApolloLink((operation, forward) => {
         span.setAttribute("page.url", window.location.href);
     }
 
+    span.setAttribute('link.traceId', span.spanContext().traceId);
+    span.setAttribute('link.spanId', '0000000000000000');
+
     // Wrap the next link's observable in a new Observable.
     return new Observable((observer) => {
         const subscription = forward(operation).subscribe({
