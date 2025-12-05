@@ -8,6 +8,12 @@ A recent version of Node.js and NPM are required. These specific versions were u
 
 * node.js v24.11.0
 * npm v11.6.1
+* OpenTelemetry Collector (required for the backend application)
+
+## Run the Backend Application
+
+Ensure the GraphQL backend application is running before starting the frontend app. 
+Instructions are in [backend/README.md](./backend/README.md). 
 
 ## Install Dependencies
 

@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This backend was created using the instructions found in  [Get Started with Apollo Server](https://www.apollographql.com/docs/apollo-server/getting-started).",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node -r @splunk/otel/instrument index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^5.2.0",
+    "@splunk/otel": "^4.1.0",
+    "graphql": "^16.12.0"
+  }
+}
