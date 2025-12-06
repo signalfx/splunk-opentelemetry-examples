@@ -10,7 +10,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { Observable } from "@apollo/client/utilities";
 import { trace, context, propagation } from "@opentelemetry/api";
 import App from "./App";
-const GRAPHQL_ENDPOINT = "http://localhost:4000/";
+const GRAPHQL_ENDPOINT = "http://localhost:4000/graphql";
 // Enhanced HttpLink with trace context propagation and Server-Timing capture
 const httpLink = new HttpLink({
     uri: GRAPHQL_ENDPOINT,
