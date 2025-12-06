@@ -4,35 +4,19 @@ import {
     ApolloClient,
     InMemoryCache,
     ApolloLink,
-    HttpLink,
+    // HttpLink is no longer directly used as we're creating a custom fetch link
 } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { Observable } from "@apollo/client/utilities";
 import { trace, context, propagation } from "@opentelemetry/api";
+import { print } from "graphql"; // Import print for DocumentNode to string conversion
 import App from "./App";
+
 const GRAPHQL_ENDPOINT = "http://localhost:4000/graphql";
-// Enhanced HttpLink with trace context propagation and Server-Timing capture
-const httpLink = new HttpLink({
-    uri: GRAPHQL_ENDPOINT,
-    fetch: async (uri, options) => {
-        // Inject trace context into headers for backend correlation
-        const headers = { ...options.headers };
-        propagation.inject(context.active(), headers);
-        const response = await fetch(uri, {
-            ...options,
-            headers,
-        });
-        // Capture Server-Timing header for trace correlation
-        const serverTiming = response.headers.get('Server-Timing');
-        if (serverTiming) {
-            // Store for use in the tracing link
-            response._serverTiming = serverTiming;
-        }
-        return response;
-    },
-});
+
 // OpenTelemetry tracer for GraphQL spans.
 const tracer = trace.getTracer("frontend-graphql");
+
 // Function to extract trace correlation from Server-Timing header
 function extractTraceCorrelation(serverTiming, span) {
     if (!serverTiming) return;
@@ -44,9 +28,68 @@ function extractTraceCorrelation(serverTiming, span) {
         if (parts.length >= 3) {
             span.setAttribute('link.traceId', parts[1]);
             span.setAttribute('link.spanId', parts[2]);
+            // console.log(`Extracted traceId: ${parts[1]}, spanId: ${parts[2]}`); // Uncomment for debugging
         }
     }
 }
+
+// Custom terminating link that handles the fetch and adds serverTiming to the result extensions
+const customFetchLink = new ApolloLink((operation) => {
+    return new Observable((observer) => {
+        const { operationName, query, variables } = operation;
+
+        const currentContext = operation.getContext();
+        const headers = {
+            ...currentContext.headers, // Merge existing headers from context
+        };
+        propagation.inject(context.active(), headers); // Inject OpenTelemetry trace context into headers
+
+        fetch(GRAPHQL_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers, // Use the merged and injected headers
+            },
+            body: JSON.stringify({
+                operationName,
+                query: print(query), // Convert DocumentNode to string for the request body
+                variables,
+            }),
+        })
+            .then(async (response) => {
+                const serverTiming = response.headers.get('Server-Timing');
+                let result; // No type annotation needed
+                try {
+                    result = await response.json();
+                } catch (e) { // No type annotation needed for 'e'
+                    observer.error(new Error(`Failed to parse GraphQL response: ${e.message}`));
+                    return;
+                }
+
+                // Add serverTiming to the extensions of the GraphQL result object
+                if (serverTiming) {
+                    if (!result.extensions) {
+                        result.extensions = {};
+                    }
+                    result.extensions._serverTiming = serverTiming;
+                    // console.log('Server-Timing captured in customFetchLink:', serverTiming); // Uncomment for debugging
+                }
+
+                if (response.ok) {
+                    observer.next(result);
+                    observer.complete();
+                } else {
+                    // Handle HTTP errors, potentially including GraphQL errors in the body
+                    observer.error(new Error(`GraphQL request failed with status ${response.status}: ${JSON.stringify(result.errors || result)}`));
+                }
+            })
+            .catch((error) => {
+                observer.error(error);
+            });
+    });
+});
+
+
 // Apollo Link that creates a span for every GraphQL operation.
 const tracingLink = new ApolloLink((operation, forward) => {
     if (!forward) {
@@ -69,11 +112,14 @@ const tracingLink = new ApolloLink((operation, forward) => {
                 !!variables && Object.keys(variables).length > 0,
         },
     });
+
     if (typeof window !== "undefined") {
         span.setAttribute("page.url", window.location.href);
     }
+
     // Set the span as active for trace context propagation
     const activeContext = trace.setSpan(context.active(), span);
+
     // Wrap the next link's observable in a new Observable.
     return new Observable((observer) => {
         const subscription = context.with(activeContext, () => {
@@ -85,17 +131,21 @@ const tracingLink = new ApolloLink((operation, forward) => {
                         span.setAttribute("error", true);
                         span.setAttribute(
                             "error.message",
-                            result.errors.map((e) => e.message).join("; ")
+                            result.errors.map((e) => e.message).join("; ") // No type annotation needed for 'e'
                         );
                     } else {
                         span.setAttribute("graphql.status", "success");
                     }
+
                     // Extract trace correlation from Server-Timing header
-                    // Note: This requires the response to be available in the result
-                    // In practice, you might need to modify this based on your setup
-                    if (result.extensions?.response?._serverTiming) {
-                        extractTraceCorrelation(result.extensions.response._serverTiming, span);
+                    // Now, _serverTiming should be reliably available in result.extensions
+                    if (result.extensions?._serverTiming) {
+                        // console.log('Server-Timing found in result.extensions:', result.extensions._serverTiming); // Uncomment for debugging
+                        extractTraceCorrelation(result.extensions._serverTiming, span);
+                    } else {
+                        // console.log('Server-Timing NOT found in result.extensions'); // Uncomment for debugging
                     }
+
                     // Custom RUM event for specific operations
                     if (operationName === "GetLocations" && window.SplunkRum?.addEvent) {
                         window.SplunkRum.addEvent("graphql_GetLocations_completed", {
@@ -126,14 +176,19 @@ const tracingLink = new ApolloLink((operation, forward) => {
         };
     });
 });
-// Combine tracing link with the HTTP link.
-const link = ApolloLink.from([tracingLink, httpLink]);
+
+// Combine tracing link with the custom fetch link.
+// The tracingLink should be first to wrap the entire operation,
+// and customFetchLink is the terminating link that performs the actual network request.
+const link = ApolloLink.from([tracingLink, customFetchLink]);
+
 const client = new ApolloClient({
     link,
     cache: new InMemoryCache(),
 });
+
 // Supported in React 18+
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root")); // Removed '!' for JavaScript compatibility
 root.render(
     <ApolloProvider client={client}>
         <App />
