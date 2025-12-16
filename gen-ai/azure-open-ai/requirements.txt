@@ -48,6 +48,6 @@ splunk-opentelemetry==2.4.0
 tqdm==4.67.1
 typing-inspection==0.4.1
 typing_extensions==4.14.0
-urllib3==2.5.0
+urllib3==2.6.0
 wrapt==1.17.2
 zipp==3.23.0
