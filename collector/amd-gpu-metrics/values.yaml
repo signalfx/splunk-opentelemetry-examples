@@ -13,7 +13,7 @@ agent:
                     static_configs:
                       - targets:
                           - '`endpoint`:5000'
-            rule: type == "pod" && labels["app"] == "amd-device-metrics-exporter"
+            rule: type == "pod" && labels["app.kubernetes.io/name"] == "metrics-exporter"
     service:
       pipelines:
         metrics/amd-gpu-metrics:
