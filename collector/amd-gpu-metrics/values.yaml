@@ -1,0 +1,28 @@
+agent:
+  config:
+    receivers:
+      receiver_creator:
+        # Name of the extensions to watch for endpoints to start and stop.
+        watch_observers: [ k8s_observer ]
+        receivers:
+          prometheus:
+            config:
+              config:
+                scrape_configs:
+                  - job_name: gpu-metrics
+                    static_configs:
+                      - targets:
+                          - '`endpoint`:5000'
+            rule: type == "pod" && labels["app"] == "amd-device-metrics-exporter"
+    service:
+      pipelines:
+        metrics/amd-gpu-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - receiver_creator

@@ -1,0 +1,35 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: eks-gpu-demo-cluster-g4ad
+  region: us-west-2
+  version: "1.31"
+  tags:
+    splunkit_data_classification: private
+    splunkit_environment_type: non-prd
+addons: # Add this section to configure EKS add-ons
+  - name: vpc-cni
+    version: latest # Ensure this is 1.9.0 or higher for prefix delegation support
+    configurationValues: |
+      {
+        "env": {
+          "ENABLE_PREFIX_DELEGATION": "true"
+        }
+      }
+nodeGroups:
+  - name: eks-gpu-demo-workers-g4ad
+    instanceType: g4ad.xlarge
+    ami: ami-096e26b9d25115941
+    amiFamily: Ubuntu2204
+    minSize: 1
+    desiredCapacity: 1
+    maxSize: 1
+    volumeSize: 100
+    overrideBootstrapCommand: |
+      #!/bin/bash
+      source /var/lib/cloud/scripts/eksctl/bootstrap.helper.sh
+      # Add --use-max-pods false and update --kubelet-extra-args to include --max-pods
+      /etc/eks/bootstrap.sh ${CLUSTER_NAME} --container-runtime containerd --use-max-pods false --kubelet-extra-args "--node-labels=${NODE_LABELS} --max-pods=110"
+    ssh:
+      allow: true
+      publicKeyPath: ~/.ssh/eks_us_west_2_id_rsa.pub
