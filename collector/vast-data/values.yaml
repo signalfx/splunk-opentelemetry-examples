@@ -1,0 +1,48 @@
+clusterReceiver:
+  config:
+    receivers:
+      prometheus/vast-data:
+        config:
+          scrape_configs:
+            - job_name: 'vast-users'
+              scheme: https
+              scrape_interval: 1m
+              scrape_timeout: 30s
+              metrics_path: '/api/prometheusmetrics/users'
+              static_configs:
+                - targets: [ '<EXPORTER_HOST>:443' ]
+              basic_auth:
+                username: '<USER_NAME>'
+                password: ${VMS_MANAGER_PASSWORD}
+              tls_config:
+                insecure_skip_verify: true
+            - job_name: 'vast-views'
+              scheme: https
+              scrape_interval: 1m
+              scrape_timeout: 30s
+              metrics_path: '/api/prometheusmetrics/views'
+              static_configs:
+                - targets: [ '<EXPORTER_HOST>:443' ]
+              basic_auth:
+                username: '<USER_NAME>'
+                password: ${VMS_MANAGER_PASSWORD}
+              tls_config:
+                insecure_skip_verify: true
+    service:
+      pipelines:
+        metrics/vast-metrics:
+          exporters:
+            - signalfx
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          receivers:
+            - prometheus/vast-data
+  extraEnvs:
+    - name: VMS_MANAGER_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: vast-secret
+          key: vms_manager_password
