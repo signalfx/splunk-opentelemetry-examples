@@ -1,0 +1,29 @@
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentcoreExample"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+dependencies = [
+    "bedrock-agentcore >= 1.0.3",
+    "langchain >= 1.0.3",
+    "langchain-mcp-adapters >= 0.1.11",
+    "langchain-openai >= 1.0.3",
+    "langgraph >= 1.0.2",
+    "mcp >= 1.19.0",
+    "opentelemetry-instrumentation-boto>=0.59b0",
+    "opentelemetry-instrumentation-urllib3>=0.59b0",
+    "pytest >= 7.0.0",
+    "pytest-asyncio >= 0.21.0",
+    "python-dotenv >= 1.2.1",
+    "splunk-opentelemetry==2.8.0",
+    "splunk-otel-genai-emitters-splunk>=0.1.6",
+    "splunk-otel-genai-evals-deepeval>=0.1.12",
+    "splunk-otel-instrumentation-langchain>=0.1.7",
+    "splunk-otel-util-genai>=0.1.9",
+    "tiktoken==0.11.0",
+]
