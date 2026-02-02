@@ -169,7 +169,9 @@ We also modified the `main.py` file to include the agent name as follows:
 Use the following command to deploy the agent: 
 
 ``` bash
-agentcore deploy \
+agentcore deploy --force-rebuild-deps \
+    --env OPENAI_API_KEY=<your-openai-api-key> \
+    --env OPENAI_MODEL=gpt-4o-mini \
     --env DISABLE_ADOT_OBSERVABILITY=true \
     --env OTEL_EXPORTER_OTLP_ENDPOINT=http://<collector endpoint>:4317 \
     --env OTEL_EXPORTER_OTLP_PROTOCOL=grpc \
@@ -184,9 +186,13 @@ agentcore deploy \
     --env OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT_MODE=SPAN_AND_EVENT \
     --env OTEL_INSTRUMENTATION_GENAI_EVALS_RESULTS_AGGREGATION=true \
     --env OTEL_INSTRUMENTATION_GENAI_EMITTERS_EVALUATION=replace-category:SplunkEvaluationResults \
+    --env OTEL_GENAI_EVAL_DEBUG_SKIPS=true \
+    --env OTEL_GENAI_EVAL_DEBUG_EACH=false \
     --env DEEPEVAL_FILE_SYSTEM=READ_ONLY \
     --env DEEPEVAL_PER_ATTEMPT_TIMEOUT_SECONDS_OVERRIDE=300 \
-    --env DEEPEVAL_RETRY_MAX_ATTEMPTS=2
+    --env DEEPEVAL_RETRY_MAX_ATTEMPTS=2 \
+    --env DEEPEVAL_TELEMETRY_OPT_OUT=YES \
+    --env HOME=/tmp
 ```
 
 We've included environment variables to do the following: 
