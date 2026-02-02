@@ -219,6 +219,11 @@ the following in Splunk Observability Cloud:
 
 ![Example trace](./images/trace.png)
 
+If LLM-as-a-judge evaluation is enabled, we can see the results of the evaluation 
+in the trace as well: 
+
+![Evaluation](./images/eval.png)
+
 ## Cleanup 
 
 Run the following command to undeploy the agent: 
