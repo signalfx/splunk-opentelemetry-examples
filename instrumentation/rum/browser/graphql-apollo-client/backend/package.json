@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apollo/server": "^5.2.0",
+    "@apollo/server": "^5.4.0",
     "@as-integrations/express4": "^1.1.2",
     "@splunk/otel": "^3.3.0",
     "body-parser": "^1.20.3",
