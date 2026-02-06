@@ -8,6 +8,6 @@ dependencies = [
     "langchain>=0.3.27",
     "langchain-openai>=0.3.32",
     "langgraph>=0.6.6",
-    "openlit>=1.35.1",
-    "splunk-opentelemetry>=2.7.0",
+    "openlit==1.35.1",
+    "splunk-opentelemetry==2.9.0",
 ]
