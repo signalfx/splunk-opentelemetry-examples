@@ -10,4 +10,5 @@ dependencies = [
     "langgraph>=0.6.6",
     "openlit==1.35.1",
     "splunk-opentelemetry==2.9.0",
+    "splunk-otel-util-genai-translator-openlit==0.1.1",
 ]

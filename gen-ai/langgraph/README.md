@@ -48,7 +48,11 @@ which enhances spans with additional details:
 ``` bash
 uv add splunk-opentelemetry
 uv add openlit
+uv add splunk-otel-util-genai-translator-openlit
 ```
+
+We also added the `splunk-otel-util-genai-translator-openlit` package, which translates
+GenAI attributes from OpenLIT into OpenTelemetry GenAI semantic conventions.
 
 Then we ran the following command to add additional instrumentation packages:
 
@@ -67,7 +71,7 @@ export OTEL_SERVICE_NAME=langgraph-example
 export OTEL_RESOURCE_ATTRIBUTES=deployment.environment=test
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-export OTEL_PYTHON_DISABLED_INSTRUMENTATIONS=click,httpx
+export OTEL_PYTHON_DISABLED_INSTRUMENTATIONS=click
 export OTEL_LOGS_EXPORTER=otlp
 export OTEL_PYTHON_LOG_LEVEL=info
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true

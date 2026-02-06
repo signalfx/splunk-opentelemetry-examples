@@ -809,6 +809,7 @@ dependencies = [
     { name = "langgraph" },
     { name = "openlit" },
     { name = "splunk-opentelemetry" },
+    { name = "splunk-otel-util-genai-translator-openlit" },
 ]
 
 [package.metadata]
@@ -818,6 +819,7 @@ requires-dist = [
     { name = "langgraph", specifier = ">=0.6.6" },
     { name = "openlit", specifier = "==1.35.1" },
     { name = "splunk-opentelemetry", specifier = "==2.9.0" },
+    { name = "splunk-otel-util-genai-translator-openlit", specifier = "==0.1.1" },
 ]
 
 [[package]]
@@ -1979,6 +1981,36 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/63/59/c99f223a097cb812f667c7e341913ae4014f8e7c823fb18b2587e3ff71b7/splunk_opentelemetry-2.9.0.tar.gz", hash = "sha256:37c965e328ba164febf4e84c6af933b3908923b6007ac76221213af2f7062f07", size = 33387, upload-time = "2026-01-08T17:08:27.94Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f5/57/71d475a99a7a1ea1ee942e67944b49b8a6c50ec5e6a1df2bef16d30136dd/splunk_opentelemetry-2.9.0-py3-none-any.whl", hash = "sha256:12ab4cb9095803f3e133c3ba5d09ee6f67788902972398128ad5a6f6e8715e8b", size = 17178, upload-time = "2026-01-08T17:08:26.647Z" },
+]
+
+[[package]]
+name = "splunk-otel-util-genai"
+version = "0.1.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/8e/2c2e988419b265ab8b71f444d9b6b072ed55978b380e19d161eeb0a1e8dc/splunk_otel_util_genai-0.1.9.tar.gz", hash = "sha256:dd917c84d383576055f42930145491e21e386e30c42b6db5a767e9a91dcf0e58", size = 77292, upload-time = "2026-01-29T23:14:28.79Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/f6/95e1a0dc9d7d2f1d36ef6353f92250197bdbf66b0f4472d78ffd8afa7aa5/splunk_otel_util_genai-0.1.9-py3-none-any.whl", hash = "sha256:1c2c32707dbe30f4a48af76a4093783ce72fe734030e8d0a3b0a1488675ef50c", size = 71559, upload-time = "2026-01-29T23:14:27.713Z" },
+]
+
+[[package]]
+name = "splunk-otel-util-genai-translator-openlit"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-sdk" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "splunk-otel-util-genai" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/37/8f/e66ed6eafbb48e5613886c0eb4520d19941a4c1de1aa0b5fadc57f070888/splunk_otel_util_genai_translator_openlit-0.1.1.tar.gz", hash = "sha256:584a9748e45a8d8603a129815be29e2f128a17cbcdf40bb8c76f708f99ee1737", size = 40918, upload-time = "2026-01-29T23:35:15.132Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e4/1a/5dd2b92150546f56dbfb9fd4fcb96bb89d45c41b7465b7b34efbebf02a45/splunk_otel_util_genai_translator_openlit-0.1.1-py3-none-any.whl", hash = "sha256:ec9576db262f3bb1c7a54e9eb95290f80418b2d1e9510b7e898780517726c7f9", size = 27353, upload-time = "2026-01-29T23:35:16.269Z" },
 ]
 
 [[package]]
