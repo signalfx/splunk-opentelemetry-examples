@@ -53,7 +53,11 @@ which enhances spans with additional details:
 ``` bash
 uv add splunk-opentelemetry
 uv add openlit
+uv add splunk-otel-util-genai-translator-openlit
 ```
+
+We also added the `splunk-otel-util-genai-translator-openlit` package, which translates 
+GenAI attributes from OpenLIT into OpenTelemetry GenAI semantic conventions. 
 
 Then we ran the following command to add additional instrumentation packages: 
 
@@ -70,6 +74,7 @@ has already been generated.
 export OPENAI_API_KEY="REPLACE_WITH_YOUR_KEY_VALUE_HERE"
 export MODEL=gpt-4o-mini
 export OTEL_SERVICE_NAME=crewai-example
+export OTEL_RESOURCE_ATTRIBUTES=deployment.environment=test
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 export CREWAI_DISABLE_TELEMETRY=true  # disable the telemetry used by CrewAI itself 
