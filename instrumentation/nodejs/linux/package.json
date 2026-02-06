@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@splunk/otel": "^3.0.0",
-    "express": "^4.21.2",
+    "express": "^4.22.1",
     "pino": "^9.5.0"
   }
 }
