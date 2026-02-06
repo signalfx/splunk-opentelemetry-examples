@@ -43,7 +43,7 @@ We then ran the following command to install instrumentation for packages
 used by our application: 
 
 ````
-opentelemetry-bootstrap -a install
+venv/bin/opentelemetry-bootstrap -a install
 ````
 
 We then generated a requirements.txt file by executing the following command:
@@ -86,7 +86,7 @@ AlwaysOn Profiling capabilities.
 Next, we'll execute the application with the `opentelemetry-instrument` binary as follows:
 
 ````
-opentelemetry-instrument flask run -p 8080
+venv/bin/opentelemetry-instrument flask run -p 8080
 ````
 
 Access the application by navigating your web browser to the following URL:
