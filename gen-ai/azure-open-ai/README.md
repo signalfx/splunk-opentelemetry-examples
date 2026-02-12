@@ -27,7 +27,7 @@ git clone https://github.com/signalfx/splunk-opentelemetry-examples.git
 cd splunk-opentelemetry-examples/gen-ai/azure-openai.git
 
 # create a virtual environment 
-python3 -m venv venv
+python3.12 -m venv venv
 
 # activate the virtual environment
 source venv/bin/activate

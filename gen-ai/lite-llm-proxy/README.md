@@ -177,7 +177,7 @@ Open another terminal window in the same directory and run the following command
 cd splunk-opentelemetry-examples/gen-ai/lite-llm-proxy/app
 
 # create a virtual environment for the application
-python3 -m venv venv
+python3.12 -m venv venv
 
 # activate the virtual environment for the application
 source venv/bin/activate

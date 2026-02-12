@@ -38,7 +38,7 @@ opentelemetry-sdk==1.33.1
 opentelemetry-semantic-conventions==0.54b1
 opentelemetry-util-http==0.54b1
 packaging==25.0
-protobuf==5.29.5
+protobuf==5.29.6
 psutil==7.0.0
 pydantic==2.11.7
 pydantic_core==2.33.2
