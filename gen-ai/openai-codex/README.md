@@ -1,4 +1,4 @@
-# Integrating OpenAI Codex with Claude Code
+# Integrating OpenTelemetry with OpenAI Codex
 
 [OpenAI Codex](https://chatgpt.com/codex) is an AI-powered coding agent. It's integrated 
 into IDEs like VS Code, and available as a standalone Mac OS application. 
