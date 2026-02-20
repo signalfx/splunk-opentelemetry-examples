@@ -1,0 +1,5 @@
+[otel]
+log_user_prompt = true
+environment = "codex-example"
+exporter = { "otlp-http" = { endpoint = "http://localhost:4318/v1/logs", protocol = "json" } }
+trace_exporter = { "otlp-http" = { endpoint = "http://localhost:4318/v1/traces", protocol = "json" } }
