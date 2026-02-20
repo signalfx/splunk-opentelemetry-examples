@@ -1,0 +1,44 @@
+# sbt project directories and files
+target/
+project/target/
+project/project/
+dist/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.cache
+.lib/
+local.sbt
+
+# Scala-specific files
+*.class
+*.log
+*.tasty # Scala 3 TASTy files
+
+# IDE specific files and directories
+.idea/
+*.iml
+*.ipr
+*.iws
+.eclipse/
+.classpath
+.project
+.settings
+.worksheet
+bin/
+.vscode/
+.bsp/
+.bloop/
+.metals/
+metals.sbt
+.scala-build/
+
+# OS specific files
+.DS_Store
+.history
+
+# Other common ignores
+/build/
+/out/
+/sandbox/
