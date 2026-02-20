@@ -5,7 +5,7 @@ the Splunk distribution of OpenTelemetry Java to automatically capture traces.
 
 ## Prerequisites
 
-The following tools are required to build and execute the Python application:
+The following tools are required to build and execute the example:
 
 * Scala 2.13.13+
 * sbt 1.12.0+
