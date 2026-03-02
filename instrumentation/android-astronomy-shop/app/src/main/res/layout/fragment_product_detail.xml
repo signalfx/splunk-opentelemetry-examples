@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <!-- Product Image -->
+        <ImageView
+                android:id="@+id/imageProduct"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:background="#F5F5F5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+        <!-- Favorite Button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabFavorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:backgroundTint="@android:color/white"
+                android:src="@drawable/ic_favorite_border_24"
+                app:fabSize="mini"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/red_500" />
+
+        <!-- Content Card -->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardContent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-20dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageProduct">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                <!-- Product Name -->
+                <TextView
+                        android:id="@+id/textProductName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        tools:text="Celestron NexStar 127SLT Telescope" />
+
+                <!-- Brand and Stock Row -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:id="@+id/textBrand"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="16sp"
+                            tools:text="by Celestron" />
+
+                    <com.google.android.material.chip.Chip
+                            android:id="@+id/chipStockStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="In Stock"
+                            android:textColor="@color/green_500"
+                            app:chipBackgroundColor="#E8F5E8"
+                            app:chipStrokeColor="@color/green_500"
+                            app:chipStrokeWidth="1dp" />
+
+                </LinearLayout>
+
+                <!-- Rating and Reviews -->
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                    <RatingBar
+                            android:id="@+id/ratingBar"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:numStars="5"
+                            android:rating="4.5"
+                            android:stepSize="0.1" />
+
+                    <TextView
+                            android:id="@+id/textRating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            tools:text="4.5" />
+
+                    <TextView
+                            android:id="@+id/textReviewCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:textColor="@android:color/darker_gray"
+                            tools:text="(123 reviews)" />
+
+                    <TextView
+                            android:id="@+id/textViewReviews"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="4dp"
+                            android:text="View Reviews"
+                            android:textColor="@color/design_default_color_primary"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Price -->
+                <TextView
+                        android:id="@+id/textPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@color/design_default_color_primary"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        tools:text="$649.99" />
+
+                <!-- Free Shipping Badge -->
+                <TextView
+                        android:id="@+id/textFreeShipping"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/free_shipping_background"
+                        android:padding="4dp"
+                        android:text="✓ FREE SHIPPING"
+                        android:textColor="@color/green_500"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                <!-- Description Section -->
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="Description"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                <TextView
+                        android:id="@+id/textDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingMultiplier="1.3"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        tools:text="Computerized telescope with fully automated GoTo mount and SkyAlign technology for easy setup and precise object tracking." />
+
+                <!-- Specifications Section -->
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Specifications"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:cardBackgroundColor="#F8F9FA"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp">
+
+                    <TextView
+                            android:id="@+id/textSpecifications"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingMultiplier="1.4"
+                            android:padding="16dp"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            tools:text="• Focal Length: 1500mm\n• Aperture: 127mm\n• Magnification: 59x-236x\n• Mount Type: Computerized Alt-Az\n• Weight: 38 lbs" />
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Quantity Selection -->
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="Quantity"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/quantity_selector_background"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="4dp">
+
+                    <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonDecreaseQuantity"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"
+                            android:text="−"
+                            android:textColor="@color/design_default_color_primary"
+                            android:textSize="20sp" />
+
+                    <TextView
+                            android:id="@+id/textQuantity"
+                            android:layout_width="60dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="1"
+                            android:textColor="@color/black"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonIncreaseQuantity"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"
+                            android:text="+"
+                            android:textColor="@color/design_default_color_primary"
+                            android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <!-- Action Buttons -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonAddToCart"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:text="Add to Cart"
+                            android:textSize="16sp"
+                            app:icon="@drawable/ic_shopping_cart_24" />
+
+                    <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonBuyNow"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="56dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="Buy Now"
+                            android:textSize="16sp"
+                            app:icon="@drawable/ic_flash_on_24" />
+
+                </LinearLayout>
+
+                <!-- Additional Info -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="vertical">
+
+                    <!-- Shipping Info -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                        <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_local_shipping_24"
+                                android:tint="@color/design_default_color_primary" />
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Free shipping on orders over $50"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <!-- Return Policy -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                        <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_autorenew_24"
+                                android:tint="@color/design_default_color_primary" />
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="30-day return policy"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <!-- Warranty -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                        <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_verified_24"
+                                android:tint="@color/design_default_color_primary" />
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="2-year manufacturer warranty"
+                                android:textColor="@android:color/darker_gray"
+                                android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

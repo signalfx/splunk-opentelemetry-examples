@@ -1,0 +1,18 @@
+<vector android:height="200dp" android:viewportHeight="200"
+    android:viewportWidth="200" android:width="200dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#E8EAF6"
+        android:pathData="M0,0h200v200h-200z"/>
+    <!-- Telescope icon -->
+    <path android:fillColor="#3F51B5"
+        android:pathData="M50,80h100v8h-100z"/>
+    <path android:fillColor="#3F51B5"
+        android:pathData="M90,60h20v60h-20z"/>
+    <path android:fillColor="#3F51B5"
+        android:pathData="M80,120h40v8h-40z"/>
+    <!-- Text -->
+    <path android:fillColor="#757575"
+        android:pathData="M60,140h80v8h-80z"/>
+    <path android:fillColor="#757575"
+        android:pathData="M70,155h60v6h-60z"/>
+</vector>

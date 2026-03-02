@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph"
+        app:startDestination="@id/navigation_home">
+
+    <fragment
+            android:id="@+id/navigation_home"
+            android:name="com.astronomyshop.app.ui.fragments.HomeFragment"
+            android:label="Home"
+            tools:layout="@layout/fragment_home" />
+
+    <fragment
+            android:id="@+id/navigation_products"
+            android:name="com.astronomyshop.app.ui.fragments.ProductsFragment"
+            android:label="Products"
+            tools:layout="@layout/fragment_products" />
+
+    <fragment
+            android:id="@+id/navigation_cart"
+            android:name="com.astronomyshop.app.ui.fragments.CartFragment"
+            android:label="Cart"
+            tools:layout="@layout/fragment_cart" />
+
+    <fragment
+            android:id="@+id/navigation_profile"
+            android:name="com.astronomyshop.app.ui.fragments.ProfileFragment"
+            android:label="Profile"
+            tools:layout="@layout/fragment_profile" />
+
+    <fragment
+            android:id="@+id/productDetailFragment"
+            android:name="com.astronomyshop.app.ui.fragments.ProductDetailFragment"
+            android:label="Product Details"
+            tools:layout="@layout/fragment_product_detail" />
+
+    <fragment
+            android:id="@+id/checkoutFragment"
+            android:name="com.astronomyshop.app.ui.fragments.CheckoutFragment"
+            android:label="Secure Checkout"
+            tools:layout="@layout/fragment_checkout" />
+
+    <fragment
+            android:id="@+id/orderConfirmationFragment"
+            android:name="com.astronomyshop.app.ui.fragments.OrderConfirmationFragment"
+            android:label="Order Confirmation"
+            tools:layout="@layout/fragment_order_confirmation" />
+
+    <fragment
+            android:id="@+id/navigation_orders"
+            android:name="com.astronomyshop.app.ui.fragments.OrderHistoryFragment"
+            android:label="Order History"
+            tools:layout="@layout/fragment_order_history" />
+
+    <fragment
+            android:id="@+id/orderDetailsFragment"
+            android:name="com.astronomyshop.app.ui.fragments.OrderDetailsFragment"
+            android:label="Order Details"
+            tools:layout="@layout/fragment_order_details" />
+
+    <fragment
+            android:id="@+id/trackingFragment"
+            android:name="com.astronomyshop.app.ui.fragments.TrackingFragment"
+            android:label="Order Tracking"
+            tools:layout="@layout/fragment_tracking" />
+
+</navigation>

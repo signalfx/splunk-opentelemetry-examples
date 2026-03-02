@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Order History"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp" />
+
+        <TextView
+                android:id="@+id/textOrderCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading orders..."
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp" />
+
+        <TextView
+                android:id="@+id/textOrderList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Loading order details..."
+                android:textSize="14sp"
+                android:background="#F5F5F5"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp" />
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonBackToProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Continue Shopping" />
+
+    </LinearLayout>
+
+</ScrollView>

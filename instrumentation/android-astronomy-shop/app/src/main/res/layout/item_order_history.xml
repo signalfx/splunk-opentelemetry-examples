@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+        <!-- Order Header -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+            <TextView
+                    android:id="@+id/textOrderNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Order #AS00123456" />
+
+            <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOrderStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shipped"
+                    android:textColor="@color/green_500"
+                    android:textSize="12sp"
+                    app:chipBackgroundColor="@color/green_50"
+                    app:chipStrokeColor="@color/green_500"
+                    app:chipStrokeWidth="1dp" />
+
+        </LinearLayout>
+
+        <!-- Order Details -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+            <TextView
+                    android:id="@+id/textOrderDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    tools:text="Ordered on Feb 07, 2026" />
+
+            <TextView
+                    android:id="@+id/textOrderTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/design_default_color_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="$705.24" />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+            <TextView
+                    android:id="@+id/textItemCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    tools:text="3 items" />
+
+            <TextView
+                    android:id="@+id/textDeliveryDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    tools:text="Delivered Feb 10" />
+
+        </LinearLayout>
+
+        <!-- Order Items Preview -->
+        <TextView
+                android:id="@+id/textOrderItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/order_items_preview_background"
+                android:ellipsize="end"
+                android:fontFamily="monospace"
+                android:maxLines="2"
+                android:padding="8dp"
+                android:textSize="11sp"
+                android:layout_marginBottom="16dp"
+                tools:text="1x Celestron Telescope\n1x Red LED Flashlight" />
+
+        <!-- Tracking Info -->
+        <LinearLayout
+                android:id="@+id/layoutTrackingInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tracking_info_background"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp">
+
+            <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_local_shipping_24"
+                    android:tint="@color/design_default_color_primary" />
+
+            <TextView
+                    android:id="@+id/textTrackingNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    tools:text="Tracking: TRK1234567890" />
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonViewDetails"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:text="View Details"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_visibility_24" />
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonTrackOrder"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="4dp"
+                    android:layout_weight="1"
+                    android:text="Track"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_location_on_24" />
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonReorder"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:text="Reorder"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_refresh_24" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

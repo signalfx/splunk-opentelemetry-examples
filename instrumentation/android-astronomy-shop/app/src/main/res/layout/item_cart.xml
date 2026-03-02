@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+        <!-- Product Image -->
+        <ImageView
+                android:id="@+id/imageProduct"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@color/light_gray"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+        <!-- Remove Button -->
+        <ImageButton
+                android:id="@+id/buttonRemove"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/remove_button_background"
+                android:src="@drawable/ic_close_24"
+                app:tint="@color/red_500"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Product Name -->
+        <TextView
+                android:id="@+id/textProductName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/buttonRemove"
+                app:layout_constraintStart_toEndOf="@+id/imageProduct"
+                app:layout_constraintTop_toTopOf="@+id/imageProduct"
+                tools:text="Celestron NexStar 127SLT Telescope" />
+
+        <!-- Product Price -->
+        <TextView
+                android:id="@+id/textProductPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/design_default_color_primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/textProductName"
+                app:layout_constraintTop_toBottomOf="@+id/textProductName"
+                tools:text="$649.99" />
+
+        <!-- Stock Status -->
+        <com.google.android.material.chip.Chip
+                android:id="@+id/chipStockStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="In Stock"
+                android:textColor="@color/green_500"
+                android:textSize="10sp"
+                app:chipBackgroundColor="@color/green_50"
+                app:chipMinHeight="24dp"
+                app:chipStrokeColor="@color/green_500"
+                app:chipStrokeWidth="1dp"
+                app:layout_constraintStart_toEndOf="@+id/textProductPrice"
+                app:layout_constraintTop_toTopOf="@+id/textProductPrice" />
+
+        <!-- Quantity Controls -->
+        <LinearLayout
+                android:id="@+id/layoutQuantityControls"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/quantity_selector_background"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                app:layout_constraintStart_toStartOf="@+id/imageProduct"
+                app:layout_constraintTop_toBottomOf="@+id/imageProduct">
+
+            <ImageButton
+                    android:id="@+id/buttonDecrease"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/quantity_button_background"
+                    android:src="@drawable/ic_remove_24"
+                    app:tint="@color/design_default_color_primary" />
+
+            <TextView
+                    android:id="@+id/textQuantity"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="2" />
+
+            <ImageButton
+                    android:id="@+id/buttonIncrease"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/quantity_button_background"
+                    android:src="@drawable/ic_add_24"
+                    app:tint="@color/design_default_color_primary" />
+
+        </LinearLayout>
+
+        <!-- Item Total Price -->
+        <TextView
+                android:id="@+id/textTotalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/layoutQuantityControls"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/layoutQuantityControls"
+                tools:text="$1,299.98" />
+
+        <!-- Save for Later Button -->
+        <TextView
+                android:id="@+id/textSaveForLater"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:drawableStart="@drawable/ic_bookmark_border_24"
+                android:drawablePadding="4dp"
+                android:drawableTint="@android:color/darker_gray"
+                android:focusable="true"
+                android:padding="8dp"
+                android:text="Save for Later"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/layoutQuantityControls"
+                app:layout_constraintTop_toBottomOf="@+id/layoutQuantityControls" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
