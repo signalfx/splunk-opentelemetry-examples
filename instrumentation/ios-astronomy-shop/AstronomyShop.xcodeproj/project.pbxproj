@@ -1,0 +1,439 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A11111110000000000000001 /* AstronomyShopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000002; };
+		A11111110000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000004; };
+		A11111110000000000000005 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000006; };
+		A11111110000000000000007 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000008; };
+		A11111110000000000000009 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111000000000000000A; };
+		A1111111000000000000000B /* CartItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111000000000000000C; };
+		A1111111000000000000000D /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111000000000000000E; };
+		A1111111000000000000000F /* ProductViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000010; };
+		A11111110000000000000011 /* CartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000012; };
+		A11111110000000000000013 /* OrderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000014; };
+		A11111110000000000000015 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000016; };
+		A11111110000000000000017 /* ProductsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000018; };
+		A11111110000000000000019 /* ProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111000000000000001A; };
+		A1111111000000000000001B /* ProductCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111000000000000001C; };
+		A1111111000000000000001D /* CartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111000000000000001E; };
+		A1111111000000000000001F /* CheckoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000020; };
+		A11111110000000000000021 /* OrderConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000022; };
+		A11111110000000000000023 /* OrderHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000024; };
+		A11111110000000000000025 /* OrderDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000026; };
+		A11111110000000000000027 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11111110000000000000028; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A11111110000000000000002 /* AstronomyShopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstronomyShopApp.swift; sourceTree = "<group>"; };
+		A11111110000000000000004 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A11111110000000000000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A11111110000000000000008 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
+		A1111111000000000000000A /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		A1111111000000000000000C /* CartItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItem.swift; sourceTree = "<group>"; };
+		A1111111000000000000000E /* Order.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
+		A11111110000000000000010 /* ProductViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewModel.swift; sourceTree = "<group>"; };
+		A11111110000000000000012 /* CartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewModel.swift; sourceTree = "<group>"; };
+		A11111110000000000000014 /* OrderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderViewModel.swift; sourceTree = "<group>"; };
+		A11111110000000000000016 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		A11111110000000000000018 /* ProductsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductsView.swift; sourceTree = "<group>"; };
+		A1111111000000000000001A /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
+		A1111111000000000000001C /* ProductCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductCard.swift; sourceTree = "<group>"; };
+		A1111111000000000000001E /* CartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartView.swift; sourceTree = "<group>"; };
+		A11111110000000000000020 /* CheckoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutView.swift; sourceTree = "<group>"; };
+		A11111110000000000000022 /* OrderConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderConfirmationView.swift; sourceTree = "<group>"; };
+		A11111110000000000000024 /* OrderHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderHistoryView.swift; sourceTree = "<group>"; };
+		A11111110000000000000026 /* OrderDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsView.swift; sourceTree = "<group>"; };
+		A11111110000000000000028 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		A11111110000000000000029 /* AstronomyShop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AstronomyShop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1111111000000000000002A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1111111000000000000002B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1111111000000000000002C = {
+			isa = PBXGroup;
+			children = (
+				A1111111000000000000002D /* AstronomyShop */,
+				A1111111000000000000002E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1111111000000000000002D /* AstronomyShop */ = {
+			isa = PBXGroup;
+			children = (
+				A11111110000000000000002 /* AstronomyShopApp.swift */,
+				A11111110000000000000004 /* ContentView.swift */,
+				A1111111000000000000002F /* Models */,
+				A11111110000000000000030 /* ViewModels */,
+				A11111110000000000000031 /* Views */,
+				A11111110000000000000032 /* Resources */,
+				A1111111000000000000002A /* Info.plist */,
+			);
+			path = AstronomyShop;
+			sourceTree = "<group>";
+		};
+		A1111111000000000000002E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A11111110000000000000029 /* AstronomyShop.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1111111000000000000002F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A11111110000000000000008 /* Product.swift */,
+				A1111111000000000000000A /* Category.swift */,
+				A1111111000000000000000C /* CartItem.swift */,
+				A1111111000000000000000E /* Order.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A11111110000000000000030 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A11111110000000000000010 /* ProductViewModel.swift */,
+				A11111110000000000000012 /* CartViewModel.swift */,
+				A11111110000000000000014 /* OrderViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A11111110000000000000031 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A11111110000000000000016 /* HomeView.swift */,
+				A11111110000000000000018 /* ProductsView.swift */,
+				A1111111000000000000001A /* ProductDetailView.swift */,
+				A1111111000000000000001C /* ProductCard.swift */,
+				A1111111000000000000001E /* CartView.swift */,
+				A11111110000000000000020 /* CheckoutView.swift */,
+				A11111110000000000000022 /* OrderConfirmationView.swift */,
+				A11111110000000000000024 /* OrderHistoryView.swift */,
+				A11111110000000000000026 /* OrderDetailsView.swift */,
+				A11111110000000000000028 /* ProfileView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A11111110000000000000032 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A11111110000000000000006 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A11111110000000000000033 /* AstronomyShop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A11111110000000000000034;
+			buildPhases = (
+				A11111110000000000000035 /* Sources */,
+				A1111111000000000000002B /* Frameworks */,
+				A11111110000000000000036 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AstronomyShop;
+			productName = AstronomyShop;
+			productReference = A11111110000000000000029 /* AstronomyShop.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A11111110000000000000037 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A11111110000000000000033 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A11111110000000000000038;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1111111000000000000002C;
+			productRefGroup = A1111111000000000000002E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A11111110000000000000033 /* AstronomyShop */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A11111110000000000000036 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A11111110000000000000005 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A11111110000000000000035 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A11111110000000000000001 /* AstronomyShopApp.swift in Sources */,
+				A11111110000000000000003 /* ContentView.swift in Sources */,
+				A11111110000000000000007 /* Product.swift in Sources */,
+				A11111110000000000000009 /* Category.swift in Sources */,
+				A1111111000000000000000B /* CartItem.swift in Sources */,
+				A1111111000000000000000D /* Order.swift in Sources */,
+				A1111111000000000000000F /* ProductViewModel.swift in Sources */,
+				A11111110000000000000011 /* CartViewModel.swift in Sources */,
+				A11111110000000000000013 /* OrderViewModel.swift in Sources */,
+				A11111110000000000000015 /* HomeView.swift in Sources */,
+				A11111110000000000000017 /* ProductsView.swift in Sources */,
+				A11111110000000000000019 /* ProductDetailView.swift in Sources */,
+				A1111111000000000000001B /* ProductCard.swift in Sources */,
+				A1111111000000000000001D /* CartView.swift in Sources */,
+				A1111111000000000000001F /* CheckoutView.swift in Sources */,
+				A11111110000000000000021 /* OrderConfirmationView.swift in Sources */,
+				A11111110000000000000023 /* OrderHistoryView.swift in Sources */,
+				A11111110000000000000025 /* OrderDetailsView.swift in Sources */,
+				A11111110000000000000027 /* ProfileView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A11111110000000000000039 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A1111111000000000000003A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A1111111000000000000003B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AstronomyShop/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AstronomyShop/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.astronomyshop.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1111111000000000000003C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AstronomyShop/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AstronomyShop/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.astronomyshop.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A11111110000000000000034 /* Build configuration list for PBXNativeTarget "AstronomyShop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1111111000000000000003B /* Debug */,
+				A1111111000000000000003C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A11111110000000000000038 /* Build configuration list for PBXProject "AstronomyShop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A11111110000000000000039 /* Debug */,
+				A1111111000000000000003A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A11111110000000000000037 /* Project object */;
+}
