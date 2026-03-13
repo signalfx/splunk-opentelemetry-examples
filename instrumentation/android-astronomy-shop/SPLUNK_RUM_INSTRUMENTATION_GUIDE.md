@@ -1,6 +1,6 @@
 # Splunk RUM Instrumentation Guide — Astronomy Shop Android App
 
-This guide walks through instrumenting the Astronomy Shop Android app with **Splunk RUM (Real User Monitoring)** Version 2.1.5, including **Session Replay** and **Custom Workflows**. It covers dependencies, configuration, the Application class, manifest setup, and end-to-end workflow tracking for user journey in the app.
+This quick guide walks through basic instrumenting the Astronomy Shop Android app with **Splunk RUM (Real User Monitoring)** Version 2.1.5, including **Session Replay** and **Custom Workflows**. It covers dependencies, configuration, and end-to-end workflow tracking for user journey in the app.
 Check for any updates | changes | deviations to the instrumentation instructions in the [Official Splunk Documentation](https://help.splunk.com/en/splunk-observability-cloud/manage-data/instrument-front-end-applications/instrument-mobile-and-web-applications-for-splunk-rum/instrument-android-applications-for-splunk-rum#d5b7f2889ca8d4730a2a8f730128e18ce--en__rum-mobile-android)
 
 ---
@@ -291,14 +291,6 @@ private fun performSearch(query: String) {
         searchSpan?.end()
     }
 }
-
-// Track filter selection
-private fun applyFilter(category: String) {
-    val filterSpan = SplunkSetup.trackWorkflow("Products.Filter")
-    filterSpan?.setAttribute(AttributeKey.stringKey("filter.category"), category)
-    viewModel.loadProducts(category)
-    filterSpan?.end()
-}
 ```
 
 ### 6.2 Cart Workflow
@@ -323,34 +315,6 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     }
 }
 
-// Track quantity update
-private fun onQuantityChanged(cartItem: CartItem, newQuantity: Int) {
-    val span = SplunkSetup.trackWorkflow("Cart.UpdateQuantity")
-    span?.setAttribute(AttributeKey.stringKey("product.id"), cartItem.productId)
-    span?.setAttribute(AttributeKey.longKey("cart.old_quantity"), cartItem.quantity.toLong())
-    span?.setAttribute(AttributeKey.longKey("cart.new_quantity"), newQuantity.toLong())
-    viewModel.updateCartItemQuantity(cartItem, newQuantity)
-    span?.end()
-}
-
-// Track item removal
-private fun onRemoveItem(cartItem: CartItem) {
-    val span = SplunkSetup.trackWorkflow("Cart.RemoveItem")
-    span?.setAttribute(AttributeKey.stringKey("product.id"), cartItem.productId)
-    span?.setAttribute(AttributeKey.stringKey("product.name"), cartItem.name)
-    viewModel.removeFromCart(cartItem)
-    span?.end()
-}
-
-// Track cart clear
-private fun onClearCart() {
-    val span = SplunkSetup.trackWorkflow("Cart.Clear")
-    span?.setAttribute(AttributeKey.longKey("cart.items_cleared"), 
-        (viewModel.cartItems.value?.size ?: 0).toLong())
-    viewModel.clearCart()
-    span?.end()
-}
-
 // Track checkout initiation
 private fun onProceedToCheckout() {
     val span = SplunkSetup.trackWorkflow("Checkout.Initiated")
@@ -362,39 +326,7 @@ private fun onProceedToCheckout() {
 }
 ```
 ---
-
-## Step 7: Error Tracking
-
-Record errors at every failure point so they appear in Splunk RUM dashboards.
-
-### 7.1 Form Validation Errors
-
-**In `CheckoutFragment`:**
-
-```kotlin
-private fun validateForm(): Boolean {
-    val errors = mutableListOf<String>()
-    if (name.isEmpty()) errors.add("name")
-    if (email.isEmpty() || !email.contains("@")) errors.add("email")
-    if (cardNumber.length != 16) errors.add("card_number")
-    if (cvv.length !in 3..4) errors.add("cvv")
-
-    if (errors.isNotEmpty()) {
-        SplunkSetup.recordError(
-            errorType = "FormValidationError",
-            errorMessage = "Checkout validation failed: ${errors.joinToString(", ")}",
-            attributes = mapOf(
-                "validation.failed_fields" to errors.joinToString(","),
-                "validation.field_count" to errors.size.toString()
-            )
-        )
-        return false
-    }
-    return true
-}
-```
----
-## Step 8: Verify Build and Run
+## Step 7: Verify Build and Run
 
 1. **Sync Gradle** and fix any missing imports or package names.
 2. **Build:** `./gradlew assembleDebug` (or build from Android Studio).
