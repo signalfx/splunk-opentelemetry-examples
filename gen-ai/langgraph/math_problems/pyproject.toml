@@ -5,9 +5,10 @@ description = "Solving math problems using LangGraph"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "langchain>=0.3.27",
-    "langchain-openai>=0.3.32",
-    "langgraph>=0.6.6",
+    "langchain>=1.2.12",
+    "langchain-openai>=1.1.11",
+    "langgraph>=1.1.2",
+    "langgraph-checkpoint>=4.0.0",
     "splunk-opentelemetry==2.8.0",
     "splunk-otel-genai-emitters-splunk==0.1.7",
     "splunk-otel-genai-evals-deepeval==0.1.13",
