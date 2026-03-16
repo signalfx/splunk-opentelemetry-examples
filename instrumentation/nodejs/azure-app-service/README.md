@@ -87,6 +87,18 @@ az webapp config appsettings set --name <app_name> \
         SPLUNK_PROFILER_MEMORY_ENABLED=true 
 ```
 
+Alternatively, you can write the OpenTelemetry traces, metrics, and logs to the console: 
+
+``` bash
+az webapp config appsettings set --name <app_name> \
+    --resource-group <resource_group> \
+    --settings NODE_OPTIONS='--require "@splunk/otel/instrument"' \
+        OTEL_SERVICE_NAME='azure-nodejs-web-app' \
+        OTEL_TRACES_EXPORTER='console' \
+        OTEL_METRICS_EXPORTER='console' \
+        OTEL_LOGS_EXPORTER='console'
+```
+
 ## Test the Application
 
 Point your browser to `http://<appName>.azurewebsites.net` to test the application.
