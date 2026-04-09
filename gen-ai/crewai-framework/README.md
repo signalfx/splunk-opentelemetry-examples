@@ -52,12 +52,11 @@ which enhances spans with additional details:
 
 ``` bash
 uv add splunk-opentelemetry
-uv add openlit
-uv add splunk-otel-util-genai-translator-openlit
+uv add splunk-otel-instrumentation-crewai
+uv add splunk-otel-instrumentation-openai
+uv add splunk-otel-genai-emitters-splunk
+uv add splunk-otel-util-genai
 ```
-
-We also added the `splunk-otel-util-genai-translator-openlit` package, which translates 
-GenAI attributes from OpenLIT into OpenTelemetry GenAI semantic conventions. 
 
 Then we ran the following command to add additional instrumentation packages: 
 
@@ -77,11 +76,12 @@ export OTEL_SERVICE_NAME=crewai-example
 export OTEL_RESOURCE_ATTRIBUTES=deployment.environment=test
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-export CREWAI_DISABLE_TELEMETRY=true  # disable the telemetry used by CrewAI itself 
+export CREWAI_DISABLE_TELEMETRY=true  # disable the telemetry used by CrewAI itself
+export OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=delta 
 export OTEL_PYTHON_DISABLED_INSTRUMENTATIONS=click
-export OTEL_LOGS_EXPORTER=otlp
-export OTEL_PYTHON_LOG_LEVEL=info
-export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+export OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true
+export OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT_MODE=SPAN
+export OTEL_INSTRUMENTATION_GENAI_EMITTERS="span_metric,splunk"
 ```
 
 ## Run the Application 
@@ -96,6 +96,6 @@ You should see traces in Splunk Observability Cloud that look like the following
 
 ![Example trace](./images/trace.png)
 
-Prompt details are available on the right-hand side of the screen as Span Events:
+Prompt details are available on the right-hand side of the screen under the `AI details` tab:
 
 ![Prompt details](./images/prompt-details.png)
