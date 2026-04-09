@@ -5,14 +5,15 @@ description = "Solving math problems using LangGraph"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "langchain>=1.2.12",
-    "langchain-openai>=1.1.11",
-    "langgraph>=1.1.2",
-    "langgraph-checkpoint>=4.0.0",
-    "splunk-opentelemetry==2.8.0",
-    "splunk-otel-genai-emitters-splunk==0.1.7",
-    "splunk-otel-genai-evals-deepeval==0.1.13",
-    "splunk-otel-instrumentation-langchain==0.1.7",
-    "splunk-otel-util-genai==0.1.9",
-    "splunk-otel-util-genai-evals==0.1.8",
+    "langchain",
+    "langchain-openai",
+    "langgraph",
+    "langgraph-checkpoint",
+    "langchain-core>=1.2.28",
+    "splunk-opentelemetry",
+    "splunk-otel-genai-emitters-splunk",
+    "splunk-otel-genai-evals-deepeval",
+    "splunk-otel-instrumentation-langchain",
+    "splunk-otel-util-genai",
+    "splunk-otel-util-genai-evals",
 ]

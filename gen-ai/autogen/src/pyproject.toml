@@ -5,9 +5,10 @@ description = "Startup Ideas using AutoGen"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "autogen-agentchat>=0.7.4",
-    "autogen-core>=0.7.4",
-    "autogen-ext>=0.7.4",
-    "openlit>=1.35.1",
-    "splunk-opentelemetry>=2.5.0",
+    "autogen-agentchat",
+    "autogen-core",
+    "autogen-ext",
+    "tiktoken",
+    "openlit",
+    "splunk-opentelemetry",
 ]
