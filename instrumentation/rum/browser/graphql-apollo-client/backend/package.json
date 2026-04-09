@@ -17,6 +17,7 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.19.0",
+    "path-to-regexp": "^0.1.13",
     "graphql": "^16.12.0"
   }
 }
