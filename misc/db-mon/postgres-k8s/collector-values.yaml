@@ -1,0 +1,51 @@
+agent:
+  config:
+    receivers:
+      receiver_creator/postgresql:
+        watch_observers: [k8s_observer]
+        receivers:
+          postgresql:
+            rule: 'type == "pod" && labels["app.kubernetes.io/name"] == "postgresql"'
+            config:
+              collection_interval: 10s
+              databases:
+                - postgres
+              endpoint: "{endpoint}:5432"
+              events:
+                db.server.query_sample:
+                  enabled: true
+                db.server.top_query:
+                  enabled: true
+              username: "postgres"
+              password: "<database password>"
+              tls:
+                insecure: true
+    # Exporters define where the telemetry data is sent to
+    exporters:
+      # Exports dbmon events as logs
+      otlp_http/dbmon:
+        headers:
+          X-SF-Token: ${SPLUNK_OBSERVABILITY_ACCESS_TOKEN}
+          X-splunk-instrumentation-library: dbmon
+        logs_endpoint: https://ingest.us1.signalfx.com/v3/event
+        sending_queue:
+          batch:
+            max_size: 10485760 # 10 MiB
+            sizer: bytes
+    service:
+      extensions:
+        - health_check
+        - headers_setter
+        - k8s_observer
+        - zpages
+      pipelines:
+        logs/dbmon:
+          receivers:
+            - receiver_creator/postgresql
+          processors:
+            - memory_limiter
+            - batch
+            - resourcedetection
+            - resource
+          exporters:
+            - otlp_http/dbmon
