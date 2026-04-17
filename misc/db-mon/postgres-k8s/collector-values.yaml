@@ -10,7 +10,7 @@ agent:
               collection_interval: 10s
               databases:
                 - postgres
-              endpoint: "{endpoint}:5432"
+              endpoint: "`endpoint`:5432"
               events:
                 db.server.query_sample:
                   enabled: true

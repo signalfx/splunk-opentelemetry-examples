@@ -100,13 +100,21 @@ helm repo update
 
 Define environment variables: 
 
+> Note: set your realm and access token before running the following commands
+
 ```bash
-export REALM=us1 # update with the target realm as needed
+export REALM=your_realm 
 export ACCESS_TOKEN=your_observability_cloud_access_token
 ````
 
-And install the collector: 
+Now we can install the collector: 
 
 ```bash
 helm upgrade --install splunk-otel-collector --set="splunkObservability.realm=$REALM,splunkObservability.accessToken=$ACCESS_TOKEN,clusterName=postgres-test,environment=postgres-test" -f ./collector-values.yaml splunk-otel-collector-chart/splunk-otel-collector 
 ```
+
+> Note: we've used a `receiver_creator` to add the `postgresql`, which prevents 
+> the collector from duplicating data pulls. 
+
+Refer to [Collect data from PostgreSQL](https://help.splunk.com/en/splunk-observability-cloud/monitor-databases/collect-data-from-your-database-platforms/collect-data-from-postgresql) 
+for further information. 
