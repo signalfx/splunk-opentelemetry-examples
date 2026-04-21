@@ -170,18 +170,22 @@ clusterReceiver:
   ...
   config:
     receivers:
-      ciscoos/switch01:
+      cisco_os:
         collection_interval: 60s
         timeout: 30s
-        device:
-          device:
-            host:
-              name: "core-switch-01"
-              ip: "<IP Address>"
-              port: 22
-          auth:
-            username: "<username>"
-            password: "<password>"
+        devices:
+          - name: "core-switch-01"
+            host: "<IP Address>"
+            port: 22
+            auth:
+              username: "<username>"
+              password: "<password>"
+          - name: "core-switch-02"
+            host: "<IP Address>"
+            port: 22
+            auth:
+              username: "<username>"
+              password: "<password>"
         scrapers:
           system:
             metrics:
@@ -214,30 +218,27 @@ clusterReceiver:
             - resourcedetection
             - resource
           receivers:
-            - ciscoos/switch01
-            - <additional switches as required>
+            - cisco_os
 ```
 
 If using this configuration approach, update the [values.yaml](./otel-collector/values.yaml) file with the 
-IP address, username, and password for each Nexus switch included with your AI POD. One receiver per 
-monitored device is required. 
+IP address, username, and password for each Nexus switch included with your AI POD. Add additional switches 
+to this section if required. 
 
 For a more secure approach, you can specify a key file instead of a password: 
 
 ``` yaml
     receivers:
-      ciscoos/switch01:
+      cisco_os:
         collection_interval: 60s
         timeout: 30s
-        device:
-          device:
-            host:
-              name: "core-switch-01"
-              ip: "<IP Address>"
-              port: 22
-          auth:
-            username: "<username>"
-            key_file: "/home/user/.ssh/id_rsa"
+        devices:
+          - name: "core-switch-01"
+            host: "<IP Address>"
+            port: 22
+            auth:
+              username: "<username>"
+              key_file: "/home/user/.ssh/id_rsa"
 ```
 
 Note that we've added this receiver to the `clusterReceiver` portion of the configuration, to ensure 
