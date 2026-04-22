@@ -384,7 +384,7 @@ agent:
         traces:
           processors:
             - memory_limiter
-            - k8sattributes
+            - k8s_attributes
             - batch
             - resourcedetection
             - resource
