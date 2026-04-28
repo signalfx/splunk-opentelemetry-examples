@@ -231,6 +231,8 @@ agent:
               - vllm:generation_tokens_total
               - vllm:kv_cache_usage_perc
               - vllm:request_finish_total
+              - vllm:request_prompt_tokens
+              - vllm:request_generation_tokens
     receivers:
       kubeletstats:
         insecure_skip_verify: true
