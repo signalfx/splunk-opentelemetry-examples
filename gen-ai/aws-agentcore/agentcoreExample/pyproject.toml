@@ -20,7 +20,7 @@ dependencies = [
     "opentelemetry-instrumentation-urllib3>=0.59b0",
     "pytest >= 7.0.0",
     "pytest-asyncio >= 0.21.0",
-    "python-dotenv >= 1.2.1",
+    "python-dotenv>=1.2.2",
     "splunk-opentelemetry==2.8.0",
     "splunk-otel-genai-emitters-splunk>=0.1.6",
     "splunk-otel-genai-evals-deepeval>=0.1.12",
