@@ -1,4 +1,4 @@
-# Microsoft Foundry Agent Service with OpenTelemetry and Splunk (Work in Progress)
+# Microsoft Foundry Agent Service with OpenTelemetry and Splunk
 
 [Foundry Agent Service](https://learn.microsoft.com/en-us/azure/foundry/agents/overview) 
 is a "fully managed platform for building, deploying, and scaling AI agents."
