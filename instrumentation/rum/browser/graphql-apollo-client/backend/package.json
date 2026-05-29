@@ -14,9 +14,9 @@
     "@apollo/server": "^5.4.0",
     "@as-integrations/express4": "^1.1.2",
     "@splunk/otel": "^3.3.0",
-    "body-parser": "^1.20.3",
+    "body-parser": "^1.20.5",
     "cors": "^2.8.5",
-    "express": "^4.19.0",
+    "express": "^4.22.2",
     "path-to-regexp": "^0.1.13",
     "graphql": "^16.12.0"
   }
