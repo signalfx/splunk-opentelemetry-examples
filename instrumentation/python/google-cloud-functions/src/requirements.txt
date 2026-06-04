@@ -10,7 +10,7 @@ functions-framework==3.8.2
 googleapis-common-protos==1.69.0
 grpcio==1.70.0
 gunicorn==23.0.0
-idna==3.10
+idna==3.15
 importlib_metadata==8.5.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
