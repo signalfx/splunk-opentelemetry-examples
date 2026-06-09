@@ -57,5 +57,6 @@ ENTRYPOINT ["sh", "-c", "exec java \
   -Dagent.deployment.mode=dual \
   -Dotel.traces.exporter=otlp \
   -Dotel.exporter.otlp.endpoint=http://localhost:4318 \
+  -Dotel.service.name=${OTEL_SERVICE_NAME} \
   -Dotel.resource.attributes=${OTEL_RESOURCE_ATTRIBUTES} \
   -jar /app/app.jar"]

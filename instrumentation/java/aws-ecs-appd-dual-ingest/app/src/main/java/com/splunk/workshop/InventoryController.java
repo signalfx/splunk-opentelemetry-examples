@@ -1,5 +1,7 @@
 package com.splunk.workshop;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,8 +13,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequestMapping("/inventory")
 public class InventoryController {
 
+    private static final Logger logger = LogManager.getLogger(InventoryController.class);
+
     @GetMapping("/check")
     public Map<String, Object> checkInventory() {
+        logger.info("Checking inventory availability");
         simulateWork(10, 50);
         return Map.of(
             "available", ThreadLocalRandom.current().nextInt(1, 100),

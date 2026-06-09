@@ -39,8 +39,12 @@
                     "value": "your_appd_access_key"
                 },
                 {
+                    "name": "OTEL_SERVICE_NAME",
+                    "value": "OrderService"
+                },
+                {
                     "name": "OTEL_RESOURCE_ATTRIBUTES",
-                    "value": "service.name=OrderService,service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
+                    "value": "service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
                 }
             ],
             "environmentFiles": [],

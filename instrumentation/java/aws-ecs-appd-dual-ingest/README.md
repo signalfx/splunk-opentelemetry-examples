@@ -73,6 +73,7 @@ ENTRYPOINT ["sh", "-c", "exec java \
   -Dagent.deployment.mode=dual \
   -Dotel.traces.exporter=otlp \
   -Dotel.exporter.otlp.endpoint=http://localhost:4318 \
+  -Dotel.service.name=${OTEL_SERVICE_NAME} \
   -Dotel.resource.attributes=${OTEL_RESOURCE_ATTRIBUTES} \
   -jar /app/app.jar"]
 ```
@@ -87,7 +88,8 @@ APPD_APP_NAME="aws-ecs-appd-dual-ingest-example" \
     APPD_CONTROLLER_HOST="your_appd_controller_host" \
     APPD_ACCOUNT_NAME="your_appd_account_name" \
     APPD_ACCESS_KEY="your_appd_access_key" \
-    OTEL_RESOURCE_ATTRIBUTES="service.name=OrderService,service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
+    OTEL_SERVICE_NAME="OrderService" \
+    OTEL_RESOURCE_ATTRIBUTES="service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
 ```
 
 Then run the Docker image with the following command: 
@@ -100,6 +102,7 @@ docker run \
     -e APPD_CONTROLLER_HOST=$APPD_CONTROLLER_HOST \
     -e APPD_ACCOUNT_NAME=$APPD_ACCOUNT_NAME \
     -e APPD_ACCESS_KEY=$APPD_ACCESS_KEY \
+    -e OTEL_SERVICE_NAME=$OTEL_SERVICE_NAME \
     -e OTEL_RESOURCE_ATTRIBUTES=$OTEL_RESOURCE_ATTRIBUTES \
     -p 8080:8080 \
     appd-dual-ingest-example:1.0
@@ -145,7 +148,7 @@ For our application container, we first need to add several environment variable
            "name": "APPD_CONTROLLER_HOST",
            "value": "your_appd_controller_host"
        },
-       },       {
+       {
            "name": "APPD_ACCOUNT_NAME",
            "value": "your_appd_account_name"
        },
@@ -154,8 +157,12 @@ For our application container, we first need to add several environment variable
            "value": "your_appd_access_key"
        },
        {
+            "name": "OTEL_SERVICE_NAME",
+            "value": "OrderService"
+       },
+       {
            "name": "OTEL_RESOURCE_ATTRIBUTES",
-           "value": "service.name=OrderService,service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
+           "value": "service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
        }
    ],
 ````
@@ -287,3 +294,46 @@ Next, click on traces and select one of the traces for `GET /order`:
 Note that the trace has been decorated with Kubernetes attributes, such as `aws.ecs.cluster.arn`.  
 This allows us to retain context when we navigate from APM to
 infrastructure data within Splunk Observability Cloud. 
+
+## View Log Data
+
+To ensure the trace and span id are included with each log entry, the following 
+packages were included in the [pom.xml](app/pom.xml) file: 
+
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-log4j-context-data-2.17-autoconfigure</artifactId>
+            <version>${opentelemetry-instrumentation.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+```
+
+And the trace information is included in the [log4j2.xml](app/src/resources/log4j2.xml) file: 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%t] %c{1} - trace_id=%X{trace_id} span_id=%X{span_id} trace_flags=%X{trace_flags} service.name=${env:OTEL_SERVICE_NAME} %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
+```
+
+In CloudWatch, we can see that log entries include the trace information: 
+
+````
+21:21:04.717 INFO [http-nio-8080-exec-4] InventoryController - trace_id=08f56590354ae2146d7ea515bfdd139f span_id=145401b79715fdc9 trace_flags=03 service.name=OrderService Checking inventory availability
+21:21:05.103 INFO [http-nio-8080-exec-5] PaymentController - trace_id=08f56590354ae2146d7ea515bfdd139f span_id=8bb911030811ce32 trace_flags=03 service.name=OrderService Payment processed with result: approved
+````

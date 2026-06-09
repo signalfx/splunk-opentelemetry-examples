@@ -1,5 +1,7 @@
 package com.splunk.workshop;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @RestController
 public class OrderController {
 
+    private static final Logger logger = LogManager.getLogger(OrderController.class);
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${server.port:8080}")
@@ -27,6 +31,7 @@ public class OrderController {
     @GetMapping("/order")
     @SuppressWarnings("unchecked")
     public Map<String, Object> getOrder() {
+        logger.info("Processing GET /order request");
         simulateWork(20, 80);
 
         Map<String, Object> inventory = restTemplate.getForObject(
@@ -46,6 +51,7 @@ public class OrderController {
     @PostMapping("/order")
     @SuppressWarnings("unchecked")
     public Map<String, Object> createOrder(@RequestBody(required = false) Map<String, Object> body) {
+        logger.info("Processing POST /order request");
         simulateWork(30, 120);
 
         Map<String, Object> payment = restTemplate.getForObject(
