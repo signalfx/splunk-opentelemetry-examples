@@ -1,0 +1,126 @@
+{
+    "family": "appd-dual-ingest-upstream-collector",
+    "containerDefinitions": [
+        {
+            "name": "appd-dual-ingest-example",
+            "image": "ghcr.io/splunk/appd-dual-ingest-example:1.0",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "appd-dual-ingest-example-8080-tcp",
+                    "containerPort": 8080,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "APPD_APP_NAME",
+                    "value": "appd-dual-ingest-example"
+                },
+                {
+                    "name": "APPD_TIER_NAME",
+                    "value": "OrderService"
+                },
+                {
+                    "name": "APPD_NODE_NAME",
+                    "value": "OrderService-Node"
+                },       {
+                    "name": "APPD_CONTROLLER_HOST",
+                    "value": "your_appd_controller_host"
+                },
+                {
+                    "name": "APPD_ACCOUNT_NAME",
+                    "value": "your_appd_account_name"
+                },
+                {
+                    "name": "APPD_ACCESS_KEY",
+                    "value": "your_appd_access_key"
+                },
+                {
+                    "name": "OTEL_SERVICE_NAME",
+                    "value": "OrderService"
+                },
+                {
+                    "name": "OTEL_RESOURCE_ATTRIBUTES",
+                    "value": "service.namespaceaws-ecs-appd-dual-ingest-example,deployment.environment=aws-ecs-appd-dual-ingest-example,deployment.environment.name=aws-ecs-appd-dual-ingest-example"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "dependsOn": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/appd-dual-ingest-example",
+                    "awslogs-region": "<AWS Region>",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            }
+        },
+        {
+            "name": "otel-collector",
+            "image": "otel/opentelemetry-collector-contrib:latest",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "command": ["--config=s3://otelcol-contrib-config.s3.eu-west-1.amazonaws.com/upstream_config_ecs_fargate.yaml"],
+            "environment": [
+                {
+                    "name": "SPLUNK_ACCESS_TOKEN",
+                    "value": "<Access Token>"
+                },
+                {
+                    "name": "SPLUNK_API_URL",
+                    "value": "https://api.us1.observability.splunkcloud.com"
+                },
+                {
+                    "name": "SPLUNK_REALM",
+                    "value": "us1"
+                },
+                {
+                    "name": "SPLUNK_MEMORY_LIMIT_MIB",
+                    "value": "512"
+                },
+                {
+                    "name": "SPLUNK_LISTEN_INTERFACE",
+                    "value": "0.0.0.0"
+                },
+                {
+                    "name": "SPLUNK_INGEST_URL",
+                    "value": "https://ingest.us1.observability.splunkcloud.com"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/appd-dual-ingest-example",
+                    "awslogs-region": "<AWS Region>",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            }
+        }
+    ],
+    "taskRoleArn": "arn:aws:iam::<AWS Account ID>:role/ecsTaskRole",
+    "executionRoleArn": "arn:aws:iam::<AWS Account ID>:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "3072",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    }
+}
