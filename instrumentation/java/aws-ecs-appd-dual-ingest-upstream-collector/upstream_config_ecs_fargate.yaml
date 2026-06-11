@@ -104,7 +104,7 @@ processors:
     limit_mib: ${SPLUNK_MEMORY_LIMIT_MIB}
   # detect if the collector is running on a cloud system
   # important for creating unique cloud provider dimensions
-  resourcedetection:
+  resource_detection:
     detectors: [ecs]
     override: false
       # Optional: The following processor can be used to add a default "deployment.environment" attribute to the logs and
@@ -115,6 +115,46 @@ processors:
       #- action: insert
       #value: staging/production/...
     #key: deployment.environment
+  transform/drop_dims_high_cardinality:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        conditions:
+          - Len(resource.attributes) + Len(datapoint.attributes) > 34
+        statements:
+          # Drop from resource attributes
+          - delete_key(resource.attributes, "process.command_args")
+          - delete_key(resource.attributes, "process.executable.path")
+          - delete_key(resource.attributes, "process.runtime.description")
+          - delete_key(resource.attributes, "process.runtime.name")
+          - delete_key(resource.attributes, "process.runtime.version")
+          - delete_key(resource.attributes, "process.pid")
+          - delete_key(resource.attributes, "os.description")
+          - delete_key(resource.attributes, "os.version")
+          - delete_key(resource.attributes, "host.arch")
+          - delete_key(resource.attributes, "host.image.id")
+          - delete_key(resource.attributes, "telemetry.distro.name")
+          - delete_key(resource.attributes, "telemetry.distro.version")
+          - delete_key(resource.attributes, "telemetry.sdk.version")
+          - delete_key(resource.attributes, "telemetry.sdk.name")
+          - delete_key(resource.attributes, "telemetry.sdk.language")
+
+          # Drop from datapoint attributes
+          - delete_key(datapoint.attributes, "process.command_args")
+          - delete_key(datapoint.attributes, "process.executable.path")
+          - delete_key(datapoint.attributes, "process.runtime.description")
+          - delete_key(datapoint.attributes, "process.runtime.name")
+          - delete_key(datapoint.attributes, "process.runtime.version")
+          - delete_key(datapoint.attributes, "process.pid")
+          - delete_key(datapoint.attributes, "os.description")
+          - delete_key(datapoint.attributes, "os.version")
+          - delete_key(datapoint.attributes, "host.arch")
+          - delete_key(datapoint.attributes, "host.image.id")
+          - delete_key(datapoint.attributes, "telemetry.distro.name")
+          - delete_key(datapoint.attributes, "telemetry.distro.version")
+          - delete_key(datapoint.attributes, "telemetry.sdk.version")
+          - delete_key(datapoint.attributes, "telemetry.sdk.name")
+          - delete_key(datapoint.attributes, "telemetry.sdk.language")
 
 exporters:
   # Traces
@@ -132,7 +172,7 @@ exporters:
     # Use instead when sending to gateway
     #api_url: http://${SPLUNK_GATEWAY_URL}:6060
     #ingest_url: http://${SPLUNK_GATEWAY_URL}:9943
-    sync_host_metadata: true
+    sync_host_metadata: false
     correlation:
   # Entities (applicable only if discovery mode is enabled)
   otlp_http/entities:
@@ -148,12 +188,12 @@ exporters:
     endpoint: "https://ingest.${SPLUNK_REALM}.observability.splunkcloud.com/v1/log"
     log_data_enabled: false
   # Send to gateway
-  otlp_grpc/gateway:
-    endpoint: "${SPLUNK_GATEWAY_URL}:4317"
-    tls:
-      insecure: true
-    auth:
-      authenticator: headers_setter
+  #otlp_grpc/gateway:
+  #  endpoint: "${SPLUNK_GATEWAY_URL}:4317"
+  #  tls:
+  #    insecure: true
+  #  auth:
+  #    authenticator: headers_setter
   # Debug
   debug:
     verbosity: detailed
@@ -177,7 +217,7 @@ service:
       processors:
         - memory_limiter
         - batch
-        - resourcedetection
+        - resource_detection
       #- resource/add_environment
       exporters: [otlp_http]
       # Use instead when sending to gateway
@@ -185,21 +225,21 @@ service:
     # Required for Splunk Infrastructure Monitoring
     metrics:
       receivers: [otlp, awsecscontainermetrics]
-      processors: [memory_limiter, batch, resourcedetection]
+      processors: [memory_limiter, resource_detection, transform/drop_dims_high_cardinality, batch]
       exporters: [signalfx]
       # Use instead when sending to gateway
       #exporters: [otlp_grpc/gateway]
     # Required for Splunk APM and/or Infrastructure Monitoring
     metrics/internal:
       receivers: [prometheus/internal]
-      processors: [memory_limiter, batch, resourcedetection]
+      processors: [memory_limiter, resource_detection, transform/drop_dims_high_cardinality, batch]
       exporters: [signalfx]
       # Use instead when sending to gateway
       #exporters: [otlp_grpc/gateway]
     logs/entities:
       # Receivers are dynamically added if discovery mode is enabled
       receivers: [nop]
-      processors: [memory_limiter, batch, resourcedetection]
+      processors: [memory_limiter, batch, resource_detection]
       exporters: [otlp_http/entities]
     # Required for profiling
     logs:
@@ -207,7 +247,7 @@ service:
       processors:
         - memory_limiter
         - batch
-        - resourcedetection
+        - resource_detection
       #- resource/add_environment
       exporters: [splunk_hec/profiling]
       # Use instead when sending to gateway
