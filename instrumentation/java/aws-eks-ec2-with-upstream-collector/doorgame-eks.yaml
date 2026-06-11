@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doorgame
+spec:
+  selector:
+    matchLabels:
+      app: doorgame
+  template:
+    metadata:
+      labels:
+        app: doorgame
+    spec:
+      tolerations:
+      nodeSelector:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: doorgame
+          image: ghcr.io/splunk/doorgame:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+          env:
+            - name: PORT
+              value: "9090"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otel-contrib-collector-agent:4318"
+            - name: OTEL_SERVICE_NAME
+              value: "doorgame"
+            - name: OTEL_PROPAGATORS
+              value: "tracecontext,baggage"
+            - name: SPLUNK_PROFILER_ENABLED
+              value: "true"
+            - name: SPLUNK_PROFILER_MEMORY_ENABLED
+              value: "true"
+          resources:
+            requests:
+              cpu: 150m
+              memory: 2048Mi
+            limits:
+              cpu: 300m
+              memory: 4096Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/target-type: ip
+  name: "doorgame"
+  namespace: "default"
+spec:
+  ports:
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: "doorgame"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: default
+  name: doorgame-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/tags: splunkit_environment_type=non-prd,splunkit_data_classification=private
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: doorgame
+                port:
+                  number: 9090
