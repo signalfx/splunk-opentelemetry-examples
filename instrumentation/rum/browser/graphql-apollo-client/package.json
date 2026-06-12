@@ -20,7 +20,7 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.1.1",
-    "vite": "^7.2.4"
+    "@vitejs/plugin-react": "^5.2.0",
+    "vite": "^8.0.16"
   }
 }
