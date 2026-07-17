@@ -1,0 +1,37 @@
+{
+  "name": "react-native-sample",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-navigation/bottom-tabs": "^7.18.8",
+    "@react-navigation/native": "^7.3.8",
+    "@react-navigation/native-stack": "^7.17.10",
+    "babel-preset-expo": "~54.0.10",
+    "expo": "~54.0.0",
+    "expo-font": "~14.0.12",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-paper": "^5.15.3",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.10",
+    "typescript": "~5.9.2"
+  },
+  "scripts": {
+    "start": "expo start --clear",
+    "start:localhost": "adb reverse tcp:8081 tcp:8081 2>/dev/null || true && expo start --clear --localhost",
+    "android": "bash scripts/start-android.sh",
+    "android:device": "bash scripts/start-android-device.sh",
+    "android:tunnel": "expo start --android --clear --tunnel",
+    "ios": "bash scripts/start-ios.sh",
+    "ios:install-expo-go": "bash scripts/install-expo-go-ios.sh",
+    "ios:expo": "expo start --ios --clear",
+    "web": "expo start --web"
+  },
+  "private": true
+}

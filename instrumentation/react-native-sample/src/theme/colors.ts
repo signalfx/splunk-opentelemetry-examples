@@ -1,0 +1,16 @@
+export const colors = {
+  primary: '#3F51B5',
+  primaryDark: '#303F9F',
+  accent: '#FF4081',
+  green500: '#4CAF50',
+  green50: '#E8F5E8',
+  red500: '#F44336',
+  red50: '#FFEBEE',
+  blue50: '#E3F2FD',
+  grey100: '#F5F5F5',
+  grey300: '#E0E0E0',
+  grey600: '#757575',
+  white: '#FFFFFF',
+  onSurface: '#1C1B1F',
+  onSurfaceVariant: '#49454F',
+};
