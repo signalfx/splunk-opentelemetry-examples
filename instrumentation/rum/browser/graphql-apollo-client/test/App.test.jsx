@@ -28,7 +28,7 @@ const mocks = [
 describe("App", () => {
     it("renders books and titles from GraphQL queries", async () => {
         render(
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={mocks} addTypename={false}>
                 <App />
             </MockedProvider>
         );
