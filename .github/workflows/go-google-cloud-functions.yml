@@ -1,0 +1,39 @@
+name: go-google-cloud-functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "instrumentation/go/google-cloud-functions/**"
+      - ".github/workflows/go-google-cloud-functions.yml"
+  pull_request:
+    paths:
+      - "instrumentation/go/google-cloud-functions/**"
+      - ".github/workflows/go-google-cloud-functions.yml"
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: instrumentation/go/google-cloud-functions/src
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: instrumentation/go/google-cloud-functions/src/go.mod
+          cache-dependency-path: instrumentation/go/google-cloud-functions/src/go.sum
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Build application
+        run: go build -v .
+
+      - name: Run go vet
+        run: go vet ./...

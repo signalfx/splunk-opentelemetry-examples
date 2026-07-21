@@ -1,0 +1,39 @@
+name: go-azure-functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "instrumentation/go/azure-functions/**"
+      - ".github/workflows/go-azure-functions.yml"
+  pull_request:
+    paths:
+      - "instrumentation/go/azure-functions/**"
+      - ".github/workflows/go-azure-functions.yml"
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: instrumentation/go/azure-functions
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: instrumentation/go/azure-functions/go.mod
+          cache-dependency-path: instrumentation/go/azure-functions/go.sum
+
+      - name: Download modules
+        run: go mod download
+
+      - name: Build custom handler
+        run: GOOS=linux GOARCH=amd64 go build -v -o /dev/null handler.go
+
+      - name: Run go vet
+        run: go vet handler.go
