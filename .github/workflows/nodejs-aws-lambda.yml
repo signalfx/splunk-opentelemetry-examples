@@ -1,0 +1,35 @@
+name: nodejs-aws-lambda
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "instrumentation/nodejs/aws-lambda/**"
+      - ".github/workflows/nodejs-aws-lambda.yml"
+  pull_request:
+    paths:
+      - "instrumentation/nodejs/aws-lambda/**"
+      - ".github/workflows/nodejs-aws-lambda.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: instrumentation/nodejs/aws-lambda/hello-world
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run security audit
+        run: npm audit
