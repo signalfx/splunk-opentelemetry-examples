@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=expo-dev-env.sh
+source "${SCRIPT_DIR}/expo-dev-env.sh"
+
 # Free Metro port if a stale dev server is still running (common after SDK changes).
 if command -v lsof >/dev/null 2>&1; then
   lsof -ti :8081 | xargs kill -9 2>/dev/null || true

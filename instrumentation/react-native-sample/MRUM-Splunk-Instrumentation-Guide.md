@@ -1,6 +1,6 @@
-# Astronomy Shop — Splunk MRUM Instrumentation Guide
+# Astronomy Shop - Splunk MRUM Instrumentation Guide
 
-How to add **Splunk Real User Monitoring (RUM)** to the Astronomy Shop React Native app. These instructions are only to be used as a guideline - please refer to the official Splunk Observability Cloud documentation for latest instructions and latest agent versions.
+How to add **Splunk Real User Monitoring (RUM)** to the Astronomy Shop React Native app using agent version 1.1.0. These instructions are only to be used as a guideline - please refer to the official Splunk Observability Cloud documentation for latest instructions and latest agent versions.
 > **SDK:** [`@splunk/otel-react-native`](https://github.com/signalfx/splunk-otel-react-native)  
 
 ---
@@ -9,8 +9,8 @@ How to add **Splunk Real User Monitoring (RUM)** to the Astronomy Shop React Nat
 
 | Requirement | Astronomy Shop value |
 |---|---|
-| React Native | 0.81.5 ✓ |
-| React | 19.1.0 ✓ |
+| React Native | 0.86.0 ✓ |
+| React | 19.2.3 ✓ |
 | Android | API 24+ |
 | iOS | 15+; `USE_FRAMEWORKS=dynamic` in Podfile (after prebuild) |
 | Splunk Observability Cloud | Account with RUM access token |
@@ -27,7 +27,7 @@ EXPO_PUBLIC_SPLUNK_ENV=dev-astronomy-shop-rn
 ```
 ---
 
-## Part 1 - Install the SDK
+## Part 1: Install the SDK
 
 ```bash
 cd react-native-sample
@@ -70,7 +70,7 @@ Android: ensure `minSdkVersion` is 24+ and core library desugaring is enabled in
 
 ---
 
-## Part 2 - Configuration
+## Part 2: Configuration
 
 Create `src/config/splunkConfig.ts`:
 
@@ -93,7 +93,7 @@ export const isSplunkConfigured =
 
 ---
 
-## Part 3 - Initialize in App.tsx
+## Part 3: Initialize in App.tsx
 
 Wrap the existing provider tree with `SplunkRumProvider`. The app entry point is `App.tsx`:
 
@@ -119,10 +119,9 @@ export default function App() {
   );
 }
 ```
-
 ---
 
-## Part 4 - Custom workflows
+## Part 4: Custom workflows
 
 Use `SplunkRum.instance.customTracking` for e-commerce flows. Instrument at `src/store/ShopContext.tsx` where business logic already lives.
 
@@ -181,7 +180,7 @@ await workflow.end();
 
 ---
 
-## Part 5 - Network and errors
+## Part 5: Network and errors
 
 **Auto-instrumented without extra code:**
 
@@ -191,13 +190,7 @@ await workflow.end();
 
 ---
 
-## Part 6 - Sensitive data (Checkout)
-
-`CheckoutScreen.tsx` displays demo PII and payment fields (name, email, address, card number, CVV).
-
----
-
-## Part 7 - Verify in Splunk
+## Part 6: Verify in Splunk
 
 1. Build and run a **development build**:
 

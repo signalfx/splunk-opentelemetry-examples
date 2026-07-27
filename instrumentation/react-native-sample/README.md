@@ -12,7 +12,7 @@ A Cross-platform (iOS & Android) React Native e-commerce demo app for astronomy 
 
 | Layer | Library |
 |---|---|
-| Framework | Expo SDK 54 + React Native 0.81 |
+| Framework | Expo SDK 57 + React Native 0.86 |
 | Language | TypeScript |
 | Navigation | React Navigation (bottom tabs + native stack) |
 | UI | React Native Paper |
@@ -57,7 +57,7 @@ npm run android:tunnel
 npm run ios
 ```
 
-## License
-Sample project for demonstration purposes.
+## Usage
+Sample project for demonstration purposes Only.
 
 @domuoyo-dotcom - July 2026
