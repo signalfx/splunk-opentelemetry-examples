@@ -1,0 +1,50 @@
+name: react-native-sample
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "react-native-sample/**"
+      - "Vuln-Smoke-Tests/smoke-reactnative-sample.yml"
+      - ".github/workflows/smoke-reactnative-sample.yml"
+  pull_request:
+    paths:
+      - "react-native-sample/**"
+      - "Vuln-Smoke-Tests/smoke-reactnative-sample.yml"
+      - ".github/workflows/smoke-reactnative-sample.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: react-native-sample
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: react-native-sample/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify dependency alignment
+        run: npx expo install --check
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Verify uuid override
+        run: |
+          npm ls uuid
+          test "$(npm ls uuid 2>/dev/null | grep -c 'uuid@11.1.1 overridden')" -eq 1
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
