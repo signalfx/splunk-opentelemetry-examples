@@ -2,3 +2,4 @@
 .DS_Store
 .aws-sam/
 temp/
+node_modules/
