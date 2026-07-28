@@ -1,0 +1,91 @@
+name: react-native-sample
+
+# Copy to splunk-opentelemetry-examples/.github/workflows/smoke-reactnative-sample.yml
+# App path: instrumentation/react-native-sample/
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "instrumentation/react-native-sample/**"
+      - ".github/workflows/smoke-reactnative-sample.yml"
+  pull_request:
+    paths:
+      - "instrumentation/react-native-sample/**"
+      - ".github/workflows/smoke-reactnative-sample.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Resolve project directory
+        id: project
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f instrumentation/react-native-sample/package-lock.json ]]; then
+            echo "directory=instrumentation/react-native-sample" >> "$GITHUB_OUTPUT"
+            echo "lockfile=instrumentation/react-native-sample/package-lock.json" >> "$GITHUB_OUTPUT"
+          elif [[ -f react-native-sample/package-lock.json ]]; then
+            echo "directory=react-native-sample" >> "$GITHUB_OUTPUT"
+            echo "lockfile=react-native-sample/package-lock.json" >> "$GITHUB_OUTPUT"
+          elif [[ -f package-lock.json ]]; then
+            echo "directory=." >> "$GITHUB_OUTPUT"
+            echo "lockfile=package-lock.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Could not find react-native-sample package-lock.json"
+            find . -maxdepth 4 -name package-lock.json || true
+            exit 1
+          fi
+          echo "Project directory: $(grep '^directory=' "$GITHUB_OUTPUT" | cut -d= -f2)"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ${{ steps.project.outputs.lockfile }}
+
+      - name: Install dependencies
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: npm ci
+
+      - name: Verify dependency alignment
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: npx expo install --check
+
+      - name: Run TypeScript check
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: npx tsc --noEmit
+
+      - name: Verify uuid override
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: |
+          node <<'EOF'
+          const pkg = require('./package.json');
+          const lock = require('./package-lock.json');
+
+          if (pkg.overrides?.uuid !== '11.1.1') {
+            throw new Error(
+              `package.json overrides.uuid must be 11.1.1, got ${pkg.overrides?.uuid}`
+            );
+          }
+
+          const uuid = lock.packages?.['node_modules/uuid'];
+          if (!uuid || uuid.version !== '11.1.1') {
+            throw new Error(
+              `lockfile uuid must be 11.1.1, got ${uuid?.version ?? 'missing'}`
+            );
+          }
+
+          console.log('uuid override OK');
+          EOF
+
+      - name: Run npm audit
+        working-directory: ${{ steps.project.outputs.directory }}
+        run: npm audit --audit-level=moderate
