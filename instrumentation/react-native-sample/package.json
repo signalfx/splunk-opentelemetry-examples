@@ -26,8 +26,8 @@
     "uuid": "11.1.1"
   },
   "scripts": {
-    "start": "expo start --clear",
-    "start:localhost": "adb reverse tcp:8081 tcp:8081 2>/dev/null || true && expo start --clear --localhost",
+    "start": "REACT_NATIVE_PACKAGER_HOSTNAME=localhost expo start --clear",
+    "start:localhost": "adb reverse tcp:8081 tcp:8081 2>/dev/null || true && REACT_NATIVE_PACKAGER_HOSTNAME=localhost expo start --clear --localhost",
     "android": "bash scripts/start-android.sh",
     "android:device": "bash scripts/start-android-device.sh",
     "android:tunnel": "expo start --android --clear --tunnel",
