@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AstronomyShop",
-    "slug": "astronomy-shop",
+    "name": "react-native-sample",
+    "slug": "react-native-sample",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,9 +20,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-font"
-    ]
+    }
   }
 }
