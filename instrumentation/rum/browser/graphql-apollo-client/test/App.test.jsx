@@ -9,8 +9,8 @@ const mocks = [
         result: {
             data: {
                 books: [
-                    { title: "The Awakening", author: "Kate Chopin" },
-                    { title: "City of Glass", author: "Paul Auster" },
+                    { title: "The Awakening", author: "Kate Chopin", __typename: "Book" },
+                    { title: "City of Glass", author: "Paul Auster", __typename: "Book" },
                 ],
             },
         },
@@ -19,7 +19,10 @@ const mocks = [
         request: { query: GET_BOOK_TITLES },
         result: {
             data: {
-                books: [{ title: "The Awakening" }, { title: "City of Glass" }],
+                books: [
+                    { title: "The Awakening", __typename: "Book" },
+                    { title: "City of Glass", __typename: "Book" },
+                ],
             },
         },
     },
@@ -28,7 +31,7 @@ const mocks = [
 describe("App", () => {
     it("renders books and titles from GraphQL queries", async () => {
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider mocks={mocks}>
                 <App />
             </MockedProvider>
         );
