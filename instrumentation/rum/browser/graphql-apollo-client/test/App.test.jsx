@@ -6,6 +6,7 @@ import App, { GET_BOOKS, GET_BOOK_TITLES } from "../App";
 const mocks = [
     {
         request: { query: GET_BOOKS },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
             data: {
                 books: [
@@ -17,6 +18,7 @@ const mocks = [
     },
     {
         request: { query: GET_BOOK_TITLES },
+        maxUsageCount: Number.POSITIVE_INFINITY,
         result: {
             data: {
                 books: [
