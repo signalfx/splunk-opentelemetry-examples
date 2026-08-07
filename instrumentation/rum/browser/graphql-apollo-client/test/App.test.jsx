@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
 import App, { GET_BOOKS, GET_BOOK_TITLES } from "../App";
 
@@ -33,15 +33,18 @@ const mocks = [
 describe("App", () => {
     it("renders books and titles from GraphQL queries", async () => {
         render(
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={mocks} mockLinkDefaultOptions={{ delay: 0 }}>
                 <App />
             </MockedProvider>
         );
 
         expect(screen.getByText("My first Apollo app 🚀")).toBeInTheDocument();
-        expect(await screen.findByText("Kate Chopin")).toBeInTheDocument();
-        expect(await screen.findByText("Paul Auster")).toBeInTheDocument();
-        expect(screen.getAllByText("The Awakening")).toHaveLength(2);
-        expect(screen.getAllByText("City of Glass")).toHaveLength(2);
+
+        await waitFor(() => {
+            expect(screen.getByText("Kate Chopin")).toBeInTheDocument();
+            expect(screen.getByText("Paul Auster")).toBeInTheDocument();
+            expect(screen.getAllByText("The Awakening")).toHaveLength(2);
+            expect(screen.getAllByText("City of Glass")).toHaveLength(2);
+        });
     });
 });
