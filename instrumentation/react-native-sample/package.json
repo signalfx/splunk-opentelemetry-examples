@@ -23,7 +23,22 @@
     "typescript": "~6.0.3"
   },
   "overrides": {
-    "uuid": "11.1.1"
+    "uuid": "11.1.1",
+    "nanoid": "3.3.18",
+    "metro": "0.84.5",
+    "metro-babel-transformer": "0.84.5",
+    "metro-cache": "0.84.5",
+    "metro-cache-key": "0.84.5",
+    "metro-config": "0.84.5",
+    "metro-core": "0.84.5",
+    "metro-file-map": "0.84.5",
+    "metro-minify-terser": "0.84.5",
+    "metro-resolver": "0.84.5",
+    "metro-runtime": "0.84.5",
+    "metro-source-map": "0.84.5",
+    "metro-symbolicate": "0.84.5",
+    "metro-transform-plugins": "0.84.5",
+    "metro-transform-worker": "0.84.5"
   },
   "scripts": {
     "start": "expo start --clear",
