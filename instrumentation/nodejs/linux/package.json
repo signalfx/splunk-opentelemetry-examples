@@ -8,6 +8,9 @@
   },
   "author": "",
   "license": "ISC",
+  "overrides": {
+    "qs": "^6.16.0"
+  },
   "dependencies": {
     "@splunk/otel": "^4.9.0",
     "express": "^4.22.1",

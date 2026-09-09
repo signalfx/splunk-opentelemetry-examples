@@ -8,6 +8,9 @@
   },
   "author": "",
   "license": "ISC",
+  "overrides": {
+    "qs": "^6.16.0"
+  },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
     "@splunk/otel": "^4.9.0",
