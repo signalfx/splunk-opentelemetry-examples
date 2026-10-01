@@ -148,6 +148,13 @@ oc create secret generic intersight-api-credentials \
     --from-file=intersight-key=/tmp/intersight.pem
 ````
 
+Next, update the [./intersight/values.yaml](./intersight/values.yaml) file to include the correct endpoint 
+for your collector: 
+
+```yaml
+otel_collector_endpoint = "http://ucs-otel-collector-splunk-otel-collector-agent.otel.svc.cluster.local:4317"
+```
+
 Finally, we can apply the manifest as follows: 
 
 ```bash

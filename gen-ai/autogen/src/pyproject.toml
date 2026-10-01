@@ -23,3 +23,9 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.uv]
+constraint-dependencies = [
+    "urllib3>=2.8.0",
+    "pyjwt>=2.15.1",
+]
