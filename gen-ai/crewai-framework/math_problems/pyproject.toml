@@ -5,8 +5,8 @@ description = "math_problems using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
-    "crewai[tools]",
-    "litellm>=1.83.0",
+    "crewai",
+    "litellm>=1.96.2",
     "splunk-opentelemetry",
     "splunk-otel-instrumentation-crewai",
     "splunk-otel-instrumentation-openai",
@@ -43,4 +43,6 @@ type = "crew"
 constraint-dependencies = [
     "urllib3>=2.8.0",
     "pyjwt>=2.15.1",
+    "pypdf>=6.19.0",
+    "oauthlib>=4.0.0",
 ]
