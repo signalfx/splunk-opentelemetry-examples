@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
-    "@splunk/otel": "^4.9.0",
+    "@splunk/otel": "^4.12.1",
     "express": "^4.22.1",
     "winston": "^3.8.2"
   }
