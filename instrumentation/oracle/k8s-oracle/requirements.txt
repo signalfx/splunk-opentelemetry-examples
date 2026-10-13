@@ -1,0 +1,4 @@
+Flask==3.1.0
+oracledb==2.5.1
+opentelemetry-instrumentation-oracledb==0.1.0
+requests==2.32.3

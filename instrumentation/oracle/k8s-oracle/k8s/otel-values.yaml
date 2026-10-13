@@ -1,0 +1,64 @@
+clusterName: bank-demo
+environment: k8s-oracle
+
+operatorcrds:
+  install: true
+operator:
+  enabled: true
+instrumentation:
+  installationJob:
+    enabled: true
+
+clusterReceiver:
+  extraEnvs:
+    - name: ORACLE_MONITOR_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: oracle-monitoring
+          key: oracle_monitor_password
+    - name: SPLUNK_DBMON_ACCESS_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: splunk-otel-secret
+          key: splunk_observability_access_token
+    - name: SPLUNK_REALM
+      valueFrom:
+        secretKeyRef:
+          name: splunk-otel-secret
+          key: splunk_realm
+  config:
+    receivers:
+      oracledb:
+        endpoint: oracle.banking.svc.cluster.local:1521
+        service: FREEPDB1
+        username: otel_monitor
+        password: ${env:ORACLE_MONITOR_PASSWORD}
+        resource_attributes:
+          oracledb.instance.name:
+            enabled: true
+        events:
+          db.server.query_sample:
+            enabled: true
+          db.server.top_query:
+            enabled: true
+    exporters:
+      "otlp_http/dbmon":
+        headers:
+          X-SF-Token: ${env:SPLUNK_DBMON_ACCESS_TOKEN}
+          X-splunk-instrumentation-library: dbmon
+        logs_endpoint: https://ingest.${env:SPLUNK_REALM}.observability.splunkcloud.com/v3/event
+        sending_queue:
+          batch:
+            flush_timeout: 15s
+            max_size: 10485760
+            sizer: bytes
+    service:
+      pipelines:
+        "metrics/dbmon":
+          receivers: [oracledb]
+          processors: [memory_limiter, batch]
+          exporters: [signalfx]
+        "logs/dbmon":
+          receivers: [oracledb]
+          processors: [memory_limiter, batch]
+          exporters: ["otlp_http/dbmon"]
