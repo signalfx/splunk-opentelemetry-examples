@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oracle-secret
+type: Opaque
+stringData:
+  ORACLE_PASSWORD: bankpass
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oracle
+spec:
+  selector:
+    app: oracle
+  ports:
+    - name: oracle
+      port: 1521
+      targetPort: 1521
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oracle
+spec:
+  serviceName: oracle
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oracle
+  template:
+    metadata:
+      labels:
+        app: oracle
+    spec:
+      containers:
+        - name: oracle
+          image: gvenzl/oracle-free:23-slim
+          ports:
+            - containerPort: 1521
+          env:
+            - name: ORACLE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oracle-secret
+                  key: ORACLE_PASSWORD
+            - name: APP_USER
+              value: bankapp
+            - name: APP_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oracle-secret
+                  key: ORACLE_PASSWORD
+          volumeMounts:
+            - name: data
+              mountPath: /opt/oracle/oradata
+            - name: init
+              mountPath: /container-entrypoint-initdb.d/01-init.sql
+              subPath: oracle-init.sql
+            - name: init
+              mountPath: /container-entrypoint-initdb.d/02-monitor-user.sql
+              subPath: oracle-monitor-user.sql
+      volumes:
+        - name: init
+          configMap:
+            name: oracle-init
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 5Gi

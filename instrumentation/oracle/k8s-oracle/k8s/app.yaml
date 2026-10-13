@@ -1,0 +1,173 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank-demo
+  template:
+    metadata:
+      labels:
+        app: bank-demo
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "observability/splunk-otel-collector"
+    spec:
+      containers:
+        - name: bank-demo
+          image: bank-demo:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: ORACLE_DSN
+              value: oracle:1521/FREEPDB1
+            - name: ORACLE_USER
+              value: bankapp
+            - name: ORACLE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oracle-secret
+                  key: ORACLE_PASSWORD
+            - name: JAVA_SERVICE_URL
+              value: http://bank-java:8081
+            - name: OTEL_SERVICE_NAME
+              value: bank-demo
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 15
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 60
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bank-demo
+spec:
+  type: NodePort
+  selector:
+    app: bank-demo
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank-loadgen
+  template:
+    metadata:
+      labels:
+        app: bank-loadgen
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "observability/splunk-otel-collector"
+    spec:
+      containers:
+        - name: loadgen
+          image: bank-demo:local
+          imagePullPolicy: IfNotPresent
+          command: ["python", "loadgen.py"]
+          args: ["--url", "http://bank-demo:8080", "--workers", "1", "--interval", "3", "--transfer-interval", "10"]
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: bank-loadgen
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank-java
+  template:
+    metadata:
+      labels:
+        app: bank-java
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "observability/splunk-otel-collector"
+    spec:
+      containers:
+        - name: bank-java
+          image: bank-java:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: bank-java
+            - name: OTEL_INSTRUMENTATION_SPLUNK_JDBC_ENABLED
+              value: "true"
+            - name: ORACLE_JDBC_URL
+              value: jdbc:oracle:thin:@//oracle:1521/FREEPDB1
+            - name: ORACLE_USER
+              value: bankapp
+            - name: ORACLE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: oracle-secret
+                  key: ORACLE_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 750m
+              memory: 768Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bank-java
+spec:
+  selector:
+    app: bank-java
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
