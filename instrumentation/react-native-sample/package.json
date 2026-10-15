@@ -8,7 +8,7 @@
     "@react-navigation/native": "^7.3.8",
     "@react-navigation/native-stack": "^7.17.10",
     "babel-preset-expo": "~57.0.4",
-    "expo": "~57.0.26",
+    "expo": "~57.0.30",
     "expo-font": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
@@ -49,7 +49,8 @@
     "metro-symbolicate": "0.84.5",
     "metro-transform-plugins": "0.84.5",
     "metro-transform-worker": "0.84.5",
-    "brace-expansion": "^5.0.12"
+    "brace-expansion": "^5.0.12",
+    "shell-quote": "1.12.0"
   },
   "scripts": {
     "start": "expo start --clear",
