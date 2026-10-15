@@ -45,4 +45,6 @@ constraint-dependencies = [
     "pyjwt>=2.15.1",
     "pypdf>=6.19.0",
     "oauthlib>=4.0.0",
+    "fsspec>=2026.6.0",
+    "multidict>=6.9.1",
 ]

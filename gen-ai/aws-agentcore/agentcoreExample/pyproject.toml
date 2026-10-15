@@ -42,4 +42,6 @@ pythonpath = ["src"]
 constraint-dependencies = [
     "urllib3>=2.8.0",
     "pyjwt>=2.15.1",
+    "langgraph-sdk>=0.4.4",
+    "multidict>=6.9.1",
 ]

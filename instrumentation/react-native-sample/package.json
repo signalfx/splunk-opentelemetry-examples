@@ -49,7 +49,8 @@
     "metro-symbolicate": "0.84.5",
     "metro-transform-plugins": "0.84.5",
     "metro-transform-worker": "0.84.5",
-    "brace-expansion": "^5.0.12"
+    "brace-expansion": "^5.0.12",
+    "shell-quote": "1.12.0"
   },
   "scripts": {
     "start": "expo start --clear",
