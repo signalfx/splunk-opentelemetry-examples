@@ -9,7 +9,8 @@ dependencies = [
     "autogen-core>=0.7.4",
     "autogen-ext>=0.7.4",
     "tiktoken",
-    "openlit",
+    "openlit>=1.45.0",
+    "mcp>=1.30.0,<2",
     "splunk-opentelemetry",
 ]
 
