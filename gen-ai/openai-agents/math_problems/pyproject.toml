@@ -7,7 +7,7 @@ requires-python = ">=3.10,<3.14"
 dependencies = [
     "openai-agents>=0.2.6",
     "openlit>=1.35.0",
-    "splunk-opentelemetry>=2.6.0",
+    "splunk-opentelemetry>=2.13.2",
 ]
 
 [dependency-groups]
@@ -25,4 +25,7 @@ pythonpath = ["src"]
 constraint-dependencies = [
     "urllib3>=2.8.0",
     "pyjwt>=2.15.1",
+    "certifi>=2026.10.19",
+    "opentelemetry-api>=1.45.1",
+    "mcp>=1.30.0,<2",
 ]
