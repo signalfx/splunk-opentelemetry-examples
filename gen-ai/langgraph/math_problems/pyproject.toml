@@ -34,4 +34,9 @@ constraint-dependencies = [
     "urllib3>=2.8.0",
     "langgraph-sdk>=0.4.4",
     "multidict>=6.9.1",
+    "certifi>=2026.10.19",
+    "aiohttp>=3.14.4",
+    "setuptools>=84.1.0",
+    # LangChain instrumentation imports OpenTelemetry 1.38 APIs removed in 1.45.
+    "splunk-opentelemetry==2.8.0",
 ]

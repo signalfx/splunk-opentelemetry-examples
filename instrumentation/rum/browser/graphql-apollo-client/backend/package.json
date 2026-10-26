@@ -16,13 +16,17 @@
     "@grpc/grpc-js": "^1.14.5",
     "brace-expansion": "^5.0.12",
     "proxy-addr": "^2.0.8",
+    "body-parser": "^1.20.9",
+    "@apollo/server": {
+      "body-parser": "2.4.0"
+    },
     "@graphql-tools/schema": "^10.1.5"
   },
   "dependencies": {
     "@apollo/server": "^5.5.1",
     "@as-integrations/express4": "^1.1.2",
     "@splunk/otel": "^4.12.1",
-    "body-parser": "^1.20.3",
+    "body-parser": "^1.20.9",
     "cors": "^2.8.5",
     "express": "^4.19.0",
     "graphql": "^16.12.0",

@@ -3,11 +3,11 @@ name = "startup_ideas"
 version = "0.1.0"
 description = "Startup Ideas using AutoGen"
 authors = [{ name = "Your Name", email = "you@example.com" }]
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.11,<3.14"
 dependencies = [
-    "autogen-agentchat",
-    "autogen-core",
-    "autogen-ext",
+    "autogen-agentchat>=0.7.4",
+    "autogen-core>=0.7.4",
+    "autogen-ext>=0.7.4",
     "tiktoken",
     "openlit",
     "splunk-opentelemetry",
@@ -25,7 +25,15 @@ testpaths = ["tests"]
 pythonpath = ["."]
 
 [tool.uv]
+# autogen-core 0.7.x caps protobuf at 5.29.x, which cannot carry the
+# patched OpenTelemetry stack in splunk-opentelemetry 2.13.2.
+override-dependencies = ["protobuf>=6.33.5"]
 constraint-dependencies = [
     "urllib3>=2.8.0",
     "pyjwt>=2.15.1",
+    "pillow>=13.0.0",
+    "certifi>=2026.10.19",
+    "opentelemetry-api>=1.45.1",
+    "mcp>=1.30.0,<2",
+    "splunk-opentelemetry>=2.13.2",
 ]
