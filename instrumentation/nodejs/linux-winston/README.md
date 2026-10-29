@@ -2,7 +2,7 @@
 
 This example demonstrates how to instrument a Node.js Application using OpenTelemetry,
 and export traces, metrics, and logs to a local collector, which will then
-export that data to Splunk. We'll use Node.js 22 for this example, but the steps
+export that data to Splunk. We'll use Node.js 22.23.4 for this example, but the steps
 for other Node.js versions are similar.
 
 We'll show how the `@splunk/otel` NPM package can be installed 
@@ -18,7 +18,7 @@ for further details on this approach.
 
 The following tools are required to build and execute the Node.js application:
 
-* Node.js 22
+* Node.js 22.23.4 or later
 * A Linux-compatible host (such as Ubuntu 24.04, or Mac OS)
 
 ## Deploy the Splunk OpenTelemetry Collector
