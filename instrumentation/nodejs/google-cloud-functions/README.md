@@ -2,7 +2,7 @@
 
 This example demonstrates how to instrument an serverless Google Cloud Run function written in
 Node.js using OpenTelemetry, and then export the data to Splunk Observability
-Cloud.  We'll use Node.js v20 for this example, but the steps for other Node.js versions are
+Cloud.  We'll use Node.js v24 for this example, but the steps for other Node.js versions are
 similar.
 
 ## Prerequisites
@@ -68,7 +68,7 @@ and `NODE_OPTIONS` environment variables as part of the gcloud deploy command:
 gcloud functions deploy node-js-gcloud-function-example \
     --gen2 \
     --region=us-central1 \
-    --runtime=nodejs20 \
+    --runtime=nodejs24 \
     --source=./src \
     --entry-point=helloHttp \
     --trigger-http \

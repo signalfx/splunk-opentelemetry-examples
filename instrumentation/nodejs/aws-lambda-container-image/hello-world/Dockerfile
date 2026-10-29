@@ -18,7 +18,7 @@ RUN curl $(aws lambda get-layer-version-by-arn --arn arn:aws:lambda:us-west-1:25
 RUN unzip layer.zip -d /opt
 RUN rm layer.zip
 
-FROM public.ecr.aws/lambda/nodejs:20
+FROM public.ecr.aws/lambda/nodejs:24.2026.10.29.11
 COPY --from=layer-copy /opt /opt
 
 # Copy function code

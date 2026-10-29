@@ -26,7 +26,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: "24.22.2"
           cache: npm
           cache-dependency-path: instrumentation/rum/browser/graphql-apollo-client/package-lock.json
 
@@ -49,7 +49,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
+          node-version: "24.22.2"
           cache: npm
           cache-dependency-path: instrumentation/rum/browser/graphql-apollo-client/backend/package-lock.json
 

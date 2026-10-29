@@ -6,6 +6,9 @@
   "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
   "author": "SAM CLI",
   "license": "MIT",
+  "overrides": {
+    "follow-redirects": "^1.16.2"
+  },
   "dependencies": {
     "axios": ">=1.20.0",
     "pino": ">=9.5.0"
