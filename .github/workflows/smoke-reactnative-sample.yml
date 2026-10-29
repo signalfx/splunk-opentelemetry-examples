@@ -76,14 +76,22 @@ jobs:
             );
           }
 
-          const uuid = lock.packages?.['node_modules/uuid'];
-          if (!uuid || uuid.version !== '11.1.1') {
-            throw new Error(
-              `lockfile uuid must be 11.1.1, got ${uuid?.version ?? 'missing'}`
-            );
-          }
+          const uuidEntries = Object.entries(lock.packages ?? {}).filter(
+            ([name]) => name === 'node_modules/uuid' || name.endsWith('/node_modules/uuid')
+          );
 
-          console.log('uuid override OK');
+          if (uuidEntries.length === 0) {
+            console.log('uuid override OK (uuid is not installed)');
+          } else {
+            for (const [name, entry] of uuidEntries) {
+              if (entry.version !== '11.1.1') {
+                throw new Error(
+                  `lockfile ${name} must be 11.1.1, got ${entry.version ?? 'missing'}`
+                );
+              }
+            }
+            console.log('uuid override OK');
+          }
           EOF
 
       - name: Run npm audit
