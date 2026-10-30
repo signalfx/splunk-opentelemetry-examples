@@ -51,7 +51,10 @@
     "metro-transform-plugins": "0.84.5",
     "metro-transform-worker": "0.84.5",
     "brace-expansion": "^5.0.12",
-    "shell-quote": "1.12.0"
+    "shell-quote": "1.12.0",
+    "@expo/config": {
+      "deepmerge": "4.1.2"
+    }
   },
   "scripts": {
     "start": "expo start --clear",
