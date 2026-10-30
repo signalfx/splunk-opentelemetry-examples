@@ -11,7 +11,8 @@ resolution-markers = [
 constraints = [
     { name = "aiohttp", specifier = ">=3.14.4" },
     { name = "certifi", specifier = ">=2026.10.19" },
-    { name = "langgraph-sdk", specifier = ">=0.4.4" },
+    { name = "langgraph", specifier = ">=1.2.14" },
+    { name = "langgraph-sdk", specifier = ">=0.4.6" },
     { name = "multidict", specifier = ">=6.9.1" },
     { name = "setuptools", specifier = ">=84.1.0" },
     { name = "splunk-opentelemetry", specifier = "==2.8.0" },

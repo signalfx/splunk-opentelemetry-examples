@@ -32,11 +32,13 @@ pythonpath = ["src"]
 [tool.uv]
 constraint-dependencies = [
     "urllib3>=2.8.0",
-    "langgraph-sdk>=0.4.4",
+    "langgraph>=1.2.14",
+    "langgraph-sdk>=0.4.6",
     "multidict>=6.9.1",
     "certifi>=2026.10.19",
     "aiohttp>=3.14.4",
     "setuptools>=84.1.0",
-    # LangChain instrumentation imports OpenTelemetry 1.38 APIs removed in 1.45.
+    # splunk-otel-util-genai imports opentelemetry._events, removed in API 1.45.
+    # Stay on the 1.38 distro until that package supports 1.45.1.
     "splunk-opentelemetry==2.8.0",
 ]

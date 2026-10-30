@@ -51,6 +51,7 @@ constraint-dependencies = [
     "certifi>=2026.10.19",
     "aiohttp>=3.14.4",
     "uv>=0.13.4",
-    # CrewAI instrumentation imports OpenTelemetry 1.38 APIs removed in 1.45.
+    # splunk-otel-util-genai imports opentelemetry._events, removed in API 1.45.
+    # Stay on the 1.38 distro until that package supports 1.45.1.
     "splunk-opentelemetry==2.8.0",
 ]
