@@ -32,7 +32,8 @@ python3.12 -m venv venv
 # activate the virtual environment
 source venv/bin/activate
 
-pip install -r requirements.txt 
+pip install -r requirements.txt
+pip install --no-deps splunk-opentelemetry==2.13.3 
 ```
 
 ## Set Environment Variables 

@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt -r requirements-dev.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt && pip install --no-deps splunk-opentelemetry==2.13.3
 
       - name: Run unit tests
         run: pytest -v

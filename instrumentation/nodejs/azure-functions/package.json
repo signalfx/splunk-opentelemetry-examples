@@ -7,21 +7,23 @@
     "test": "echo \"No tests yet...\""
   },
   "overrides": {
-    "minimatch": "^10.2.6",
+    "minimatch": "^11.0.8",
+    "glob": "^14.0.6",
     "brace-expansion": "^5.0.12",
-    "@grpc/grpc-js": "^1.14.5"
+    "@grpc/grpc-js": "^1.14.5",
+    "@opentelemetry/instrumentation-http": "^0.222.0"
   },
   "dependencies": {
     "@azure/functions": "^4.16.0",
     "@azure/functions-opentelemetry-instrumentation": "^0.3.0",
     "@opentelemetry/api": "^1.9.1",
-    "@opentelemetry/auto-instrumentations-node": "^0.79.0",
-    "@opentelemetry/exporter-logs-otlp-http": "^0.219.0",
-    "@opentelemetry/exporter-metrics-otlp-http": "^0.219.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.219.0",
-    "@opentelemetry/sdk-logs": "^0.219.0",
-    "@opentelemetry/sdk-metrics": "^2.7.1",
-    "@opentelemetry/sdk-node": "^0.221.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.80.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.222.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.222.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.222.0",
+    "@opentelemetry/sdk-logs": "^0.222.0",
+    "@opentelemetry/sdk-metrics": "^2.11.0",
+    "@opentelemetry/sdk-node": "^0.222.0",
     "pino": "^10.3.1"
   },
   "main": "src/{index.js,functions/*.js}"
