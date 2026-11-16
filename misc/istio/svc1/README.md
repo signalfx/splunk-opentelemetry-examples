@@ -61,6 +61,7 @@ used for OpenTelemetry instrumentation:
 
 ````
 pip3 install -r requirements.txt
+pip3 install --no-deps splunk-opentelemetry==2.13.3
 ````
 
 ### Set Environment Variables

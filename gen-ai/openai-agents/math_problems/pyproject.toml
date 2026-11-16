@@ -22,10 +22,23 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.uv]
+override-dependencies = [
+    # splunk-opentelemetry 2.13.3 still pins the 1.45.1 / 0.66b1 stack.
+    "opentelemetry-api==1.45.2",
+    "opentelemetry-sdk==1.45.2",
+    "opentelemetry-semantic-conventions==0.66b2",
+    "opentelemetry-configuration==0.66b2",
+    "opentelemetry-exporter-otlp-proto-grpc==1.45.2",
+    "opentelemetry-exporter-otlp-proto-http==1.45.2",
+    "opentelemetry-instrumentation==0.66b2",
+    "opentelemetry-instrumentation-logging==0.66b2",
+    "opentelemetry-instrumentation-system-metrics==0.66b2",
+    "opentelemetry-propagator-b3==1.45.2",
+]
 constraint-dependencies = [
     "urllib3>=2.8.0",
     "pyjwt>=2.15.1",
     "certifi>=2026.10.19",
-    "opentelemetry-api>=1.45.1",
+    "opentelemetry-api>=1.45.2",
     "mcp>=1.30.0,<2",
 ]

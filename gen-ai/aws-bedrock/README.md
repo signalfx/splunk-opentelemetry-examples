@@ -42,15 +42,10 @@ python3 -m venv venv
 # activate the virtual environment for the proxy
 source venv/bin/activate
 
-# install boto3 and splunk-opentelemetry
-pip install boto3
-pip install splunk-opentelemetry
-```
-
-Run the bootstrap script to install instrumentation for every supported package in your environment:
-
-``` bash
-./venv/bin/opentelemetry-bootstrap -a install
+# Pinned OpenTelemetry API 1.45.2. The Splunk distro is installed
+# without its dependency pins, which still require API 1.45.1.
+pip install -r requirements.txt
+pip install --no-deps splunk-opentelemetry==2.13.3
 ```
 
 ## Set Environment Variables
